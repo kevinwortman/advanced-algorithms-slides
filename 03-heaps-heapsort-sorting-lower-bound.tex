@@ -44,6 +44,20 @@ Applications
     Prim's MST algorithm,
     Dijkstra's shortest paths algorithm, others
 \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Big Picture}
+\textbf{Big idea in computer science}: automata with simple local behavior can have amazing effects
+when assembled at scale
+\begin{itemize}
+  \item finite states and Turing tape cells $\rightarrow$ Turing-complete computation
+  \item CPU instructions $\rightarrow$ sophisticated software
+  \item neural network nodes $\rightarrow$ teachable intelligent system
+  \item hyptertext pages $\rightarrow$ the web
+  \item compromised network hosts $\rightarrow$ distributed denial of service
+  \item (today): tree nodes w/ different order and balance invariant $\rightarrow$ organize
+    large datasets efficiently in different ways
+\end{itemize}
 
 \end{frame}
 
@@ -64,19 +78,18 @@ of heap
 
 \begin{frame} \frametitle{Binary Heap Order Invariant}
 
-Let parent node $p$ have children $l, r$ \stanza
-
-Recall \textbf{BST invariant}: $l.key < p.key < r.key$ \stanza
-
+Let parent node $p$ have children $l, r$ \\
+Recall \textbf{BST invariant}: $l.key < p.key < r.key$ \\
 Binary \textbf{max-heap invariant}: $p.key \geq l.key$ and $p.key \geq r.key$ \\
 (sketch) \stanza
 
 Implies
 \begin{enumerate}
-  \item BST is totally sorted
-  \item heap is ``halfway'' sorted; can tell parent comes before children,
-    but siblings are unsorted
+  \item BST is totally sorted, but loosely balanced
+  \item heap-order is ``half-baked'' sort; can tell parent comes before children,
+    but siblings are unsorted relative to each other
   \item root must be overall maximum; that one element is perfectly sorted
+  \item tradeoff: heap can be more tightly balanced than BST
 \end{enumerate}
 
 \end{frame}
@@ -101,7 +114,7 @@ Max-heap is more convenient for sorting in non-decreasing order, so we'll focus 
 
 \textbf{Depth} of a node: distance from root (leaves are deepest) \stanza
 
-Heap is a nearly-perfect binary tree
+Heap is nearly-perfectly-balanced
 \begin{itemize}
   \item every level except the bottom is completely full
   \item bottom level: full on the left side, may be missing elements on the
@@ -129,7 +142,33 @@ Arrayed max-heap:
   \item $RIGHT(i) = 2i+1$
   \item $PARENT, LEFT, RIGHT$ are $\Theta(1)$ and ordinarily only 1-2 CPU instructions each
 \end{itemize}
+\end{frame}
 
+\begin{frame} \frametitle{Create Heap Operation}
+  \begin{algorithmic}[1]
+    \Function{CREATE-MAX-HEAP}{A}
+    \Require $A$ is an array of size $n$ that may become a heap
+    \Ensure $A$ is a valid, empty, heap
+    \State $A.heapsize = 0$
+    \EndFunction
+  \end{algorithmic}
+
+  (Trivial pseudocode, but still worthwhile to write this down so that each operation
+   is encapsulated and crystal clear.)
+
+  Clearly $\Theta(1)$ time
+\end{frame}
+
+\begin{frame} \frametitle{Find-Max Operation}
+\begin{algorithmic}[1]
+  \Function{MAX-HEAP-MAXIMUM}{A}
+  \Require $A$ is a valid, non-empty heap
+  \Ensure returns the maximum key in $A$
+  \State \Return $A[1]$
+  \EndFunction
+\end{algorithmic}
+
+Again, straightforward and clearly $\Theta(1)$ time
 \end{frame}
 
 \begin{frame} \frametitle{Max-Heapify Intro.}
@@ -148,7 +187,7 @@ $MAX-HEAPIFY(A, i)$
 {\small
 \begin{algorithmic}[1]
   \Function{MAX-HEAPIFY}{A, i}
-  \Require $A[LEFT(i)]$ and $A[RIGHT(i)]$ are heap-ordered
+  \Require $A$ is a heap, $A[LEFT(i)]$ and $A[RIGHT(i)]$ are heap-ordered
   \Ensure $A[i]$ is heap-ordered
   \State $l = LEFT(i), r = RIGHT(i)$
   \If{ $l \leq k$ and $A[l] > A[i]$}
@@ -177,24 +216,34 @@ $MAX-HEAPIFY(A, i)$
   \item Balance invariant $\implies$ at least 1/3 elements on right side $\implies$ at at most $2/3$ elements in worst case
   \item $T(n) = T(\frac{2}{3}n) + \Theta(1)$
   \item $T(n) \in \Theta(\log n)$ by master theorem case 2
-  \item \textbf{Pushing the envelope}: for any fraction $f<1$, $T(fn)+\Theta(1) \in O(\log n)$; not just $f=\frac{1}{2}$
+  \item \textbf{Pushing the envelope}: for any fraction $f<1$,
+    including $f>\frac{1}{2}$,
+    $T(fn)+\Theta(1) \in O(\log n)$
 \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Create Heap, Get Maximum, Increase Key, Pseudocode}
-  {\small
+\begin{frame} \frametitle{Delete-Max Operation}
+
+Idea: grab rightmost node on bottom level, move it to root, heapify root (sketch)
+
 \begin{algorithmic}[1]
-  \Function{CREATE-MAX-HEAP}{A}
-  \State $heapsize = 0$
+  \Function{MAX-HEAP-DELETE-MAX}{A}
+  \Require $A$ is a valid non-empty heap
+  \Ensure the maximum key in $A$ is removed and then returned
+  \State $max = A[1]$
+  \State $A[1] = A[A.heapsize]$
+  \State $A.heapsize = A.heapsize - 1$
+  \State $MAX-HEAPIFY(A, 1)$
+  \State \Return $max$
   \EndFunction
 \end{algorithmic}
 
-\begin{algorithmic}[1]
-  \Function{MAX-HEAP-MAXIMUM}{A}
-  \Require $A$ is a valid heap, $n>0$
-  \State \Return $A[1]$
-  \EndFunction
-\end{algorithmic}
+Analysis: $\Theta(1)$ plus $MAX-HEAPIFY$ so $\Theta(\log n)$
+\end{frame}
+
+
+\begin{frame} \frametitle{Increase Key Operation}
+$A[i]$ ``floats up'' until it is either in heap-order, or becomes the root \stanza
 
 \begin{algorithmic}[1]
   \Function{MAX-HEAP-INCREASE-KEY}{A, i, key}
@@ -206,48 +255,22 @@ $MAX-HEAPIFY(A, i)$
   \EndWhile
   \EndFunction
 \end{algorithmic}
-}
-\end{frame}
 
-\begin{frame} \frametitle{Create Heap, Get Maximum, Increase Key, Analysis}
-Create Heap, Get Maximum: clearly $\Theta(1)$ \stanza
+$\Theta(\text{depth of } A[i]) = \Theta(\log n)$ time
 
-Increase Key:
-\begin{itemize}
-  \item $A[i]$ ``floats up'' until it is either in heap-order, or becomes the root
-  \item $\Theta(\text{depth of } A[i]) = \Theta(\log n)$ time
-\end{itemize}
 \end{frame}
 
 \begin{frame} \frametitle{Insert}
 \begin{algorithmic}[1]
   \Function{MAX-HEAP-INSERT}{A, key}
-  \Require $A$ is a valid heap, $heapsize < n$
-  \State $heapsize = heapsize + 1$
-  \State $A[heapsize] = - \infty$
-  \State $MAX-HEAP-INCREASE-KEY(A, heapsize, key)$
+  \Require $A$ is a valid heap, $A.heapsize < n$
+  \State $A.heapsize = A.heapsize + 1$
+  \State $A[A.heapsize] = - \infty$
+  \State $MAX-HEAP-INCREASE-KEY(A, A.heapsize, key)$
   \EndFunction
 \end{algorithmic}
 
 Analysis: $\Theta(1)$ plus $MAX-HEAP-INCREASE-KEY$, so $\Theta(\log n)$
-\end{frame}
-
-\begin{frame} \frametitle{Delete-Max}
-
-Idea: grab rightmost node on bottom level, move it to root, heapify root (sketch)
-
-\begin{algorithmic}[1]
-  \Function{MAX-HEAP-DELETE-MAX}{A}
-  \Require $A$ is a valid heap, $heapsize > 0$
-  \State $max = A[1]$
-  \State $A[1] = A[heapsize]$
-  \State $heapsize = heapsize - 1$
-  \State $MAX-HEAPIFY(A, 1)$
-  \State \Return $max$
-  \EndFunction
-\end{algorithmic}
-
-Analysis: $\Theta(1)$ plus $MAX-HEAPIFY$ so $\Theta(\log n)$
 \end{frame}
 
 \begin{frame} \frametitle{Build-Heap}
@@ -255,7 +278,7 @@ Analysis: $\Theta(1)$ plus $MAX-HEAPIFY$ so $\Theta(\log n)$
 
 \textbf{Offline construction/build}: given $n$ elements all at once, build valid data structure \stanza
 
-Offfline is often faster, by constant factors or even asymptotically \stanza
+Offline is often faster, by constant factors or even asymptotically \stanza
 
 Leaves are trivially in heap order and live in $A[\lfloor n/2 \rfloor+1, \ldots, n]$ \stanza
 
@@ -266,10 +289,10 @@ Just heapify all the parents! \stanza
 
 \begin{frame} \frametitle{Build-Heap Pseudocode}
   \begin{algorithmic}[1]
-    \Function{BUILD-MAX-HEAP}{A, i}
+    \Function{BUILD-MAX-HEAP}{A}
     \Require $A[1, \ldots, n]$ may or may not be in heap-order
     \Ensure $A[1, \ldots, n]$ is in heap-order
-    \State $heapsize = n$
+    \State $A.heapsize = n$
     \For {$i$ from $\lfloor n/2 \rfloor$ down to 1}
       \State $MAX-HEAPIFY(A, i)$
     \EndFor
@@ -375,9 +398,11 @@ E.g.
   \item $\implies$ merge sort, heap sort are \textbf{optimal}
 \end{itemize}
 
-(Heap sort is theoretically superior because it is in-place.) \stanza
+(Heap sort is theoretically superior because it is in-place.
+Practical constant factors depends on whether allocation (mergesort) or cache misses (heapsort) are costlier.)
+\stanza
 
-End-goal of algorithm design and lower-bound analysis.
+Optimal algorithms are the end-goal of algorithm design and lower-bound analysis.
 \end{frame}
 
 \begin{frame} \frametitle{Epilogue --- Sorted Order vs. Heap Order}
@@ -394,7 +419,7 @@ Retrieve in order & $\Theta(n)$ & $\Theta(n \log n)$ \\
 \end{center}
 Whack-a-mole: a $\Omega(n \log n)$ phase inevitably pops up somewhere! \stanza
 
-Heap-order is not insightful enough to be asymptotically significant, which is
+Heap-order is not organized enough to be asymptotically significant, which is
  why it can be $o(n \log n),$ and maintain a stronger balance invariant than
  BSTs.
 
