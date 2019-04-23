@@ -23,7 +23,7 @@
 
 \newcommand{\stanza}{ \\~\ }
 
-\title{10. Computational Geometry}
+\title{10. Computational Geometry and Line Segment Intersection}
 \subtitle{CPSC 535 $\sim$ Spring 2019}
 \author{Kevin A. Wortman}
 \institute{ \includegraphics[height=2cm]{csuf-logo-cmyk} }
@@ -217,6 +217,31 @@ A pattern in CG algorithms:
 \includegraphics[height=2.5in]{10-lines.png}
 \end{frame}
 
+\begin{frame} \frametitle{Line Segment Intersection Pseudocode}
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{LINE-SEGMENT-INTERSECTION}{$L$}
+      \State $T$ = new BST of points ordered by $y$-coordinate
+      \State $S$ = sort all endpoints in $L$ by $x$-coordinate
+      \For { endpoint $p$ in $S$ }
+        \If { $p$ is a left endpoint }
+          \State $T$.insert($p$)
+          \If { $p$ intersects with $p$'s predecessor or successor }
+            \State \Return { $p$ and that intersecting neighbor }
+          \EndIf
+        \Else \Comment{ $p$ must be a right endpoint }
+          \If { $p$'s pred. and succ. both exist and intersect }
+            \State \Return { the predecessor and successor }
+          \EndIf
+          \State $T$.delete($p$)
+        \EndIf
+      \EndFor
+      \State \Return { NIL }
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
 \begin{frame} \frametitle{Non-Degeneracy Assumptions Revisited}
 Algorithm assumes that
 \[ \text{sweep line } \cap \text{ each line segment} \]
@@ -243,7 +268,7 @@ Predecessor/successor query:
 \end{frame}
 
 \begin{frame} \frametitle{Line Intersection Analysis}
-  sort points: $\Theta(n log n)$ \stanza
+  sort points: $\Theta(n \log n)$ \stanza
 
   for loop: $2n \in \Theta(n)$ events \\
   body of loop involves $\Theta(1)$ BST operations \\
@@ -252,73 +277,6 @@ Predecessor/successor query:
   $\Theta(n \log n + n \log n) = \Theta(n \log n)$ total time \stanza
 
   Example of reduction to both sorting and BST operations.
-\end{frame}
-
-\begin{frame} \frametitle{Convex Hulls}
-\emph{convex hull problem} \\
-\textbf{input}: set of $n \geq 3$ points $Q$ \\
-\textbf{output}: $CH(Q)$, the subset of $Q$ that is the set of vertices on
-  the convex hull of $Q$ \stanza
-
-Convex hull $\equiv$ convex polygon enclosing all of $Q$ \stanza
-
-Applications
-\begin{itemize}
-  \item object intersection in raytracing, video games, GUIs
-  \item drawing implicit regions in GIS
-  \item finding farthest points
-  \item component of other algorithms
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Approaches to Convex Hulls}
-Like the sorting problem, many algorithm patterns work for convex hulls,
-and there is a rich literature of competitive algorithms. \stanza
-
-\begin{itemize}
-  \item Greedy pattern: line-sweep, update hull as we go
-  \item Divide-and-conquer: divide $Q$ in half, compute convex hulls for each
-    half, merge two convex hulls into one
-  \item Iterative improvement: start with a superset of $CH(Q)$; refine by repeatedly eliminating
-    a constant fraction of the points until only $CH(Q)$ remains
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Graham Scan}
-
-  (TODO)
-
-\end{frame}
-
-\begin{frame} \frametitle{Jarvis March}
-Greedy heuristic: moving around the hull counter-clockwise, each step from one
-  vertex to the next is \emph{the input point whose angle is shallowest} \stanza
-
-Jarvis march
-\begin{enumerate}
-  \item Find the lowest and highest points in $Q$.
-  \item (right chain)
-  \item Starting from the lowest point, and until we reach the highest point:
-    \begin{enumerate}
-      \item Linear search $Q$ for the next point, minimizing the angle between
-        the two points.
-      \item Add the first point to $CH(Q)$ and move to the second point.
-    \end{enumerate}
-  \item (left chain) Starting from the highest point, repeat this process until we
-    reach the lowest point.
-  \item Return $CH(Q)$
-\end{enumerate}
-\end{frame}
-
-\begin{frame} \frametitle{Jarvis March Analysis}
-  Preprocessing to find points: $\Theta(n)$ \stanza
-
-  Loops together iterate $h$ times, where $h \equiv $ number of points on the hull. \stanza
-
-  The linear search inside the loop takes $\Theta(n)$ time. \stanza
-
-  $\therefore$ $\Theta(nh)$ total time. \\
-  Faster than Graham scan's $\Theta(n \log n)$ when $h \in o(\log n).$
 \end{frame}
 
 \end{document}
