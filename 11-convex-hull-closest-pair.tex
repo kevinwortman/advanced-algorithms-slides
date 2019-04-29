@@ -109,9 +109,9 @@ and there is a rich literature of competitive algorithms. \stanza
   \item greedy pattern, reduction-to-sorting
   \item Heuristic: when touring the hull in counter-clockwise order, we
     \textbf{only make left turns}
-  \item right turn $=$ exiting a concavity
+  \item right turn $=$ exiting a concavity; middle point not in hull
   \item $\therefore$ sweep counter-clockwise, keep points that participate in left
-    turns, drop points that cause right turns
+    turns, drop points in the middle of right turns
   \item alternative kind of line sweep: rotating the line (not left-to-right)
 \end{itemize}
 \end{frame}
@@ -128,7 +128,7 @@ and there is a rich literature of competitive algorithms. \stanza
   \item inductive case:
     \begin{itemize}
       \item examine next input point $p_i$, top of stack $t$, next-lowest stack point $r$
-      \item if $\angle r t p_i$ is not a left turn $t$ not on hull
+      \item if $\angle r t p_i$ is not a left turn $\implies t$ not on hull
     \end{itemize}
   \item Note: need stack data structure w/ accessor to top \textbf{two} elements
   \end{itemize}
@@ -140,7 +140,7 @@ and there is a rich literature of competitive algorithms. \stanza
   \Function{GRAHAM-SCAN}{$Q$} \Comment{guaranteed $|Q| \geq 3$}
     \State $p_0 = $ lowest point in $Q$ (break ties by choosing leftmost point)
     \State $p_1 \ldots p_m = $ sort $Q-\{p_0\}$ into counter-clockwise order,
-      by polar angle with $p_0$; break ties by keeping only the point farhest from $p_0$
+      by polar angle with $p_0$; break ties by keeping only the point farthest from $p_0$
     \State $S$ = new stack
     \State $S.PUSH(p0)$
     \State $S.PUSH(p1)$
@@ -277,7 +277,7 @@ Jarvis march
 
 \begin{frame} \frametitle{Narrowing Search at Boundary}
 \begin{itemize}
-  \item \textbf{Claim}: only need to check $O(n)$ pairs of straddling points, not $O(n^2)$
+  \item \textbf{Claim}: only need to check $O(n)$ pairs of straddling points, not $\Theta(n^2)$
   \item let $\delta = \min(d(p_L, q_L), d(p_R, q_R)) = $ distance between closest
     pair entirely in $L$ or entirely in $R$
   \item suppose $\exists p_S$ left of $\ell,$ $q_S$ right of $\ell,$ with $p_S, q_S$ closer than $\delta$
@@ -322,12 +322,12 @@ Jarvis march
 \begin{itemize}
   \item base case is $\Theta(1)$
   \item each sort is $\Theta(n \log n)$
-  \item compute $\ell$ is $\Theta(1)$ (geven sorted $X$)
+  \item compute $\ell$ is $\Theta(1)$ (given sorted $X$)
   \item form $L, R$ is $\Theta(n)$
   \item straddling \textbf{for} loop is $\Theta(7n) = \Theta(n)$
   \item $T(n) = 2 T(n/2) + n \log n$
   \item by master theorem, $\Theta(n^2 \log n)$
-  \item \emph{bottleneck} is sorting $X, Y$; can do this once before recursion
+  \item \textbf{bottleneck} is sorting $X, Y$; can do this once before recursion
 \end{itemize}
 \end{frame}
 
@@ -336,7 +336,7 @@ Jarvis march
   \Function{CLOSEST-PAIR}{$Q$}
     \State $X = $ sort $Q$ by $x$-coordinate
     \State $Y = $ sort $Q$ by $y$-coordinate
-    \State Return CLOSEST-PAIR-HELPER($Q$, $X$, $Y$)
+    \State Return CLOSEST-PAIR-HELPER($X$, $X$, $Y$)
   \EndFunction
 \end{algorithmic}
 \end{frame}
@@ -344,17 +344,17 @@ Jarvis march
 \begin{frame} \frametitle{Third Draft -- Recursive Helper}
   {\footnotesize
 \begin{algorithmic}[1]
-  \Function{CLOSEST-PAIR-HELPER}{$Q$, $X$, $Y$}
+  \Function{CLOSEST-PAIR-HELPER}{$P$, $X$, $Y$}
     \If { $n \leq 3$ }
-      \State \Return CLOSEST-PAIR-NAIVE($Q$)
+      \State \Return CLOSEST-PAIR-NAIVE($P$)
     \Else
-      \State $x_m$ = median $x$-coordinate in $Q$
+      \State $x_m$ = median $x$-coordinate in $P$
       \State $\ell$ = vertical line through $x_m$
-      \State $L = \{p \in Q : p \text{ left of } \ell\}, R = Q-L$
+      \State $L = \{p \in P : p \text{ left of } \ell\}, R = P-L$
       \State $p_L, q_L = $ CLOSEST-PAIR-HELPER($L$, $X$, $Y$)
       \State $p_R, q_R = $ CLOSEST-PAIR-HELPER($R$, $X$, $Y$)
       \State $p, q$ = closer of $p_L, q_L$ versus $p_R, q_R$; $\delta=d(p,q)$
-      \For { $a \in Q$ and within $\delta$ of $\ell$ }
+      \For { $a \in P$ and within $\delta$ of $\ell$ }
         \For { 7 points $b$ preceding $a$ in $Y$ }
           \If { $d(a, b) < \delta$ }
             \State $p=a, q=b, \delta=d(a,b)$
@@ -373,6 +373,8 @@ Jarvis march
   \item helper:
     \begin{itemize}
       \item find median $x$ is $\Theta(n)$
+      \item (use general median-finding algorithm; or count $k=|P \cap X|$
+        then iterate past $k/2$ elements of $X$)
       \item compute $\ell$ is $\Theta(1)$ (given median)
       \item form $L, R$ is $\Theta(n)$
       \item straddling \textbf{for} loop is $\Theta(7n) = \Theta(n)$
