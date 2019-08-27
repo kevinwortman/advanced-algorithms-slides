@@ -76,14 +76,33 @@ Commonalities
     \item Read the problem definition (input/output) carefully and critically.
     \item Make sure that you understand the data types involved, constraints on them,
       technical terms, and story of the problem.
+      \item Write out a straightforward input and output. Try additional examples
+        involving non-obvious solutions.
     \item What are the \emph{corner cases} of input? Can the input be empty?
       When is the solution obvious, and when is it not?
-    \item Write out a straightforward input and output. Try additional examples
-      involving non-obvious solutions.
     \item What is a use case for this algorithm in practical software?
     \item Does this problem resemble other problems you know about?
     \item If any of this is unclear, \textbf{ask questions}.
   \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Example Problem: Top 25 Words \footnote{Credit: \href{https://www.crcpress.com/Exercises-in-Programming-Style/Lopes/p/book/9781482227376}{Exercises in Programming Style, Christa Lopes}}}
+\textbf{input:} a document $D$ (list of $n$ strings) and set
+  set $S$ of stop-words (strings) \\
+\textbf{output:} a list of pairs
+  $T=\{(w, k) : w \in W, w \notin S, \text{ and } k \in \mathbb{N} \}$
+  containing the 25 most frequently-occuring words, not including stop-words,
+  and the number of times each appears \\
+\vspace{12pt}
+  Quiz:
+  \begin{itemize}
+    \item Data types, constraints, of input/output
+    \item Example input and output
+    \item Corner cases
+    \item Use case
+    \item Similar to anything familiar?
+  \end{itemize}
+
 \end{frame}
 
 \begin{frame} \frametitle{2. Baseline}
@@ -126,7 +145,7 @@ What about the baseline do we want to improve?
   \item better space efficiency
   \item avoid randomization
   \item avoid amortization
-  \item extra feature e.g. in-place, stable
+  \item extra feature e.g. sort is in-place
   \item simplicity; elegance; easier to implement/understand
   \item better constant factors
 \end{itemize}
