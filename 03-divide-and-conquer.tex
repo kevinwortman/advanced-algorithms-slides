@@ -226,7 +226,7 @@ First try is not using the fact that a \emph{crossing} subarray
     \State $sum = 0$
     \For {$i$ from $mid$ down to $low$}
       \State $sum = sum + P[i]$
-      \If { $sum > left-sum$ }
+      \If { $sum > leftsum$ }
         \State $leftsum = sum$
         \State $maxleft = i$
       \EndIf
