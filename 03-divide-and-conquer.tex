@@ -236,7 +236,7 @@ First try is not using the fact that a \emph{crossing} subarray
       \State $sum = sum + P[i]$
       \If { $sum > rightsum$ }
         \State $rightsum = sum$
-        \State $rightleft = i$
+        \State $maxright = i$
       \EndIf
     \EndFor
     \State \Return $(maxleft, maxright, leftsum + rightsum)$
