@@ -425,6 +425,34 @@ Use algebra to refactor into 7 recursive multiplies instead of 8
 \end{align*}
 by master theorem
 \end{frame}
+\begin{frame} \frametitle{Divide-and-conquer matrix multiplication --- try 2}
+  {\tiny
+  \begin{algorithmic}[1]
+    \Function{MMS}{A, B}
+    \State $C = $ new $n \times n$ matrix
+    \If { $n$ == 1 }
+      \State $c_{11} = a_{11} \cdot b_{11}$
+    \Else
+      \State quadrisect $A, B, C$
+      \State form $S_1, \ldots, S_{10}$ as shown on next slide
+      \State $P_1 = MMS(A_{11}, S_1)$
+      \State $P_2 = MMS(S_2, B{22})$
+      \State $P_3 = MMS(S_3, B{11})$
+      \State $P_4 = MMS(A_{22}, S_4)$
+      \State $P_5 = MMS(S_5, S_6)$
+      \State $P_6 = MMS(S_7, S_8)$
+      \State $P_7 = MMS(S_9, S_{10})$
+      \State $C_{11} = P_5 + P_4 - P_2 + P_6$
+      \State $C_{12} = P_1 + P_2$
+      \State $C_{21} = P_3 + P_4$
+      \State $C_{22} = P_5 + P_1 - P_3 - P_7$
+    \EndIf
+    \State \Return $C$
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
 
 \begin{frame} \frametitle{Details of Strassen's algorithm}
   \begin{columns}
