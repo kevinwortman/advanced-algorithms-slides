@@ -358,4 +358,53 @@ Trade-off:
   \end{itemize}
 \end{frame}
 
+\begin{frame} \frametitle{Hash Tables}
+Review hash tables
+\begin{itemize}
+  \item can store a \textbf{set} of \emph{keys}
+  \item or a \textbf{map} from keys to arbitrary \emph{values}
+  \item keys must \emph{hashable:} either integers, or can be mapped deterministically
+    to integers (e.g. strings, floats, tuples of hashable objects, etc.)
+  \item a search, insert, or delete operation takes $\Theta(1)$ expected time and
+    $\Theta(n)$ worst-case time
+  \item many variants with trade-offs: chaining vs. open addressing, universal vs.
+    tabular functions, cuckoo, robin hood, etc.
+\end{itemize}
+
+\textbf{Reduce to hash tables pattern}:
+\begin{itemize}
+  \item make critical use of a hash set or hash map
+  \item good: fast, simple (when hash internals are encapsulated)
+  \item bad: introduces expected qualifier
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Application: Duplicate Removal}
+  \textbf{input:} an array $A[1..n]$ of objects\\
+  \textbf{output:} a list $D$ of the distinct elements of $A$ (i.e. duplicates
+    are removed)\\
+    \vspace{.3cm}
+
+  Baseline uses nested for loops and $\Theta(n^2)$ time. Reducing to hash tables:
+  \vspace{.3cm}
+
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{REMOVE-DUPLICATES}{$A$}
+    \State $S$ = new hash map
+    \State $D$ = hew list
+    \For { $x$ in $A$ }
+      \If { not $S$.contains($x$) }
+        \State $D$.add($x$)
+        \State $S$.insert($x$)
+      \EndIf
+    \EndFor
+    \State \Return { $D$ }
+    \EndFunction
+  \end{algorithmic}
+  }
+  \vspace{.3cm}
+  $\Theta(n)$ expected time, $\Theta(n^2)$ worst-case time.
+\end{frame}
+
 \end{document}
