@@ -110,11 +110,11 @@ problem can be interpreted by humans in two (or more) very different ways
 \begin{frame} \frametitle{Duality Example}
 \textbf{maximum $y$ coordinate} \\
 \emph{input: } a set of $(x, y)$ points $S=\{(x, y) \, | \, x, y \in \mathbb{R} \}$ \\
-\emph{output: } the greatext $y$-coordinate in $S$ \stanza
+\emph{output: } the greatest $y$-coordinate in $S$ \stanza
 
 \textbf{highest $y$-intercept point problem} \\
 \emph{input: } a set of $y=mx+b$ lines $L=\{(m, b) \, | \, m, b \in \mathbb{R} \}$ \\
-\emph{output: } the greatext $y$-intercept $b$ in $L$ \stanza
+\emph{output: } the greatest $y$-intercept $b$ in $L$ \stanza
 \end{frame}
 
 \begin{frame} \frametitle{Geometry Sketch}
@@ -368,7 +368,7 @@ $(S, T)$ is maximum
       \If { $(u, v) \in E$ }
         \State $(u, v).f = (u, v).f + c_f(p)$
       \Else
-        \State $(u, v).f = (v, u).f + c_f(p)$
+        \State $(u, v).f = (v, u).f - c_f(p)$
       \EndIf
     \EndFor
   \EndWhile
