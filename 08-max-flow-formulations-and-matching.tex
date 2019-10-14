@@ -1,0 +1,302 @@
+
+\documentclass{beamer}
+
+\usepackage{algpseudocode, color, colortbl}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    urlcolor=blue,
+}
+
+\usepackage{listings}
+
+\usetheme{Montpellier}
+\usecolortheme{rose}
+
+% page numbers, from
+% https://tex.stackexchange.com/questions/137022/how-to-insert-page-number-in-beamer-navigation-symbols
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+  \insertshorttitle\hfill%
+  \insertframenumber\,/\,\inserttotalframenumber}
+
+\definecolor{Gray}{gray}{0.8}
+\newcolumntype{g}{>{\columncolor{Gray}}c}
+
+\newcommand{\stanza}{ \\~\ }
+
+\title{08. Maximum Flow Formulations and Bipartite Matching}
+\subtitle{CPSC 535 $\sim$ Spring 2019}
+\author{Kevin A. Wortman}
+\institute{ \includegraphics[height=2cm]{csuf-logo-cmyk} }
+\date{October 14, 2019 \stanza
+
+\includegraphics[height=14pt]{by} \\
+
+{\tiny
+This work is licensed under a
+\href{http://creativecommons.org/licenses/by/4.0/}{Creative Commons Attribution 4.0 International License}.
+}}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame} \frametitle{Big Idea: Problem Reduction}
+\emph{problem $A$ reduces to problem $B$} $=$ can use an algorithm for $B$ to do all the hard
+work of solving problem $A$ \\
+$= A$ is easier than $B$ (or tied) \stanza
+
+Sometimes $A, B$ are closely related \\
+e.g. $A = $ sorting bounded integers, $B = $ general sorting \stanza
+
+More interesting: problems seem completely unrelated (e.g. SAT, CLIQUE;
+max-flow, bipartite matching)
+\end{frame}
+
+\begin{frame} \frametitle{Reduction Algorithm Pseudocode}
+  \emph{problem $A$ reduces to problem $B$} $=$ can use an algorithm for $B$ to do all the hard
+  work of solving problem $A$ \stanza
+
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{SOLVE-A}{input-for-A}
+    \State input-for-B = pre-process input-for-A
+    \State solution-for-B = solve-B(input-for-B)
+    \State solution-for-A = post-process solution-for-B
+    \State \Return{ solution-for-A }
+    \EndFunction
+  \end{algorithmic}
+  }
+\vspace{.5cm}
+In spirit
+\begin{itemize}
+  \item the \textbf{solve-B} part is complex and the bottleneck
+  \item the \textbf{overhead} (pre-process and post-process parts) is simple and fast
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Reducing to Max-Flow}
+  \textbf{maximum flow problem} \\
+  \emph{input:} a flow network $G$ \\
+  \emph{output:} a flow $f$ of maximum value $|f|$ \stanza
+
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{SOLVE-A}{input-for-A}
+    \State $G' = $ flow network based on input-for-A
+    \State $f = $ SOLVE-MAX-FLOW($G'$)
+    \State solution-for-A = post-process $f$
+    \State \Return{ solution-for-A }
+    \EndFunction
+  \end{algorithmic}
+  }
+(use $G'$ because sometimes input-for-A is already a graph $G$) \stanza
+
+The fastest max-flow alg. in CLRS takes $O(|V|^3)$ time; overhead usually takes
+linear time; so SOLVE-MAX-FLOW is usually the bottleneck.
+\end{frame}
+
+\begin{frame} \frametitle{Max-Flow Formulation}
+
+\emph{Max-Flow Formulation:} details of how an algorithm for problem A
+\begin{itemize}
+  \item maps an input into a flow network $G'$
+  \item recovers a solution from the flow $f$
+\end{itemize}
+\vspace{.5cm}
+Also: analyze these steps to determine whether
+\begin{itemize}
+  \item overhead is $O(|V|^3)$ $\implies$ SOLVE-MAX-FLOW
+    is the bottleneck in SOLVE-A (usually yes)
+  \item or, overhead is $\Omega(|V|^3)$ and is the bottleneck
+\end{itemize}
+\vspace{.5cm}
+Usually we only discuss these parts, and don't write out the SOLVE-A pseudocode
+explicitly.
+\end{frame}
+
+\begin{frame} \frametitle{A Straightforward Formulation: Evacuation}
+Suppose we are working with safety authorities to determine how quickly CSUF
+could be evacuated in a natural disaster such as a wildfire. \stanza
+
+\emph{evacuation rate problem} \\
+\textbf{input:} directed graph $G$ representing a road map of Fullerton, each edge
+weighted with the number of autos/hour that may travel on that road \\
+\textbf{output:} the maximum number of autos/hour that could travel from CSUF to
+a 57 or 91 freeway onramp \stanza
+
+(Straightforward because this is clearly about flow in a directed graph.)
+\end{frame}
+
+\begin{frame} \frametitle{A Straightforward Formulation: Evacuation}
+For a clear formulation, need to specify
+\begin{itemize}
+  \item how to convert road map into flow network $G';$ needs
+  \begin{itemize}
+    \item to be a directed graph
+    \item source $s$ and sink $t$
+    \item non-negative capacity on each edge
+    \item no self-loops, antiparallel edges, or disconnected vertices
+  \end{itemize}
+  \item how to decode flow $f$ into a solution for our problem (\# autos/hour evacuated)
+  \item overhead time efficiency
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{A Straightforward Formulation: Evacuation}
+\begin{itemize}
+  \item suppose road map $G$ has none of the taboo components (self-loops etc.)
+  \item start with $G'=G$
+  \item define source $s$ in $G'$ as the Gymnasium-Campus intersection on campus
+  \item create new sink $t$ in $G'$ that represents ``on either freeway;''
+    create edges from highway onramps to $t,$ each with capacity $\infty$
+  \item after finding max-flow in $G',$ examine flow function $f$ to compute
+    evacuation rate as
+    \[ \sum_{\text{onramp vertex }o} f(o, t) \]
+  \item overhead is $O(|V|+|E|),$ not bottleneck
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Generalized Max-Flow}
+Goal: eliminate some of the limiting constraints of the classical max-flow problem
+\stanza
+
+\textbf{generalized maximum flow problem} \\
+\emph{input:} a flow network $G=(V,E),$ which may contain unreachable vertices,
+antiparallel edges, a set $S \subseteq V$ of sources, and a set $T \subseteq V$
+  of sinks\\
+\emph{output:} a flow $f$ of maximum value $|f|$ \stanza
+\end{frame}
+
+\begin{frame} \frametitle{Reformulating to Eliminate Unreachable Vertices}
+given flow network $G$ that may contain unreachable vertices,
+\begin{itemize}
+  \item use BFS or DFS to mark every vertex that is reachable from $s$
+  \item use BFS/DFS again, following edges backwards, to mark every vertex that is reachable from $t$
+  \item if a vertex was not marked both times, it is redundant
+  \item $G' = $ induced subgraph of $G$ with all redundant vertices removed
+  \item to convert flow $f$ in $G'$ to flow in $G$, set flow along all redundant
+    edges to 0
+  \item overhead is $O(|V|+|E|),$ not bottleneck
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Reformulating to Eliminate Antiparallel Edges}
+given a flow network $G$ that may contain antiparallel edges,
+\begin{itemize}
+  \item initially $G' = G$
+  \item identify all antiparallel edges
+  \item when $\exists$ antiparallel edges between vertices $v_1, v_2,$
+  \begin{itemize}
+    \item create new vertex $v'$ in $G'$ between $v_1, v_2$
+    \item replace edge $(v_1, v_2)$ with edges $(v_1, v')$ and $(v', v_2)$
+    \item set $c(v_1, v')=c(v', v_2)=c(v_1, v_2)$
+  \end{itemize}
+  \item observe that flow between $v_1, v_2$ is identical but antiparallel
+    edge is eliminated
+  \item to convert flow $f$ in $G'$ to equiv. flow in $G:$ for each $v'$
+    introduced above, set $f(v_1, v_2) = f(v_1, v')$
+  \item overhead is $O(|E|),$ not bottleneck
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Reformulating to Accommodate Multiple Sinks or Sources}
+  \begin{itemize}
+    \item initially $G'=G$
+    \item create in $G'$ a \emph{super-source} vertex $s$ and \emph{super-sink} $t$
+    \item for each source $s_i \in G,$ create an edge $(s, s_i)$ in $G'$ with capacity
+      $c(s, s_i) = \infty$
+    \item for each sink $t_i \in G,$ create an edge $(t_i, t)$ in $G'$ with capacity
+      $c(t_i, t) = \infty$
+    \item to convert flow $f$ in $G'$ to equiv. flow in $G:$ delete flow info.
+      along any of the new edges
+    \item overhead is $O(|V|),$ not bottleneck
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Formulations for Generalized Max-Flow}
+From now on, we have the option of formulating problems as instances of the
+more general max-flow problem:
+\stanza
+
+\textbf{generalized maximum flow problem} \\
+\emph{input:} a flow network $G=(V,E),$ which may contain unreachable vertices,
+antiparallel edges, a set $S \subseteq V$ of sources, and a set $T \subseteq V$
+  of sinks\\
+\emph{output:} a flow $f$ of maximum value $|f|$ \stanza
+
+\end{frame}
+
+\begin{frame} \frametitle{Segue to Bipartite Matching}
+So far, all our reductions to max-flow have been either straightforward
+flow simulations, or variations on max-flow. \stanza
+
+Now we'll see a quite-different problem that reduces to max-flow as well.
+\end{frame}
+
+\begin{frame} \frametitle{Bipartite Matching}
+\textbf{bipartite maximum matching} \\
+\emph{input:} an undirected bipartite graph $G=(V, E)$ where $V=L \cup R$
+  are the parts of $G$ \\
+\emph{output:} a matching $M \subseteq E$ where the number of matched vertices
+  is maximum \stanza
+
+\begin{itemize}
+  \item \emph{bipartite:} $L, R$ are disjoint and edges only go between $L, R$
+  \item \emph{matching:} pick edges that ``pair off'' two vertices; goal is to
+    maximize \#paired-off
+  \item intuitively, $L$ is one kind of thing and $R$ is another kind of thing
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Bipartite Matching Applications}
+\begin{itemize}
+  \item any scenario where there are two kinds of things that can be paired
+  \item goal is simply maximum number of pairings
+  \item casting for a play: $L = $ set of actors; $R = $ set of roles;
+    edge $\{l, r\}$ exists when $l$ could play role $r$
+  \item packing leftover food (one item/container): $L = $ set of food items; $R = $ available
+    containers; edge $\{l, r\}$ exists when food $l$ could fit in container $r$
+  \item scheduling appointments: $L = $ set of clients; $R = $ set of time slots;
+    edge $\{l, r \}$ exists when client $l$ could meet appointment $r$
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Formulating Bipartite Matching as Flow}
+\begin{itemize}
+  \item let $G=(V, E)$ be bipartite matching instance
+  \item create $G'=(V', E')$ with $V' = V \cup \{s, t\}$ where $s, t$ are new
+    source/sink
+  \item create edges
+  \begin{itemize}
+    \item $(l, r) \enspace \forall \{l, r\} \in E$
+    \item $(s, l) \enspace \forall l \in L$
+    \item $(r, t) \enspace \forall r \in R$
+  \end{itemize}
+  \item every edge $(v, w)$ has capacity $c(v, w)=1$
+  \item post-processing: edge $(l, r) \in M$ iff $f(l, r)=1$
+  \item observe $|V'| \in O(|V|), |E'| \in O(|E|),$ overhead is $O(|V|+|E|)$
+  \item $\implies$ if this is correct, can solve bipartite matching in $O(|V|^3)$ time
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Correctness of this Formulation}
+Technical details:
+\begin{itemize}
+  \item \emph{integrality theorem:} if every capacity $c(u, v) \in \mathbb{Z}$
+    then every $f(u, v) \in \mathbb{Z}$ and $|f| \in \mathbb{Z}$
+  \item $\exists$ matching $M$ with cardinality $k=|M|$ iff $\exists$ some flow $f$
+    with value $k=|f|$
+    \begin{itemize}
+      \item key idea: pairing two vertices in the matching adds exactly one
+        flow from $s \leadsto t$
+      \item there are no opportunities for flow aside from matched vertices
+    \end{itemize}
+  \item $\implies$ a maximum flow in $G'$ corresponds to a maximum matching in $G$
+\end{itemize}
+\end{frame}
+
+\end{document}
