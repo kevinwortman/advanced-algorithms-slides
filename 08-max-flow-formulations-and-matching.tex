@@ -11,6 +11,8 @@
 
 \usepackage{listings}
 
+\usepackage{tikz}
+
 \usetheme{Montpellier}
 \usecolortheme{rose}
 
@@ -29,7 +31,7 @@
 \subtitle{CPSC 535 $\sim$ Spring 2019}
 \author{Kevin A. Wortman}
 \institute{ \includegraphics[height=2cm]{csuf-logo-cmyk} }
-\date{October 14, 2019 \stanza
+\date{October 21, 2019 \stanza
 
 \includegraphics[height=14pt]{by} \\
 
@@ -118,6 +120,23 @@ Usually we only discuss these parts, and don't write out the SOLVE-A pseudocode
 explicitly.
 \end{frame}
 
+\begin{frame} \frametitle{Max-Flow Formulation}
+Need to make sure that the ``rules'' of problem $A$ are completely implemented
+by the ``rules'' built into the max-flow problem
+\begin{itemize}
+  \item directed graph $G=(V, E),$ source $s \in V,$ sink $t \in V$
+  \item none of: self-loop, antiparallel edge, unflowable vertex
+  \item non-negative capacity on every edge
+  \item flow is function $f(u, v)$ over vertices $u, v$
+  \item \textbf{nonexistent edges}: if $(u, v) \notin E$ then $f(u, v) = 0$
+  \item \textbf{capacity constraint}: $0 \leq f(u, v) \leq c(u, v)$
+  \item \textbf{flow conservation}: (flow-in) $=$ (flow-out), except for source and
+    sink; formally, $\forall u \in V - \{s, t\},$
+    \[ \sum_{v \in V} f(v, u) = \sum_{v \in V} f(u, v) \]
+  \item \emph{value} $|f|$ = net flow into sink
+  \end{itemize}
+\end{frame}
+
 \begin{frame} \frametitle{A Straightforward Formulation: Evacuation}
 Suppose we are working with safety authorities to determine how quickly CSUF
 could be evacuated in a natural disaster such as a wildfire. \stanza
@@ -148,7 +167,7 @@ For a clear formulation, need to specify
 
 \begin{frame} \frametitle{A Straightforward Formulation: Evacuation}
 \begin{itemize}
-  \item suppose road map $G$ has none of the taboo components (self-loops etc.)
+  \item suppose for sake of discussion, road map $G$ has none of the taboo components (self-loops etc.)
   \item start with $G'=G$
   \item define source $s$ in $G'$ as the Gymnasium-Campus intersection on campus
   \item create new sink $t$ in $G'$ that represents ``on either freeway;''
@@ -160,28 +179,98 @@ For a clear formulation, need to specify
 \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Generalized Max-Flow}
-Goal: eliminate some of the limiting constraints of the classical max-flow problem
+\begin{frame} \frametitle{Robust Max-Flow}
+Goal: eliminate some of the pesky constraints of the classical max-flow problem
 \stanza
 
-\textbf{generalized maximum flow problem} \\
+\textbf{robust maximum flow problem} \\
 \emph{input:} a flow network $G=(V,E),$ which may contain unreachable vertices,
 antiparallel edges, a set $S \subseteq V$ of sources, and a set $T \subseteq V$
   of sinks\\
 \emph{output:} a flow $f$ of maximum value $|f|$ \stanza
+\vspace{.5cm}
+\begin{itemize}
+  \item unreachable vertices are allowed
+  \item antiparallel edges are allowed
+  \item \textbf{set} of sources/sinks instead of just one vertex each
+\end{itemize}
 \end{frame}
 
 \begin{frame} \frametitle{Reformulating to Eliminate Unreachable Vertices}
 given flow network $G$ that may contain unreachable vertices,
 \begin{itemize}
-  \item use BFS or DFS to mark every vertex that is reachable from $s$
-  \item use BFS/DFS again, following edges backwards, to mark every vertex that is reachable from $t$
+  \item use BFS (or DFS) to mark every vertex that is reachable from $s$
+  \item use BFS again, following edges backwards, to mark every vertex that is reachable from $t$
   \item if a vertex was not marked both times, it is redundant
   \item $G' = $ induced subgraph of $G$ with all redundant vertices removed
-  \item to convert flow $f$ in $G'$ to flow in $G$, set flow along all redundant
-    edges to 0
-  \item overhead is $O(|V|+|E|),$ not bottleneck
+  \item compute flow $f'$ in $G'$
+  \item to convert $f'$ to flow $f$ in $G$, set flow along all redundant edges to 0
+  \item overhead is 2 $\times$ BFS $= O(|V|+|E|),$ not bottleneck
 \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Reformulating to Eliminate Unreachable Vertices}
+\begin{center}
+\begin{tabular}{cccc}
+$G$ & $G'$ & $f'$ & $f$ \\
+
+% G
+\begin{tikzpicture}[every node/.style={scale=.7}]
+  \node [draw, circle] (s) at (0, 1) {$s$};
+  \node [draw, circle] (v1) at (1, 0) {$v_1$};
+  \node [draw, circle] (v2) at (1, 1) {$v_2$};
+  \node [draw, circle] (v3) at (1, 2) {$v_3$};
+  \node [draw, circle] (t) at (2, 1) {$t$};
+  \draw [->] (s) -- node [below] {2} (v2);
+  \draw [->] (s) -- node [above] {3} (v3);
+  \draw [->] (v2) -- node [below] {4} (t);
+  \draw [->] (v3) -- node [above] {5} (t);
+  \draw [->] (v1) -- node [below] {2} (s);
+\end{tikzpicture}
+
+% G'
+&
+\begin{tikzpicture}[every node/.style={scale=.7}]
+  \node [draw, circle] (s) at (0, 1) {$s$};
+  \node [draw, circle] (v2) at (1, 1) {$v_2$};
+  \node [draw, circle] (v3) at (1, 2) {$v_3$};
+  \node [draw, circle] (t) at (2, 1) {$t$};
+  \draw [->] (s) -- node [below] {2} (v2);
+  \draw [->] (s) -- node [above] {3} (v3);
+  \draw [->] (v2) -- node [below] {4} (t);
+  \draw [->] (v3) -- node [above] {5} (t);
+\end{tikzpicture}
+
+% f'
+&
+\begin{tikzpicture}[every node/.style={scale=.7}]
+  \node [draw, circle] (s) at (0, 1) {$s$};
+  \node [draw, circle] (v2) at (1, 1) {$v_2$};
+  \node [draw, circle] (v3) at (1, 2) {$v_3$};
+  \node [draw, circle] (t) at (2, 1) {$t$};
+  \draw [->] (s) -- node [below] {2/2} (v2);
+  \draw [->] (s) -- node [above] {3/3} (v3);
+  \draw [->] (v2) -- node [below] {2/4} (t);
+  \draw [->] (v3) -- node [above] {3/5} (t);
+\end{tikzpicture}
+
+% f
+&
+\begin{tikzpicture}[every node/.style={scale=.7}]
+  \node [draw, circle] (s) at (0, 1) {$s$};
+  \node [draw, circle] (v1) at (1, 0) {$v_1$};
+  \node [draw, circle] (v2) at (1, 1) {$v_2$};
+  \node [draw, circle] (v3) at (1, 2) {$v_3$};
+  \node [draw, circle] (t) at (2, 1) {$t$};
+  \draw [->] (s) -- node [below] {2/2} (v2);
+  \draw [->] (s) -- node [above] {3/3} (v3);
+  \draw [->] (v2) -- node [below] {2/4} (t);
+  \draw [->] (v3) -- node [above] {3/5} (t);
+  \draw [->] (v1) -- node [below] {\textbf{0/2}} (s);
+\end{tikzpicture}
+
+\end{tabular}
+\end{center}
 \end{frame}
 
 \begin{frame} \frametitle{Reformulating to Eliminate Antiparallel Edges}
@@ -197,10 +286,58 @@ given a flow network $G$ that may contain antiparallel edges,
   \end{itemize}
   \item observe that flow between $v_1, v_2$ is identical but antiparallel
     edge is eliminated
-  \item to convert flow $f$ in $G'$ to equiv. flow in $G:$ for each $v'$
-    introduced above, set $f(v_1, v_2) = f(v_1, v')$
-  \item overhead is $O(|E|),$ not bottleneck
+  \item to convert flow $f'$ in $G'$ to equiv. flow in $G:$ for each $v'$
+    introduced above, set $f(v_1, v_2) = f'(v_1, v')$
+  \item overhead is $O(|E|),$ $|E'| < 2|E| \in \Theta(|E|),$ not bottleneck
 \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Reformulating to Eliminate Antiparallel Edges}
+  \begin{center}
+  \begin{tabular}{cccc}
+  $G$ & $G'$ & $f'$ & $f$ \\
+
+  % G
+  \begin{tikzpicture}[every node/.style={scale=.7}]
+    \node [draw, circle] (v1) at (0, 2) {$v_1$};
+    \node [draw, circle] (v2) at (0, 0) {$v_2$};
+    \draw [->] (v1) to[bend right] node [left] {3} (v2);
+    \draw [->] (v2) to[bend right] node [right] {2} (v1);
+  \end{tikzpicture}
+
+  % G'
+  &
+  \begin{tikzpicture}[every node/.style={scale=.7}]
+    \node [draw, circle] (v1) at (0, 2) {$v_1$};
+    \node [draw, circle] (v2) at (0, 0) {$v_2$};
+    \node [draw, circle] (v') at (.5, 1) {$v'$};
+    \draw [->] (v1) to[bend right] node [left] {3} (v2);
+    \draw [->] (v2) to[bend right] node [right] {2} (v');
+    \draw [->] (v') to[bend right] node [right] {2} (v1);
+  \end{tikzpicture}
+
+  % f'
+  &
+  \begin{tikzpicture}[every node/.style={scale=.7}]
+    \node [draw, circle] (v1) at (0, 2) {$v_1$};
+    \node [draw, circle] (v2) at (0, 0) {$v_2$};
+    \node [draw, circle] (v') at (.5, 1) {$v'$};
+    \draw [->] (v1) to[bend right] node [left] {3/3} (v2);
+    \draw [->] (v2) to[bend right] node [right] {1/2} (v');
+    \draw [->] (v') to[bend right] node [right] {1/2} (v1);
+  \end{tikzpicture}
+
+  % f
+  &
+  \begin{tikzpicture}[every node/.style={scale=.7}]
+    \node [draw, circle] (v1) at (0, 2) {$v_1$};
+    \node [draw, circle] (v2) at (0, 0) {$v_2$};
+    \draw [->] (v1) to[bend right] node [left] {3/3} (v2);
+    \draw [->] (v2) to[bend right] node [right] {1/2} (v1);
+  \end{tikzpicture}
+
+  \end{tabular}
+  \end{center}
 \end{frame}
 
 \begin{frame} \frametitle{Reformulating to Accommodate Multiple Sinks or Sources}
@@ -211,18 +348,100 @@ given a flow network $G$ that may contain antiparallel edges,
       $c(s, s_i) = \infty$
     \item for each sink $t_i \in G,$ create an edge $(t_i, t)$ in $G'$ with capacity
       $c(t_i, t) = \infty$
-    \item to convert flow $f$ in $G'$ to equiv. flow in $G:$ delete flow info.
+    \item to convert flow $f'$ in $G'$ to equiv. flow $f$ in $G:$ delete flow info.
       along any of the new edges
-    \item overhead is $O(|V|),$ not bottleneck
+    \item overhead is $O(|V|), |V'|=|V|+2 \in \Theta(|V|), |E'| \leq |V|+|E|,$ not bottleneck
   \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Formulations for Generalized Max-Flow}
+\begin{frame} \frametitle{Reformulating to Accommodate Multiple Sinks or Sources}
+  \begin{center}
+  \begin{tabular}{cccc}
+  $G$ & $G'$ & $f'$ & $f$ \\
+
+  % G
+  \begin{tikzpicture}[every node/.style={scale=.7}]
+    \node [draw, circle] (s1) at (0, 2) {$s_1$};
+    \node [draw, circle] (s2) at (0, 1) {$s_2$};
+    \node [draw, circle] (s3) at (0, 0) {$s_3$};
+    \node (v1) at (1, 2.5) {$\ldots$};
+    \node (v2) at (1, 1.5) {$\ldots$};
+    \node (v3) at (1, 1) {$\ldots$};
+    \node (v4) at (1, 0) {$\ldots$};
+    \draw [->] (s1) to node [above] {3} (v1);
+    \draw [->] (s1) to node [above] {2} (v2);
+    \draw [->] (s2) to node [above] {4} (v3);
+    \draw [->] (s3) to node [above] {1} (v4);
+  \end{tikzpicture}
+
+  % G'
+  &
+  \begin{tikzpicture}[every node/.style={scale=.7}]
+    \node [draw, circle] (s1) at (0, 2) {$s_1$};
+    \node [draw, circle] (s2) at (0, 1) {$s_2$};
+    \node [draw, circle] (s3) at (0, 0) {$s_3$};
+    \node (v1) at (1, 2.5) {$\ldots$};
+    \node (v2) at (1, 1.5) {$\ldots$};
+    \node (v3) at (1, 1) {$\ldots$};
+    \node (v4) at (1, 0) {$\ldots$};
+    \draw [->] (s1) to node [above] {3} (v1);
+    \draw [->] (s1) to node [above] {2} (v2);
+    \draw [->] (s2) to node [above] {4} (v3);
+    \draw [->] (s3) to node [above] {1} (v4);
+
+    \node [draw, circle] (s) at (-1, 1) {$s$};
+    \draw [->] (s) to[bend left] node [left] {$\infty$} (s1);
+    \draw [->] (s) to node [above] {$\infty$} (s2);
+    \draw [->] (s) to[bend right] node [right] {$\infty$} (s3);
+  \end{tikzpicture}
+
+  % f'
+  &
+  \begin{tikzpicture}[every node/.style={scale=.7}]
+    \node [draw, circle] (s1) at (0, 2) {$s_1$};
+    \node [draw, circle] (s2) at (0, 1) {$s_2$};
+    \node [draw, circle] (s3) at (0, 0) {$s_3$};
+    \node (v1) at (1, 2.5) {$\ldots$};
+    \node (v2) at (1, 1.5) {$\ldots$};
+    \node (v3) at (1, 1) {$\ldots$};
+    \node (v4) at (1, 0) {$\ldots$};
+    \draw [->] (s1) to node [above] {3/3} (v1);
+    \draw [->] (s1) to node [above] {2/2} (v2);
+    \draw [->] (s2) to node [above] {4/4} (v3);
+    \draw [->] (s3) to node [above] {1/1} (v4);
+
+    \node [draw, circle] (s) at (-1, 1) {$s$};
+    \draw [->] (s) to[bend left] node [left] {5/$\infty$} (s1);
+    \draw [->] (s) to node [above] {4/$\infty$} (s2);
+    \draw [->] (s) to[bend right] node [right] {1/$\infty$} (s3);
+  \end{tikzpicture}
+
+  % f
+  &
+  \begin{tikzpicture}[every node/.style={scale=.7}]
+    \node [draw, circle] (s1) at (0, 2) {$s_1$};
+    \node [draw, circle] (s2) at (0, 1) {$s_2$};
+    \node [draw, circle] (s3) at (0, 0) {$s_3$};
+    \node (v1) at (1, 2.5) {$\ldots$};
+    \node (v2) at (1, 1.5) {$\ldots$};
+    \node (v3) at (1, 1) {$\ldots$};
+    \node (v4) at (1, 0) {$\ldots$};
+    \draw [->] (s1) to node [above] {3/3} (v1);
+    \draw [->] (s1) to node [above] {2/2} (v2);
+    \draw [->] (s2) to node [above] {4/4} (v3);
+    \draw [->] (s3) to node [above] {1/1} (v4);
+  \end{tikzpicture}
+
+  \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame} \frametitle{Formulations for Robust Max-Flow}
 From now on, we have the option of formulating problems as instances of the
-more general max-flow problem:
+more robust max-flow problem:
 \stanza
 
-\textbf{generalized maximum flow problem} \\
+\textbf{robust maximum flow problem} \\
 \emph{input:} a flow network $G=(V,E),$ which may contain unreachable vertices,
 antiparallel edges, a set $S \subseteq V$ of sources, and a set $T \subseteq V$
   of sinks\\
@@ -252,6 +471,77 @@ Now we'll see a quite-different problem that reduces to max-flow as well.
 \end{itemize}
 \end{frame}
 
+\begin{frame} \frametitle{Bipartite Matching}
+\begin{center}
+  \begin{tikzpicture}[every node/.style={scale=.7}]
+
+    \node [draw, circle] (l1) at (0, 4) {$l_1$};
+    \node [draw, circle] (l2) at (0, 3) {$l_2$};
+    \node [draw, circle] (l3) at (0, 2) {$l_3$};
+    \node [draw, circle] (l4) at (0, 1) {$l_4$};
+    \node [draw, circle] (l5) at (0, 0) {$l_5$};
+
+    \node [draw, circle] (r1) at (2, 4) {$r_1$};
+    \node [draw, circle] (r2) at (2, 2.666) {$r_2$};
+    \node [draw, circle] (r3) at (2, 1.333) {$r_3$};
+    \node [draw, circle] (r4) at (2, 0) {$r_4$};
+
+    \draw (l1) to (r1);
+    \draw (l2) to (r1);
+
+    \draw (l3) to (r2);
+    \draw (l3) to (r3);
+    \draw (l3) to (r4);
+
+    \draw (l4) to (r3);
+    \draw (l4) to (r4);
+
+    \draw (l5) to (r3);
+    \draw (l5) to (r4);
+
+  \end{tikzpicture}
+\end{center}
+\end{frame}
+
+\begin{frame} \frametitle{Bipartite Matching}
+\begin{center}
+  \begin{tikzpicture}[every node/.style={scale=.7}]
+
+    \node [draw, circle, color=red] (l1) at (0, 4) {$l_1$};
+    \node [draw, circle] (l2) at (0, 3) {$l_2$};
+    \node [draw, circle, color=red] (l3) at (0, 2) {$l_3$};
+    \node [draw, circle, color=red] (l4) at (0, 1) {$l_4$};
+    \node [draw, circle, color=red] (l5) at (0, 0) {$l_5$};
+
+    \node [draw, circle, color=red] (r1) at (2, 4) {$r_1$};
+    \node [draw, circle, color=red] (r2) at (2, 2.666) {$r_2$};
+    \node [draw, circle, color=red] (r3) at (2, 1.333) {$r_3$};
+    \node [draw, circle, color=red] (r4) at (2, 0) {$r_4$};
+
+    \draw [color=red] (l1) to (r1);
+    \draw (l2) to (r1);
+
+    \draw [color=red] (l3) to (r2);
+    \draw (l3) to (r3);
+    \draw (l3) to (r4);
+
+    \draw [color=red] (l4) to (r3);
+    \draw (l4) to (r4);
+
+    \draw (l5) to (r3);
+    \draw [color=red] (l5) to (r4);
+
+  \end{tikzpicture}
+
+  matching $M = \{\text{included edges}\}
+    = \{ \{l_1, r_1\}, \{l_3, r_3\}, \{l_4, r_3\}, \{l_5, r_4\} \}$ \\
+
+    $|M|=4$ \\
+
+    (other optimal matchings exist)
+\end{center}
+\end{frame}
+
 \begin{frame} \frametitle{Bipartite Matching Applications}
 \begin{itemize}
   \item any scenario where there are two kinds of things that can be paired
@@ -262,6 +552,7 @@ Now we'll see a quite-different problem that reduces to max-flow as well.
     containers; edge $\{l, r\}$ exists when food $l$ could fit in container $r$
   \item scheduling appointments: $L = $ set of clients; $R = $ set of time slots;
     edge $\{l, r \}$ exists when client $l$ could meet appointment $r$
+  \item might feel $NP$-hard, but actually in $P$
 \end{itemize}
 \end{frame}
 
@@ -272,7 +563,7 @@ Now we'll see a quite-different problem that reduces to max-flow as well.
     source/sink
   \item create edges
   \begin{itemize}
-    \item $(l, r) \enspace \forall \{l, r\} \in E$
+    \item $(l, r) \enspace \forall l \in L, r \in R, \{l, r\} \in E$
     \item $(s, l) \enspace \forall l \in L$
     \item $(r, t) \enspace \forall r \in R$
   \end{itemize}
@@ -281,6 +572,93 @@ Now we'll see a quite-different problem that reduces to max-flow as well.
   \item observe $|V'| \in O(|V|), |E'| \in O(|E|),$ overhead is $O(|V|+|E|)$
   \item $\implies$ if this is correct, can solve bipartite matching in $O(|V|^3)$ time
 \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Formulating Bipartite Matching as Flow}
+  \begin{center}
+  \begin{tabular}{cccc}
+  $G$ & $G'$ & $f'$ & $M$ \\
+
+  % G
+  \begin{tikzpicture}[every node/.style={scale=.7}]
+    \node [draw, circle] (l1) at (0, 1.5) {$l_1$};
+    \node [draw, circle] (l2) at (0, .5) {$l_2$};
+    \node [draw, circle] (r1) at (1, 2) {$r_1$};
+    \node [draw, circle] (r2) at (1, 1) {$r_2$};
+    \node [draw, circle] (r3) at (1, 0) {$r_3$};
+    \draw (l1) to (r1);
+    \draw (l2) to (r1);
+    \draw (l2) to (r2);
+    \draw (l2) to (r3);
+  \end{tikzpicture}
+
+  % G'
+  &
+  \begin{tikzpicture}[every node/.style={scale=.7}]
+    \node [draw, circle] (l1) at (0, 1.5) {$l_1$};
+    \node [draw, circle] (l2) at (0, .5) {$l_2$};
+    \node [draw, circle] (r1) at (1, 2) {$r_1$};
+    \node [draw, circle] (r2) at (1, 1) {$r_2$};
+    \node [draw, circle] (r3) at (1, 0) {$r_3$};
+
+    \node [draw, circle] (s) at (-1, 1) {$s$};
+    \node [draw, circle] (t) at (2, 1) {$t$};
+
+    \draw [->] (l1) to node [above] {1} (r1);
+    \draw [->] (l2) to node [above] {1} (r1);
+    \draw [->] (l2) to node [above] {1} (r2);
+    \draw [->] (l2) to node [above] {1} (r3);
+
+    \draw [->] (s) to node [above] {1} (l1);
+    \draw [->] (s) to node [above] {1} (l2);
+    \draw [->] (r1) to node [above] {1} (t);
+    \draw [->] (r2) to node [above] {1} (t);
+    \draw [->] (r3) to node [above] {1} (t);
+  \end{tikzpicture}
+
+  % f'
+  &
+  \begin{tikzpicture}[every node/.style={scale=.7}]
+    \node [draw, circle] (l1) at (0, 1.5) {$l_1$};
+    \node [draw, circle] (l2) at (0, .5) {$l_2$};
+    \node [draw, circle] (r1) at (1, 2) {$r_1$};
+    \node [draw, circle] (r2) at (1, 1) {$r_2$};
+    \node [draw, circle] (r3) at (1, 0) {$r_3$};
+
+    \node [draw, circle] (s) at (-1, 1) {$s$};
+    \node [draw, circle] (t) at (2, 1) {$t$};
+
+    \draw [->] (l1) to node [above] {1/1} (r1);
+    \draw [->] (l2) to node [above] {0/1} (r1);
+    \draw [->] (l2) to node [above] {1/1} (r2);
+    \draw [->] (l2) to node [above] {0/1} (r3);
+
+    \draw [->] (s) to node [above] {1/1} (l1);
+    \draw [->] (s) to node [above] {1/1} (l2);
+    \draw [->] (r1) to node [above] {1/1} (t);
+    \draw [->] (r2) to node [above] {1/1} (t);
+    \draw [->] (r3) to node [above] {0/1} (t);
+  \end{tikzpicture}
+
+    % M
+    &
+    \begin{tikzpicture}[every node/.style={scale=.7}]
+      \node [draw, circle, color=red] (l1) at (0, 1.5) {$l_1$};
+      \node [draw, circle, color=red] (l2) at (0, .5) {$l_2$};
+      \node [draw, circle, color=red] (r1) at (1, 2) {$r_1$};
+      \node [draw, circle, color=red] (r2) at (1, 1) {$r_2$};
+      \node [draw, circle] (r3) at (1, 0) {$r_3$};
+      \draw [color=red] (l1) to (r1);
+      \draw (l2) to (r1);
+      \draw [color=red] (l2) to (r2);
+      \draw (l2) to (r3);
+    \end{tikzpicture}
+
+  \end{tabular}
+  \vspace{.5cm}
+  $M = \{ \{l, r\} \, | \, f'(l, r)=1 \} = \{ \{l_1, r_1\}, \{l_2, r_2\} \}$ \\
+  (other max flows $\Leftrightarrow$ matchings exist)
+  \end{center}
 \end{frame}
 
 \begin{frame} \frametitle{Correctness of this Formulation}
@@ -297,6 +675,18 @@ Technical details:
     \end{itemize}
   \item $\implies$ a maximum flow in $G'$ corresponds to a maximum matching in $G$
 \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Summary}
+  \begin{itemize}
+    \item classical max-flow problem can be solved in $O(|V|^3)$ time, in $P$
+    \item robust max-flow problem (supports unreachable vertices, antiparallel edges, multiple sinks/sources)
+      also in $O(|V|^3)$ time w/ worse constant factors, in $P$
+    \item bipartite matching reduces to max-flow, so bipartite matching can be solved in
+      $O(|V|^3)$ time, in $P$
+    \item other practical, distinct problems reduce to max-flow or bipartite
+      matching so take $O(|V|^3)$ time and are in $P$
+  \end{itemize}
 \end{frame}
 
 \end{document}
