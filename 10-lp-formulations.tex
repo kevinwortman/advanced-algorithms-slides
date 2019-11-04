@@ -43,13 +43,13 @@ This work is licensed under a
 \end{frame}
 
 \begin{frame} \frametitle{Linear Programming Formulations}
-  Many problems reduce to linear programming (LP):
+  Many problems reduce to standard-form linear programming (LP):
   \begin{itemize}
     \item generalize standard form to be more flexible
     \begin{itemize}
       \item allow minimization, negative variables, $=$ constraints, $\geq$ constraints
     \end{itemize}
-    \item business logic
+    \item business/administrative problems (``operations research'')
     \item problems that don't resemble LP: shortest paths, max flow
     \item (similar situation to max-flow formulations)
   \end{itemize}
@@ -316,7 +316,9 @@ subject to
       solution, $I=O=R=L=0$
     \item unbounded: never happens because the
       $2.9I + 3.2O + .5R + .3L \leq 1400$
-      constraint upper-bounds the objective function
+      and non-negativity
+      constraints upper-bound every variable in the objective function
+      ($2.9I \leq 1400, 3.2O \leq 1400,$ etc.)
     \item solution: Tell the Supervisors to incinerate $I$ tons locally,
     incinerate $O$ tons overseas, recycle $R$ tons, and landfill $L$ tons.
   \end{itemize}
@@ -390,6 +392,7 @@ subject to
         \item find the constraints where
         \[ d_v = d_x + w(x, v) \]
         (not $\leq$); these vertices $x, v$ are part of the shortest path
+        \item use BFS or DFS, limited to on-path vertices, to order these vertices
       \end{itemize}
     \end{itemize}
   \end{enumerate}
@@ -434,8 +437,10 @@ subject to
     \item capacity constraints:
     \[ f_{u, v} \geq 0 \qquad \forall u, v \in V \]
     \[ f_{u, v} \leq c(u, v) \qquad \forall (u, v) \in E \]
+    (these are separate, not ``$0 \leq f_{u, v} \leq c(u,v),$'' to match general LP format)
     \item flow conservation:
     \[ \sum_{v \in V} f_{v, u} - \sum_{v \in V} f_{u, v} = 0 \qquad \forall u \in V - \{s, t\} \]
+    (using algebra to get constant r.h.s. to match LP format)
   \end{itemize}
 \end{enumerate}
 \end{frame}
@@ -462,10 +467,11 @@ subject to
   \setcounter{enumi}{4}
   \item \textbf{Interpreting result:}
   \begin{itemize}
-    \item infeasible: never happens because setting each $f_{u, v}=0$ is a feasible solution
+    \item infeasible: never happens because setting every $f_{u, v}=0$ is a feasible solution
     \item unbounded: never happens because the objective function is
     \[ \sum_{v \in V} f_{s, v} - \sum_{v, s} f_{v, s}, \]
-     every $f_{s, v} \leq c(s, v)$ which is finite, and every $f_{v, s} \geq 0$
+     every $f_{s, v} \leq c(s, v)$, and every $f_{v, s} \geq 0,$
+     so objective is certainly \[ \leq \sum_{u, v \in V} c(u, v) \] which is finite
     \item solution: define flow function
     \[ f(u, v) =
       \begin{cases}
