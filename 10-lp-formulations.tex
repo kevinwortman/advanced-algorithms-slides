@@ -23,11 +23,11 @@
 
 \newcommand{\stanza}{ \\~\ }
 
-\title{09. Linear Programming Generalizations}
+\title{09. Linear Programming Formulations}
 \subtitle{CPSC 535 $\sim$ Spring 2019}
 \author{Kevin A. Wortman}
 \institute{ \includegraphics[height=2cm]{csuf-logo-cmyk} }
-\date{April 15, 2019 \stanza
+\date{November 4, 2019 \stanza
 
 \includegraphics[height=14pt]{by} \\
 
@@ -42,218 +42,439 @@ This work is licensed under a
   \titlepage
 \end{frame}
 
-\begin{frame} \frametitle{Big Idea from Algorithm Design: Duality}
-  \textbf{Duality:} When a mathematical object fits two different human models,
-    we can view that object in two ways, (1) \emph{primal} and (2) \emph{dual.} \stanza
-
-  $\implies$ one algorithm could solve two different problems, (1) primal-based
-    and (2) dual-based. \stanza
-
-  Consequently
+\begin{frame} \frametitle{Linear Programming Formulations}
+  Many problems reduce to linear programming (LP):
   \begin{itemize}
-    \item one algorithm actually solves two problems
-    \item two perspectives on the same problem could inspire problem-solving
-    \item reasoning about dual could be easier than primal
+    \item generalize standard form to be more flexible
+    \begin{itemize}
+      \item allow minimization, negative variables, $=$ constraints, $\geq$ constraints
+    \end{itemize}
+    \item business logic
+    \item problems that don't resemble LP: shortest paths, max flow
+    \item (similar situation to max-flow formulations)
   \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Big Idea from Algorithm Design: Parameterized Tractibility}
-Idea: Sometimes we can overcome efficiency barriers by designing an algorithm that
-is fast in terms of a parameter that scales up (e.g. $n$), but slow in terms of a
-parameter that doesn't in practice (e.g. $W$).
-
-Recall
-\begin{itemize}
-\item decision sorting must take $\Omega(n \log n)$ time (barrier)
-\item radix sort takes $\Theta(nW)$ time; faster when $W \in O(1)$ (faster in practice,
-  if not technically faster in theory)
-\end{itemize}
-
-Linear Programming (LP)
-\begin{itemize}
-  \item fast (polynomial) on practical inputs
-  \item seems to take worst-case exponential time in theory
-  \item fast pseudopolynomial time i.e. $O((d+n)^{1.5} d W)$
-  \item dimension (\# variables) is $O(1)$, fast linear time $O(n)$
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Example: lines and points}
-Primal: set of lines $\{ (m, b) : m, b \in \mathbb{R} \}$ \\
-Dual: set of 2D points $\{ (x, y) : x, y \in \mathbb{R} \}$ \stanza
-
-Observe: math, and computer, can't distinguish between lines and points!
-A function that does something to a set of lines, also does something to a set of points. \stanza
-
-\emph{parallel line search} \\
-\textbf{input:} a set $L = \{ (m, b) : m, b \in \mathbb{R} \}$ of lines \\
-\textbf{output:} two lines $(m_1, b_1), (m_2, b_2)$ that are parallel, or NIL
-if no such lines exist \stanza
-
-Question: what is the dual of this problem? \\
-\emph{Hint:} replace ``line'' $\rightarrow$ ``point,'' $m \rightarrow x, b \rightarrow y$
-\end{frame}
-
-\begin{frame} \frametitle{Duality in the Simplex Algorithm}
-\textbf{Idea:} view solving an LP in terms of \emph{two} related programs
-\begin{enumerate}
-  \item primal LP: original input; goal is to maximize objective function
-  \item dual LP: minimize ``slack'' between left-hand-side of inequalities and
-    right-hand-side
-\end{enumerate}
-
-Recall: optimal solutions may always be found on simplex vertices
-\begin{enumerate}
-  \item in the primal: objective function ``pushes'' us toward a vertex
-  \item in the dual: minimizing slack ``pulls'' us toward an inequality (line/hyperplane)
-\end{enumerate}
-\end{frame}
-
-\begin{frame} \frametitle{Standard Form to Slack Form}
-A standard-form inequality looks like
-\[ 7 x_1 + 3 x_2 \leq 4 \]
-
-Equivalently we may introduce variable $s$ representing the \emph{slack}
-or difference between the left-hand-side and right-hand-side.
-\[ 7 x_1 + 3 x_2 + s = 4 \]
-\[ s \geq 0 \]
-(note that $\leq$ turned into $=$)
-
-\end{frame}
-
-\begin{frame} \frametitle{Simplex Algorithm (High-Level)}
-\begin{enumerate}
-  \item Find an initial \emph{feasible solution} inside the simplex of feasible solutions.
-    (Usually trivial.)
-  \item \textbf{repeat}:
-    \begin{enumerate}
-      \item Find a variable with positive slack in all inequalities.
-      \item If no such variable exists, \textbf{stop}.
-      \item Eliminate slack; increase var's with positive coefficients, or decrease
-        var's with negative coefficients, until some inequality has zero slack.
-      \item \emph{Pivot:} This variable/inequality in the primal is maxxed out and
-        cannot be optimized again; exchange it for an inequality/variable in the dual.
-      \end{enumerate}
-\end{enumerate}
-\end{frame}
-
-\begin{frame} \frametitle{Simplex Algorithm Analysis}
-With $d$ variables and $n$ inequalities, the body of the loop is $\Theta(dn).$ \stanza
-
-\# iterations = number of times one variable gets maxxed out before reaching optimal solution
-(not a function of $d, n$) \stanza
-
-In practice (e.g. last week's exercise), \# iterations is $\sim d, n$ so simplex algorithm
-takes polynomial time. \stanza
-
-Surprise: $\exists$ carefully-crafted LP for which simplex algorithm takes exponential
-time (e.g. \emph{Klee-Minty cube}) \stanza
-
-Worst-case analysis approach is unsatisfying here; can be shown that average runtime
-is polynomial when averaging over random LPs.
-\end{frame}
-
-\begin{frame} \frametitle{Pseudopolynomial Time Algorithms}
-After the simplex algorithm was analyzed formally, researchers designed algorithms with provable pseudopolynomial. For word size $W, d$ variables, and $n$ inequalities,
-\begin{itemize}
-  \item Khachiyan's \emph{ellipsoid algorithm} takes $O(d^4 W)$ time.
-  \item \emph{Vaidya's algorithm} takes $O((d+n)^{1.5} d W)$ time.
-  \item (there are others)
-\end{itemize}
-
-Mostly of theoretical interest; simplex algorithm remains faster on practical LPs. \stanza
-
-Open research questions
-\begin{enumerate}
-  \item Is there an LP algorithm that runs in pseudopolynomial time \emph{and} is faster than simplex in practice?
-  \item Is LP in $P$? $\Leftrightarrow$ Is there an LP algorithm that runs in strongly polynomial time (function of only $d, n$, not $W$)?
-\end{enumerate}
-\end{frame}
-
-\begin{frame} \frametitle{Integer Linear Programming}
-\textbf{Integer Linear Programming (ILP)}: same form as LP, but every variable must
-be an integer, not real number. \stanza
-
-maximize $\mathbf{c}^T \mathbf{x}$ \\
-subject to $A \mathbf{x} \leq \mathbf{b}$ and $\mathbf{x} \geq \mathbf{0}$ \\
-\underline{and $\mathbf{x} \in \mathbb{Z}^d$} \stanza
-
-\textbf{Mixed Integer Linear Programming (MILP)}: \emph{some} variables must be
-integers, others may be any real (integer or not). \stanza
-
-Both are $NP$-complete; exponential-time only (assuming $P \ne NP$).
-\end{frame}
-
-\begin{frame} \frametitle{Applications of ILP, MILP}
-Can use an integer variable to choose between discrete alternatives. \stanza
-
-Can introduce indicator variables to decide to use/not use something; e.g.
-whether an edge is part of a minimum spanning tree.
-\begin{itemize}
-  \item Create variable $x \in \mathbb{Z}$
-  \item $0 \leq x$
-  \item $x \leq 1$
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Example: Latin Squares}
-\textbf{input}: $n \times n$ grid with some elements filled with $1, \ldots, n$ \\
-\textbf{output}: each element filled with $1, \ldots, n$ such that each value
-appears exactly once per row and once per column; or NIL if this is impossible \stanza
+\begin{frame} \frametitle{Standard Form versus General Form}
+\textbf{general form LP:} a ``real'' LP, more flexible than standard form (last week)
 \begin{center}
-\begin{tabular}{|c|c|c|c|} \hline
-   1 &   &    \\ \hline
-     & 2 & 1  \\ \hline
-   2 &   &    \\ \hline
-\end{tabular}
-$\Longrightarrow$
-\begin{tabular}{|c|c|c|c|} \hline
-   1 & 3 & 2  \\ \hline
-   3 & 2 & 1  \\ \hline
-   2 & 1 & 3  \\ \hline
-\end{tabular}
+  \begin{tabular}{|l|l|}
+    \hline
+    \textbf{Standard Form} & \textbf{General Form} \\ \hline
+    maximize objective function & maximize \textbf{or minimize} obj. func. \\ \hline
+    all variables are non-negative & no restriction (may be negative) \\ \hline
+    every constraint is $\leq$ r.h.s. & constraint may be $=$ or $\geq$ r.h.s. \\ \hline
+  \end{tabular}
 \end{center}
 \end{frame}
 
-\begin{frame} \frametitle{Latin Squares formulated as ILP}
-For each row $i$, column $j$, value $v$, each in $1, \ldots, n$, introduce
-indicator variable
-\[ g_{i, j, k} = 1 \Leftrightarrow \text{assign value } k \text{ to row $i$, col. $j$} \]
-
-\begin{tabular}{ll}
-  $0 \leq g_{i, j, k} \leq 1$ & $\forall i, j, k$ (each indicator is 0 or 1) \\
-  $g_{i, j, k} = x$ & for all pos'n $i, j$ pre-filled to $x$ \\
-  $\sum_{j} g_{i, j, k} = 1$ & $\forall i, k$ (each value appears once per row) \\
-  $\sum_{i} g_{i, j, k} = 1$ & $\forall j, k$ (each value appears once per column) \\
-  $g_{i, j, k} \in \mathbb{Z}$ & $\forall i, j, k$ (indicators are integers) \\
-\end{tabular}
-
+\begin{frame} \frametitle{Standard Form Example}
+  maximize $2 x_1 + x_2 - \frac{1}{3} x_3$ \\
+  subject to
+  \begin{eqnarray*}
+  x_1 + x_2 &\leq& 10 \\
+  -x_3 &\leq& -2 \\
+  x_1, x_2, x_3 &\geq& 0
+  \end{eqnarray*}
 \end{frame}
 
-\begin{frame} \frametitle{Low-Dimensional LP}
-Megiddo: algorithm with runtime
-\[ O(c^d n) \]
-for $c>1$;
+\begin{frame} \frametitle{General Form Example}
+  minimize $x_1 - x_2 + \ldots + c_n x_n$ \\
+  subject to
+  \begin{eqnarray*}
+    x_1 &\leq& 100 \\
+    x_2 &\geq& 2 \\
+    x_1 + x_2 &=& 10 \\
+    x_2 &\geq& 0
+  \end{eqnarray*}
+
+Note
 \begin{itemize}
-  \item exponential in $d$, still counts as exponential time
-  \item \textbf{but}, when $d \in O(1)$, this simplifies to
-  \[ O(c^d n) = O((1) n) = O(n) \]
-  \item $\implies$ \textbf{linear time} when number of variables $d$ is a small
-    constant
+  \item minimizing objective function
+  \item mix of $\leq, =, \geq$ constraints
+  \item not all variables have $x_i \geq 0$ non-negativity constraint ($x_1$ is missing)
 \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Generalizations of Low-Dimensional LP}
-More general objective functions still admit $O(c^d n)$-time algorithms
-\begin{enumerate}
-  \item \emph{quadratic} programming e.g. maximize $f(x_1, \ldots, x_d) = $ (polynomial of order 2)
-  \item \emph{cubic} programming e.g. maximize $f(x_1, \ldots, x_d) = $ (polynomial of order 3)
-  \item \emph{convex} programming e.g. maximize $f,$ a \emph{convex} function
-  \item \emph{quasiconvex} programming, e.g. maximize $f,$ a \emph{quasiconvex} function
-\end{enumerate}
+\begin{frame} \frametitle{Formulating General LP as Standard LP}
+  \begin{itemize}
+    \item pre-processing: convert general LP to standard LP
+    \item need to get rid of any non-standard feature
+    \item want insignificant overhead
+    \begin{itemize}
+      \item $n = $ \#variables, $m = $ \# constraints
+      \item space complexity of general LP is $\Theta(nm)$
+      \item want size of resulting standard LP, and time overhead, to both be
+      $O(nm)$
+    \end{itemize}
+    \item three features to deal with
+    \begin{itemize}
+      \item minimization
+      \item negative variables
+      \item $=, \geq$ constraints
+    \end{itemize}
+  \end{itemize}
+\end{frame}
 
-Inequalities are still linear in these frameworks.\\
-Applications include geometric problems (points, lines, circles, etc.).
+\begin{frame} \frametitle{Converting ``minimize'' to Standard Form}
+  \begin{itemize}
+    \item minimize $f(x) \equiv$ maximize $-f(x)$
+    \item so if general LP says
+    \[ \text{minimize } c_1 x_1 + c_2 x_2 + \ldots + c_n x_n \]
+    \item replace that with
+    \[ \text{maximize } -c_1 x_1 - c_2 x_2 - \ldots - c_n x_n \]
+    \item size of $LP$ unchanged
+    \item $O(n)$ time to negate coefficients
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Converting Negative Variables to Standard Form}
+  \begin{itemize}
+    \item if $x_j$ does not have a non-negativity constraint $x_j \geq 0$,
+      call $x_j$ a \emph{negative variable}
+    \item handle each negative variable one at a time
+    \item negative variable $x_j$ becomes two non-negative variables $x_j', x_j''$
+    \begin{itemize}
+      \item define $x_j = x_j'-x_j''$
+      \item can represent negative $x_j$ by $x_j'=0, x_j''$ positive
+    \end{itemize}
+    \item add non-negativity constraints $x_j' \geq 0, x_j'' \geq 0$
+    \item substitute $(x_j'-x_j'')=x_j$
+    \begin{itemize}
+      \item obj. func: $c_j x_j \Rightarrow c_j(x_j'-x_j'')=c_j x_j' - c_j x_j''$
+      \item constraints: $a_{i,j} x_j \Rightarrow a_{i,j} (x_j'-x_j'') = a_{i, j} x_j' - a_{i, j} x_j''$
+    \end{itemize}
+    \item after solving standard LP, to complete general LP evaluate $x_j=x_j'-x_j''$
+    \item $n, m$ at most double $\Rightarrow$ still $\Theta(nm)$ space
+    \item $O(nm)$ time with care (do all substitutions in one pass)
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Converting $=$ Constraints to Inequalities}
+  \begin{itemize}
+    \item this step converts any $=$ constraint to $\leq, \geq$ constraints
+    \item $\geq$ constraints are eliminated in the next step
+    \item $a = b \Longleftrightarrow a \leq b \text{ and } a \geq b$
+    \item replace each $=$ constraint
+    \[ a_{i, 1} x_1 + a_{i, 2} x_2 + \ldots + a_{i, n} x_n = b_n \]
+    with two constraints
+    \[ a_{i, 1} x_1 + a_{i, 2} x_2 + \ldots + a_{i, n} x_n \geq b_n \]
+    \[ a_{i, 1} x_1 + a_{i, 2} x_2 + \ldots + a_{i, n} x_n \leq b_n \]
+    \item $n$ unchanged, $m$ at most doubles $\Rightarrow$ still $\Theta(nm)$ space
+    \item $O(nm)$ time
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Converting $\geq$ Constraints to $\leq$}
+  \begin{itemize}
+    \item $a \geq b \Longleftrightarrow -a \leq -b$
+    \item replace each $\geq$ constraint
+    \[ a_{i, 1} x_1 + a_{i, 2} x_2 + \ldots + a_{i, n} x_n \geq b_n \]
+    with
+    \[ -a_{i, 1} x_1 - a_{i, 2} x_2 - \ldots - a_{i, n} x_n \leq -b_n \]
+    \item $n, m$ unchanged so still $\Theta(nm)$ space
+    \item $O(nm)$ time
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{General LP Problem}
+  \emph{general-form linear programming problem} \\
+  \textbf{input:}
+  \begin{itemize}
+    \item Boolean for whether $f$ is maximized/minimized
+    \item vector $c \in \mathbb{R}^n$
+    \item vector $b \in \mathbb{R}^m$
+    \item vector $o \in \{\leq, =, \geq\}^m$
+    \item $m \times n$ matrix $A$ of real numbers
+  \end{itemize}
+  \textbf{output:} one of
+  \begin{enumerate}
+    \item ``unbounded'';
+    \item ``infeasible''; or
+    \item ``solution'' with a vector $x \in \mathbb{R}^n$
+      maximizing the objective function
+  \end{enumerate}
+\end{frame}
+
+\begin{frame} \frametitle{Time Complexity}
+  \begin{itemize}
+    \item converting a general-form LP to standard-form takes $\Theta(nm)$
+    time
+    \item so time to solve general LP is
+    \[ O(nm + \text{time to solve standard LP}) \]
+    \item standard-LP solver needs to spend at least $\Omega(nm)$ time
+      just to read in the input
+    \item $\Rightarrow$ time to solve general LP = $O(\text{time to solve standard LP})$
+    (w/ worse constant factors)
+    \item from now on we will formulate general LPs
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Formulating General LPs}
+  Need to define
+  \begin{enumerate}
+    \item the variables, \textbf{what they represent}
+    \item the objective function, whether it is maximize or minimize
+    \item the constraints, \textbf{what they represent}
+    \item the entire LP in general form
+    \item how to interpret
+    \begin{itemize}
+      \item infeasible result
+      \item unbounded result
+      \item solution result; how to interpret solution vector $x$ in
+        terms of business logic
+    \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame} \frametitle{Formulating Business Logic}
+  \begin{itemize}
+    \item business scenario is a ``word problem'' that defines business-logic
+      rules, resource limits, what needs to be optimized
+    \item you need to figure out how to model all these in parts of an LP
+    \begin{itemize}
+      \item variables
+      \item objective function
+      \item constraints
+    \end{itemize}
+    \item only works when the objective is a linear function (not squared, exponential, etc.)
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Example: Plastic Recycling}
+  Suppose Orange County has the following options for disposing of plastic waste:
+  \begin{center}
+  \begin{tabular}{lll}
+    \textbf{Method} & \textbf{Carbon/ton} & \textbf{Dollars/ton} \\
+    Local incinerator & 2.9 & 800 \\
+    Overseas incinerator & 3.2 & 600 \\
+    Thermal recycling & .5 & 1200 \\
+    Landfill & .3 & 1400 \\
+  \end{tabular}
+\end{center}
+  December is expected to produce 700 tons of plastic and is required by law
+  to emit no more than 1400 tons of carbon. The landfill can accommodate up
+  to 100 tons per month and the other methods are effectively unlimited.
+  The County Supervisors want you to minimize the cost of plastic disposal.
+\end{frame}
+
+\begin{frame} \frametitle{Example: Plastic Recycling}
+\begin{enumerate}
+  \item \textbf{Variables:} create a variable to represent how much of each
+    method to use,
+    \begin{eqnarray*}
+      I &\equiv& \text{ tons incinerated locally } \\
+      O &\equiv& \text{ tons incinerated overseas } \\
+      R &\equiv& \text{ tons recycled } \\
+      L &\equiv& \text{ tons sent to landfill } \\
+    \end{eqnarray*}
+  \item \textbf{Objective function:}
+  \begin{itemize}
+    \item ``County Supervisors want you to minimize the cost''
+    \[ \text{ minimize } 800I + 600O + 1200R + 1400L \]
+  \end{itemize}
+\end{enumerate}
+\end{frame}
+
+\begin{frame} \frametitle{Example: Plastic Recycling}
+\begin{enumerate}
+  \setcounter{enumi}{2}
+  \item \textbf{Constraints:}
+  \begin{itemize}
+    \item re-read the word problem and pick out rules
+    \item ``produce 700 tons of plastic'': \[I+O+R+L=700\]
+    \item ``no more than 1400 tons of carbon'': \[2.9I + 3.2O + .5R + .3L \leq 1400\]
+    \item ``landfill can accommodate up to 100 tons'': \[L \leq 100\]
+    \item also, use critical thinking, common sense to model implicit rules
+    \[ I, O, R, L \geq 0 \]
+  \end{itemize}
+\end{enumerate}
+\end{frame}
+
+\begin{frame} \frametitle{Example: Plastic Recycling}
+  \begin{enumerate}
+    \setcounter{enumi}{3}
+\item general-form LP: \stanza
+
+maximize $800I + 600O + 1200R + 1400L$ \\
+subject to
+\begin{eqnarray*}
+  I+O+R+L &=& 700 \\
+  2.9I + 3.2O + .5R + .3L &\leq& 1400 \\
+  L &\leq& 100 \\
+  I, O, R, L &\geq& 0 \\
+\end{eqnarray*}
+\end{enumerate}
+\end{frame}
+
+\begin{frame} \frametitle{Example: Plastic Recycling}
+\begin{enumerate}
+  \setcounter{enumi}{4}
+  \item \textbf{Interpret results:}
+  \begin{itemize}
+    \item infeasible: never happens because there exists at least one feasible
+      solution, $I=O=R=L=0$
+    \item unbounded: never happens because the
+      $2.9I + 3.2O + .5R + .3L \leq 1400$
+      constraint upper-bounds the objective function
+    \item solution: Tell the Supervisors to incinerate $I$ tons locally,
+    incinerate $O$ tons overseas, recycle $R$ tons, and landfill $L$ tons.
+  \end{itemize}
+\end{enumerate}
+\end{frame}
+
+\begin{frame} \frametitle{Single-Source Shortest Paths}
+  \emph{single-source single-sink shortest paths (1S1SSP) problem} \\
+  \textbf{input:} weighted undirected graph $G=(V,E),$ source vertex $s \in V$,
+    sink vertex $t \in V$\\
+  \textbf{output:} the shortest path $s \leadsto t$ in $G$ \stanza
+
+  \begin{itemize}
+    \item Bellman-Ford algorithm solves this in $\Theta(|V| \cdot |E|)$ time
+    \item when every weight $w(e) \geq 0,$ Dijkstra's algorithm solves this
+      in $\Theta(|E| + |V| \log |V|)$ time
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Formulating Single-Source Shortest Paths}
+\begin{enumerate}
+  \item \textbf{Variables:} for each vertex $v \in V,$ create an LP variable
+  \[ d_v \equiv \text{ total weight of shortest path } s \leadsto v \text{ in } G \]
+  \item \textbf{Objective function:} hold that thought
+  \item \textbf{Constraints:}
+  \begin{itemize}
+    \item Recall that in Bellman-Ford and Dijkstra, we compute
+    \[ d_v = \min_{x \in V, \{x, v\} \in E} d_x + w({x, v}) \]
+    \item LP can't express ``min'' but we can say $d_v \leq$ every candidate:
+    \[ d_v \leq d_x + w(\{x, v\}) \qquad \forall x \in V, \{x, v\} \in E \]
+    \item $d_s = 0$ because it is the source
+  \end{itemize}
+\end{enumerate}
+\end{frame}
+
+\begin{frame} \frametitle{Formulating Single-Source Shortest Paths}
+\begin{enumerate}
+  \setcounter{enumi}{1}
+  \item \textbf{Objective function:} for sink $t,$ maximize $d_t$
+\begin{itemize}
+  \item \emph{not} minimize $d_t$
+  \item that would allow LP to just set every $d_v = 0$; no notion of
+    edges adding to path weights
+  \item maximizing $d_t$ forces LP to set each $d_v$ to the
+    $d_x + w(\{x, v\})$ that is the minimum
+  \item now, when you use an edge, you add its weight
+\end{itemize}
+\setcounter{enumi}{3}
+\item \textbf{General-form LP:} given $G=(V, E)$, source $s,$ sink $t$ \\
+create variable $d_v \enspace \forall v \in V$ \\
+maximize $d_t$ \\
+subject to
+\begin{eqnarray*}
+  d_v &\leq& d_x + w(x, v) \qquad \forall \{x, v \} \in E \\
+  d_s &=& 0
+\end{eqnarray*}
+\end{enumerate}
+\end{frame}
+
+\begin{frame} \frametitle{Formulating Single-Source Shortest Paths}
+  \begin{enumerate}
+    \setcounter{enumi}{3}
+    \item \textbf{Interpreting result:}
+    \begin{itemize}
+      \item infeasible: never happens because setting every $d_v=0$ is always feasible
+      \item unbounded: $d_t = \infty$ means that $t$ is unreachable from $s$
+      \item solution:
+      \begin{itemize}
+        \item need to identify path (list of vertices) $s \leadsto t$
+        \item i.e. identify edges definining the shortest path and $d_t$
+        \item find the constraints where
+        \[ d_v = d_x + w(x, v) \]
+        (not $\leq$); these vertices $x, v$ are part of the shortest path
+      \end{itemize}
+    \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame} \frametitle{Formulating Max Flow}
+\textbf{maximum flow problem} \\
+\emph{input:} a flow network $G=(V,E)$ \\
+\emph{output:} a flow $f$ of maximum value $|f|$ \stanza
+
+\begin{itemize}
+  \item source $s \in V,$ sink $t \in V$
+  \item $c(u, v)$ is capacity, $f(u, v)$ is flow rate of conn. vertices $u, v$
+  \item \textbf{capacity constraint:} $0 \leq f(u, v) \leq c(u, v)$
+  \item \textbf{flow conservation:}  $\forall u \in V - \{s, t\},$
+  \[ \sum_{v \in V} f(v, u) = \sum_{v \in V} f(u, v) \]
+  \item value $|f|$ is net flow into sink:
+  \[ |f| = \sum_{v \in V} f(s, v) - \sum_{v \in V} f(v, s) \]
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Formulating Max Flow}
+\begin{enumerate}
+  \item \textbf{Variables:} for each directed edge $(u, v) \in E,$ create variable
+  \[ f_{u, v} \equiv \text{flow from } u \text{ to } v \]
+  \item \textbf{Objective function:}
+  \begin{itemize}
+    \item want to maximize $|f|$
+    \item so maximize
+    \[ \sum_{v \in V} f_{s, v} - \sum_{v, s} f_{v, s} \]
+  \end{itemize}
+\end{enumerate}
+\end{frame}
+
+\begin{frame} \frametitle{Formulating Max Flow}
+\begin{enumerate}
+  \setcounter{enumi}{2}
+  \item \textbf{Constraints:}
+  \begin{itemize}
+    \item still need to model the \textbf{capacity constraint} and
+      \textbf{flow conservation} rules of max-flow
+    \item capacity constraints:
+    \[ f_{u, v} \geq 0 \qquad \forall u, v \in V \]
+    \[ f_{u, v} \leq c(u, v) \qquad \forall (u, v) \in E \]
+    \item flow conservation:
+    \[ \sum_{v \in V} f_{v, u} - \sum_{v \in V} f_{u, v} = 0 \qquad \forall u \in V - \{s, t\} \]
+  \end{itemize}
+\end{enumerate}
+\end{frame}
+
+\begin{frame} \frametitle{Formulating Max Flow}
+  \begin{enumerate}
+    \setcounter{enumi}{3}
+\item \textbf{General-form LP:} given flow network $G=(V, E),$ source $s,$ sink $t$ \stanza
+
+create variables $f_{u, v} \enspace \forall u, v \in V$ \stanza
+
+maximize $\sum_{v \in V} f_{s, v} - \sum_{v, s} f_{v, s}$ \\
+subject to
+\begin{eqnarray*}
+  f_{u, v} &\geq& 0 \qquad \forall u, v \in V \\
+  f_{u, v} &\leq& c(u, v) \qquad \forall (u, v) \in E \\
+  \sum_{v \in V} f_{v, u} - \sum_{v \in V} f_{u, v} &=& 0 \qquad \forall u \in V - \{s, t\} \\
+\end{eqnarray*}
+\end{enumerate}
+\end{frame}
+
+\begin{frame} \frametitle{Formulating Max Flow}
+\begin{enumerate}
+  \setcounter{enumi}{4}
+  \item \textbf{Interpreting result:}
+  \begin{itemize}
+    \item infeasible: never happens because setting each $f_{u, v}=0$ is a feasible solution
+    \item unbounded: never happens because the objective function is
+    \[ \sum_{v \in V} f_{s, v} - \sum_{v, s} f_{v, s}, \]
+     every $f_{s, v} \leq c(s, v)$ which is finite, and every $f_{v, s} \geq 0$
+    \item solution: define flow function
+    \[ f(u, v) =
+      \begin{cases}
+        f_{u, v} & (u, v) \in E \\
+        0 & (u, v) \notin E
+      \end{cases}
+    \]
+  \end{itemize}
+\end{enumerate}
 \end{frame}
 
 \end{document}
