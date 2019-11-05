@@ -129,17 +129,25 @@ Note
 \end{frame}
 
 \begin{frame} \frametitle{Converting Negative Variables to Standard Form}
+The idea:
   \begin{itemize}
     \item if $x_j$ does not have a non-negativity constraint $x_j \geq 0$,
       call $x_j$ a \emph{negative variable}
     \item handle each negative variable one at a time
     \item negative variable $x_j$ becomes two non-negative variables $x_j', x_j''$
-    \begin{itemize}
-      \item define $x_j = x_j'-x_j''$
-      \item can represent negative $x_j$ by $x_j'=0, x_j''$ positive
-    \end{itemize}
+    \item invariant: $x_j = x_j'-x_j''$
+    \item $x_j' = $ the ``positive'' part of $x_j$
+    \item $x_j'' = $ the ``negative'' part of $x_j$
+    \item $x_j $ positive $\Longleftrightarrow$ $x_j'>0, x_j''=0$
+    \item $x_j $ negative $\Longleftrightarrow$ $x_j'=0, x_j''>0$
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Converting Negative Variables to Standard Form}
+  The algorithm:
+  \begin{itemize}
     \item add non-negativity constraints $x_j' \geq 0, x_j'' \geq 0$
-    \item substitute $(x_j'-x_j'')=x_j$
+    \item substitute $(x_j'-x_j'')=x_j$ into LP
     \begin{itemize}
       \item obj. func: $c_j x_j \Rightarrow c_j(x_j'-x_j'')=c_j x_j' - c_j x_j''$
       \item constraints: $a_{i,j} x_j \Rightarrow a_{i,j} (x_j'-x_j'') = a_{i, j} x_j' - a_{i, j} x_j''$
@@ -237,6 +245,7 @@ Note
       \item objective function
       \item constraints
     \end{itemize}
+    \item every concept mentioned in the scenario needs to be modeled in the LP somehow
     \item only works when the objective is a linear function (not squared, exponential, etc.)
   \end{itemize}
 \end{frame}
@@ -296,7 +305,7 @@ Note
     \setcounter{enumi}{3}
 \item general-form LP: \stanza
 
-maximize $800I + 600O + 1200R + 1400L$ \\
+minimize $800I + 600O + 1200R + 1400L$ \\
 subject to
 \begin{eqnarray*}
   I+O+R+L &=& 700 \\
@@ -313,12 +322,10 @@ subject to
   \item \textbf{Interpret results:}
   \begin{itemize}
     \item infeasible: never happens because there exists at least one feasible
-      solution, $I=O=R=L=0$
+      solution: $R=700, I=O=L=0$
     \item unbounded: never happens because the
-      $2.9I + 3.2O + .5R + .3L \leq 1400$
-      and non-negativity
-      constraints upper-bound every variable in the objective function
-      ($2.9I \leq 1400, 3.2O \leq 1400,$ etc.)
+      non-negativity constraints lower-bound the objective at 0; it can't
+      approach $-\infty$
     \item solution: Tell the Supervisors to incinerate $I$ tons locally,
     incinerate $O$ tons overseas, recycle $R$ tons, and landfill $L$ tons.
   \end{itemize}
@@ -380,7 +387,7 @@ subject to
 
 \begin{frame} \frametitle{Formulating Single-Source Shortest Paths}
   \begin{enumerate}
-    \setcounter{enumi}{3}
+    \setcounter{enumi}{4}
     \item \textbf{Interpreting result:}
     \begin{itemize}
       \item infeasible: never happens because setting every $d_v=0$ is always feasible
