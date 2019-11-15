@@ -42,6 +42,98 @@ This work is licensed under a
   \titlepage
 \end{frame}
 
+\begin{frame} \frametitle{Big Idea: Output Sensitive Algorithm}
+  \begin{itemize}
+    \item \textbf{input sensitive}: time efficiency is a function of the input
+      e.g. size $n$, \# edges $m$
+    \item \textbf{output sensitive}: efficiency is also a function of the
+      \emph{output} size e.g. \# items returned
+    \item most relevant when the size of the output could be the
+      bottleneck
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Computational Geometry}
+\textbf{computational $X$}: interdisciplinary study of computer science with $X$ \\
+(computational sociology/epidemiology/physics/finance/etc.) \stanza
+
+computational geometry (CG): algorithms, data structures, asymptotic analysis, of
+geometric objects: points, lines, circles, triangle meshes, etc. \stanza
+
+Applications
+\begin{itemize}
+  \item computer graphics, user interfaces
+  \item GIS, geographic databases
+  \item scene reconstruction (e.g. LIDAR)
+  \item business operations research (e.g. linear programming, aircraft control)
+  \item manufacturing (e.g. feasibility of assembly, castings)
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Putting the Geo in CG}
+Some general algorithms can actually solve geometric problems efficiently, without
+any awareness of the geometry. \stanza
+
+\emph{bounding box problem} \\
+\textbf{input}: set of 2D points $P=\{p_1, p_2, \ldots, p_n\}$ \\
+\textbf{output}: points $tl=(x_l, y_t)$ and $rb=(x_r, y_b)$ such that the rectangle
+with top-left corner $tl$ and bottom-right corner $rb$ contains $P$ \stanza
+
+Na\"{i}ve, optimal algorithm: $x_l, y_t, x_r, y_b = $ min $x$, min $y$, max $x$,
+max $y$ respectively; $\Theta(n)$ \stanza
+
+Computational geometers are most interested when geometric properties matter.
+\end{frame}
+
+\begin{frame} \frametitle{Line Segment Predicates}
+We can use arithmetic to answer any of the following predicates (questions)
+about points $p_0, p_1, p_2, p_3$ in $\Theta(1)$ time:
+\begin{enumerate}
+  \item Is line segment $\overline{p_0 p_1}$ clockwise from $\overline{p_0 p_2}$
+    around the common endpoint $p_0$?
+  \item If we follow $\overline{p_0 p_1}$ and then $\overline{p_1 p_2}$, do we
+    turn right or left?
+  \item Do line segments $\overline{p_0 p_1}$ and $\overline{p_2 p_3}$
+    intersect?
+\end{enumerate}
+
+$\implies$ We may use any of these in pseudocode.
+\end{frame}
+
+\begin{frame} \frametitle{Degeneracy and Non-Degeneracy Assumptions}
+\textbf{degenerate} object: has the proper shape/type, but the values are a
+  special case that betrays the spirit of the definition \stanza
+
+\emph{Example:} triangle $\equiv$ three points $(p_1, p_2, p_3)$ \\
+degenerate triangle: $p_1=p_2=p_3$; or $p_1, p_2, p_3$ colinear; etc. \stanza
+
+\textbf{Non-degeneracy assumption}:
+\begin{itemize}
+  \item constraint that input to a CG algorithm is not degenerate in specific ways
+  \item simplifies algorithm design
+  \item assume that in practice, some combination of
+  \begin{itemize}
+    \item degeneracies do not occur
+    \item input can be preprocessed to remove degeneracies
+    \item implementer can modify algorithm to handle degeneracies
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Sweep Algorithms}
+A pattern in CG algorithms:
+\begin{itemize}
+  \item \emph{line sweep:} envision a line ``sweeping'' through the input
+  \item e.g. a vertical line sweeping left-to-right
+  \item helps us visualize a 2D situation as a 1D situation that changes over
+    time
+  \item like duality, doesn't actually change the problem, but might help us
+    problem-solve
+  \item generalizes to higher dimensions e.g. plane sweep in 3D, hyperplane sweep
+    in any dimension
+\end{itemize}
+\end{frame}
+
 \begin{frame} \frametitle{Convex Hulls}
 \emph{convex hull problem} \\
 \textbf{input}: set of $n \geq 3$ points $Q$ \\
