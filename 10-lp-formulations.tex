@@ -490,4 +490,116 @@ subject to
 \end{enumerate}
 \end{frame}
 
+\begin{frame} \frametitle{Placeholder Variables}
+\begin{itemize}
+  \item \emph{placeholder variable:}
+    \begin{itemize}
+      \item variable that represents a concept
+        in the formulation
+      \item for convenience
+      \item not strictly necessary
+    \end{itemize}
+  \item similar to creating self-documenting variables/constants in coding
+  \item encouraged for clarity
+  \item don't hurt complexity of feasible region $\Leftrightarrow$ not an efficiency concern
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Example: mobile phones}
+  \begin{itemize}
+    \item you sell mobile phones for \$99 in USA, and the equivalent price in UK
+    \item your factory in China builds 10,000 phones/month for \$30/unit
+    \item shipping: \$2/unit to UK, \$1.50/unit to USA
+    \item USA charges sales tax $=$ 9\% of retail price
+    \item UK charges value added tax (VAT) $=$ 20\% of profits (for our purposes)
+    \item goal is to maximize profits, after expenses and taxes
+    \item how many to ship to each country?
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{First Try: no placeholders}
+Let $A = $ \# shipped to USA, $K = $ \# shipped to UK \\
+production limit: $A+K \leq 10,000$ \\
+non-negative production: $A, K \geq 0$ \\
+expenses for USA units: $(30+1.5)A = 31.5A$ \\
+expenses for UK units: $(30+2)K = 32K$ \\
+tax for USA units: $.09 \times 99 \times A = 8.91 A$ \\
+tax for UK units: $.20 \times (99-32)A = .20 \times (67)A = 13.4 K$ \\
+profit:
+\[ 99A + 99K - 31.5A - 32K - 8.91A - 13.4K = 58.59A + 53.6K \]
+\end{frame}
+
+\begin{frame} \frametitle{First Try: no placeholders}
+  maximize $58.59A + 53.6K$ \\
+  subject to
+  \begin{eqnarray*}
+    A + K &\leq& 10,000 \\
+    A, K \geq 0
+  \end{eqnarray*}
+  \stanza
+  good: this is a valid LP \stanza
+  bad:
+  \begin{itemize}
+    \item it's unreadable
+    \item we humans had to do a lot of arithmetic
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Second Try: use placeholders}
+Let
+\begin{itemize}
+  \item $P_A, P_K, P_T = $ profits in USA, UK, total, respectively
+  \item $S_A, S_K, S_T = $ sales in USA, UK, total, resp.
+  \item $E_A, E_K = $ production+shipping expenses in USA, UK resp.
+  \item $T_A, T_K = $ taxes in USA, UK resp.
+\end{itemize}
+Now:
+\begin{itemize}
+  \item objective: maximize $P_T$
+  \item need constraints to relate the other variables to each other
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Second Try: use placeholders}
+  maximize $P_T$ \\
+  subject to \\
+  \begin{tabular}{ll}
+    $P_T = P_A + P_K$ & def'n total profits \\
+    $S_T = S_A + S_K$ & def'n total sales \\
+    $S_T \leq 10,000$ & max. production \\
+    $S_A, S_K \geq 0$ & min. production \\
+    $P_A = 99S_A - E_A - T_A$ & def'n USA profits \\
+    $P_K = 99S_K - E_K - T_K$ & def'n UK profits \\
+    $E_A = (30+1.5) S_A$ & USA expenses \\
+    $E_K = (30+2) S_K $ & UK expenses \\
+    $T_A = (.09 \times 99) S_A$ & USA sales tax \\
+    $T_K = (.20 (99-30-2)) S_K$ & UK VAT \\
+  \end{tabular}
+\end{frame}
+
+\begin{frame} \frametitle{Second Try: use placeholders}
+good:
+\begin{itemize}
+  \item \textbf{much} more readable
+  \item easier to formulate (divide-and-conquer)
+  \item maintainable; easy to change one parameter (e.g. shipping cost)
+\end{itemize}
+\vspace{.3cm}
+bad:
+\begin{itemize}
+  \item longer
+  \item answering business-logic question involves discernment
+  \begin{itemize}
+    \item USA sales $= S_A$
+    \item UK sales $= S_K$
+    \item ignore all other variables
+  \end{itemize}
+\end{itemize}
+\vspace{.3cm}
+neutral:
+\begin{itemize}
+  \item probably no significant difference in LP solver runtime
+\end{itemize}
+\end{frame}
+
 \end{document}
