@@ -9,6 +9,8 @@
     urlcolor=blue,
 }
 
+\usepackage{tikz, xcolor}
+
 \usetheme{Montpellier}
 \usecolortheme{rose}
 
@@ -54,17 +56,22 @@ This work is licensed under a
 \end{frame}
 
 \begin{frame} \frametitle{Computational Geometry}
-\textbf{computational $X$}: interdisciplinary study of computer science with $X$ \\
-(computational sociology/epidemiology/physics/finance/etc.) \stanza
+\textbf{computational $X$}: interdisciplinary study of computer science with $X$ \stanza
 
-computational geometry (CG): algorithms, data structures, asymptotic analysis, of
-geometric objects: points, lines, circles, triangle meshes, etc. \stanza
+(computational finance, epidemiology, physics, finance, etc.) \stanza
 
-Applications
+\emph{computational geometry (CG):} algorithms, data structures, asymptotic analysis, of
+geometric objects: points, lines, circles, triangle meshes, etc.
+\end{frame}
+
+\begin{frame} \frametitle{Computational Geometry Applications}
+
+Applications of CG:
 \begin{itemize}
-  \item computer graphics, user interfaces
-  \item GIS, geographic databases
-  \item scene reconstruction (e.g. LIDAR)
+  \item 3D computer graphics
+  \item graphical user interfaces (GUIs)
+  \item geographic information systems (GIS), geographic databases
+  \item scene reconstruction, self-driving cars (e.g. LIDAR)
   \item business operations research (e.g. linear programming, aircraft control)
   \item manufacturing (e.g. feasibility of assembly, castings)
 \end{itemize}
@@ -72,29 +79,57 @@ Applications
 
 \begin{frame} \frametitle{Putting the Geo in CG}
 Some general algorithms can actually solve geometric problems efficiently, without
-any awareness of the geometry. \stanza
+any awareness of geometry. \stanza
 
-\emph{bounding box problem} \\
-\textbf{input}: set of 2D points $P=\{p_1, p_2, \ldots, p_n\}$ \\
-\textbf{output}: points $tl=(x_l, y_t)$ and $rb=(x_r, y_b)$ such that the rectangle
-with top-left corner $tl$ and bottom-right corner $rb$ contains $P$ \stanza
+\begin{columns}
+  \begin{column}{0.7 \textwidth}
+  \emph{bounding box problem} \\
+  \textbf{input}: set of 2D points $P=\{p_1, p_2, \ldots, p_n\}$ \\
+  \textbf{output}: points $tl=(x_l, y_t)$ and $rb=(x_r, y_b)$ such that the rectangle
+  with top-left corner $tl$ and bottom-right corner $rb$ contains $P$ \stanza
+  \end{column}
+  \begin{column}{0.3 \textwidth}
+    \begin{center}
+      \begin{tikzpicture}
+        \draw [color=red] (0, 0) -- (3, 0) -- (3, 2) -- (0, 2) -- (0, 0);
+        \foreach \Point in {
+          % definining the bounding box
+          (0, 0), (3, 2),
+          % 10 random points
+          (2.0951240918974277, 1.7968031777699034),
+          (1.6893802109325138, 0.3988643181954554),
+          (0.4478056694086142, 1.434611748573361),
+          (1.21650131559343, 0.3708718939225579),
+          (0.3622805800271429, 0.03376103132220609),
+          (0.48201024301923834, 0.47617070155843133),
+          (1.8378918317441353, 0.6021102667795148),
+          (0.7819121241895028, 0.6833500815401432),
+          (1.155185084745803, 0.05634877501390312),
+          (1.8516975398072102, 1.5517971681158893) } {
+          \draw [fill=black] \Point circle [radius=2pt];
+        }
+      \end{tikzpicture}
+    \end{center}
+  \end{column}
+\end{columns}
 
-Na\"{i}ve, optimal algorithm: $x_l, y_t, x_r, y_b = $ min $x$, min $y$, max $x$,
-max $y$ respectively; $\Theta(n)$ \stanza
+Na\"{i}ve, optimal algorithm:
+$x_l = \min x, y_t = \max y, x_r = \max x, y_b = \min y$;
+$\Theta(n)$ time \stanza
 
-Computational geometers are most interested when geometric properties matter.
+Computational geometers are more interested when geometric properties matter.
 \end{frame}
 
 \begin{frame} \frametitle{Line Segment Predicates}
 We can use arithmetic to answer any of the following predicates (questions)
-about points $p_0, p_1, p_2, p_3$ in $\Theta(1)$ time:
+about points $p_0, p_1, p_2, p_3$ in $\Theta(1)$ time \textbf{(sketch)}: \stanza
 \begin{enumerate}
   \item Is line segment $\overline{p_0 p_1}$ clockwise from $\overline{p_0 p_2}$
     around the common endpoint $p_0$?
   \item If we follow $\overline{p_0 p_1}$ and then $\overline{p_1 p_2}$, do we
     turn right or left?
   \item Do line segments $\overline{p_0 p_1}$ and $\overline{p_2 p_3}$
-    intersect?
+    intersect? \stanza
 \end{enumerate}
 
 $\implies$ We may use any of these in pseudocode.
@@ -105,9 +140,9 @@ $\implies$ We may use any of these in pseudocode.
   special case that betrays the spirit of the definition \stanza
 
 \emph{Example:} triangle $\equiv$ three points $(p_1, p_2, p_3)$ \\
-degenerate triangle: $p_1=p_2=p_3$; or $p_1, p_2, p_3$ colinear; etc. \stanza
+degenerate triangle: $p_1=p_2=p_3$, or two points colinear  \textbf{(sketch)} \stanza
 
-\textbf{Non-degeneracy assumption}:
+\textbf{non-degeneracy assumption}:
 \begin{itemize}
   \item constraint that input to a CG algorithm is not degenerate in specific ways
   \item simplifies algorithm design
@@ -124,7 +159,7 @@ degenerate triangle: $p_1=p_2=p_3$; or $p_1, p_2, p_3$ colinear; etc. \stanza
 A pattern in CG algorithms:
 \begin{itemize}
   \item \emph{line sweep:} envision a line ``sweeping'' through the input
-  \item e.g. a vertical line sweeping left-to-right
+  \item e.g. a vertical line sweeping left-to-right \textbf{(sketch)}
   \item helps us visualize a 2D situation as a 1D situation that changes over
     time
   \item like duality, doesn't actually change the problem, but might help us
@@ -140,13 +175,14 @@ A pattern in CG algorithms:
 \textbf{output}: $CH(Q)$, the subset of $Q$ that is the set of vertices on
   the convex hull of $Q$ \stanza
 
-Convex hull $\equiv$ boundary of convex polygon enclosing all of $Q$ \stanza
+convex hull $\equiv$ boundary of convex polygon enclosing all of $Q$\\
+ \textbf{(sketch)} \stanza
 
 Applications
 \begin{itemize}
   \item object intersection in raytracing, video games, GUIs
   \item drawing implicit regions in GIS
-  \item finding farthest points
+  \item finding farthest points (they're always $CH$ vertices)
   \item component of other algorithms
 \end{itemize}
 \end{frame}
@@ -167,12 +203,12 @@ and there is a rich literature of competitive algorithms. \stanza
 \begin{frame} \frametitle{Baseline Algorithm}
 \textbf{Observe}
 \begin{itemize}
-  \item any two input points define a line $\ell$
+  \item any two input points define a line $\ell$ \textbf{(sketch)}
   \item when those points are both in $CH(Q),$ remaining $n-2$ points are all on
-    the same side of $\ell$ \emph{(geometric property)}
+    the same side of $\ell$ \textbf{(a geometric property)}
   \item $\implies$ for each pair of input points $p, q$, see whether all other points
     are on the same side of $\ell$
-  \item if so include $p, q$ in $CH(Q)$
+  \item if so include $p, q$ in $CH(Q)$ \textbf{(sketch)}
 \end{itemize}
 \end{frame}
 
@@ -189,21 +225,22 @@ and there is a rich literature of competitive algorithms. \stanza
       \EndIf
     \EndFor
     \State \Return $H$
-  \EndFunction
+  \EndFunction \stanza
 \end{algorithmic}
 }
 
-\textbf{Analysis}: $\Theta(n^3)$ time
+\textbf{Analysis}: $\Theta(n^2)$ iterations, counting \#points is $\Theta(n)$ \\
+$\Longrightarrow \Theta(n^3)$ time
 \end{frame}
 
 \begin{frame} \frametitle{Graham Scan Idea}
 \begin{itemize}
   \item greedy pattern, reduction-to-sorting
-  \item Heuristic: when touring the hull in counter-clockwise order, we
-    \textbf{only make left turns}
-  \item right turn $=$ exiting a concavity; middle point not in hull
+  \item \textbf{Geometric property}: when touring a CH in counter-clockwise order, we
+    \textbf{only make left turns} \textbf{(sketch)}
+  \item right turn $=$ exiting a concavity, middle point not in hull \textbf{(sketch)}
   \item $\therefore$ sweep counter-clockwise, keep points that participate in left
-    turns, drop points in the middle of right turns
+    turns, drop points in the middle of right turns \textbf{(sketch)}
   \item alternative kind of line sweep: rotating the line (not left-to-right)
 \end{itemize}
 \end{frame}
@@ -243,7 +280,7 @@ and there is a rich literature of competitive algorithms. \stanza
       \EndWhile
       \State $S.PUSH(p_i)$
     \EndFor
-    \State \Return $S$
+    \State \Return set of point still in $S$
   \EndFunction
 \end{algorithmic}
 }
@@ -258,33 +295,45 @@ and there is a rich literature of competitive algorithms. \stanza
   \item \textbf{for} loop repeats $m < n$ times
   \item turn angle test, stack operations are $\Theta(1)$
   \item $\Rightarrow \Theta(n \log n)$ time
-  \item dominating term is sort, organizing data structure is arrayed stack
-    $\Rightarrow$ good constant factors
+  \item dominating term is sort \emph{(reduction to sorting)}
+  \item organizing data structure is arrayed stack
+  \item $\Rightarrow$ good constant factors
 \end{itemize}
 \end{frame}
 
 \begin{frame} \frametitle{Jarvis March}
 \textbf{Alternative greedy heuristic}: moving around the hull counter-clockwise,
  each step from one vertex to the next is
- \emph{the input point whose angle is shallowest} (``gift wrapping'') \stanza
+ \emph{the input point whose angle is shallowest.}  \textbf{(sketch)} \stanza
 
-Jarvis march
+ $\Rightarrow$ we can start from a $CH$ point, then incrementally find one more $CH$
+ point until we're done. \stanza
+
+ Called ``gift wrapping'' b/c this resembles carefully wrapping up an irregular
+ object in paper or foil. \textbf{(sketch)} \stanza
+
+ (Jarvis march is sometimes called the \emph{gift-wrapping algorithm.})
+\end{frame}
+
+\begin{frame} \frametitle{Jarvis March Pseudocode}
+Jarvis march $(Q)$
 \begin{enumerate}
-  \item Find the lowest and highest points in $Q$.
-  \item (right chain) Starting from the lowest point, and until we reach the highest point:
+  \item $H = \emptyset$
+  \item Let $\ell = $ lowest point in $Q$ (min. $y$-coord.)
+  \item Let $h = $ highest point in $Q$
+  \item (right chain) Starting from $\ell$ and until we reach $h$:
     \begin{enumerate}
-      \item Linear search $Q$ for the next point, minimizing the angle between
-        the two points.
-      \item Add the first point to $CH(Q)$ and move to the second point.
+      \item Linear search $Q$ for the next point $p_i$, minimizing the angle
+        between $p_i$ and the previous point
+      \item Include $p_i$ in $H$ and continue the loop at $p_i$.
     \end{enumerate}
-  \item (left chain) Starting from the highest point, repeat this process until we
-    reach the lowest point.
-  \item Return $CH(Q)$
+  \item (left chain) Repeat the previous process but starting from $h$ and ending at $\ell$.
+  \item Return $H$
 \end{enumerate}
 \end{frame}
 
 \begin{frame} \frametitle{Jarvis March Analysis}
-  Preprocessing to find highest/lowest: $\Theta(n)$ \stanza
+  Preprocessing to find $h, \ell: \Theta(n)$ \stanza
 
   Each iteration of the left/right-chain loops identifies one hull point \\
   $\implies$ in total they iterate $h$ times,
@@ -293,23 +342,62 @@ Jarvis march
   linear search inside the loops takes $\Theta(n)$ time. \stanza
 
   $\therefore$ $\Theta(nh)$ total time. \stanza
-
-  Faster than Graham scan's $\Theta(n \log n)$ when $h \in o(\log n).$ \stanza
-
-  \textbf{Optimal output-sensitive}: Chan's algorithm, $\Theta(n \log h)$.
 \end{frame}
 
-\begin{frame} \frametitle{Summary of Convex Hull Algorithms}
+
+\begin{frame} \frametitle{Comparison of Convex Hull Algorithms}
 \begin{center}
   \begin{tabular}{|l|l|l|}
     \hline
     \textbf{Algorithm} & \textbf{Time} & \textbf{Main Idea} \\ \hline
     Graham Scan & $\Theta(n \log n)$ & sort, skip right turns \\
     Jarvis March & $\Theta(nh)$ & gift-wrapping \\
-    Chan's algorithm & $\Theta(n \log h)$ & divide w/ Graham, merge w/ Jarvis \\
     \hline
   \end{tabular}
 \end{center}
+\vspace{.5cm}
+What is the relationship between $n$ and $h$?
+\end{frame}
+
+\begin{frame} \frametitle{$n$ vs $h$}
+  Recall
+  \begin{itemize}
+    \item $n \equiv $ \# input points $= |Q|$
+    \item $h \equiv $ \# output points $=$ \# vertices of convex hull $= |CH(Q)|$
+    \stanza
+  \end{itemize}
+
+  For fixed $n,$
+  \begin{itemize}
+    \item minimum $h = 3$ when all input points are enclosed in a triangle \textbf{(sketch)}
+    \item maximum $h = n$ when all input points happen to be convex hull vertices \textbf{(sketch)}
+  \end{itemize}
+
+  \[ 3 \leq h \leq n \]
+
+\end{frame}
+
+\begin{frame} \frametitle{Summary of Convex Hull Algorithms}
+  FYI
+  \begin{itemize}
+    \item \textbf{Chan's algorithm} is an optimal output-sensitive algorithm
+    \item (not covered in book or class)
+    \item combines both algorithms, divides input points using Graham's heuristic,
+      merges hulls using Jarvis' heuristic
+    \item $\Theta(n \log h)$ time \stanza
+  \end{itemize}
+
+\begin{center}
+  \begin{tabular}{|l|l|l|l|}
+    \hline
+    \textbf{Algorithm} & \textbf{Time} & $h \in O(1)$ & $h \in \Theta(n)$ \\ \hline
+    Graham Scan & $\Theta(n \log n)$ & $\Theta(n \log n)$ & $\Theta(n \log n)$ \\
+    Jarvis March & $\Theta(nh)$ & $\Theta(n)$ & $\Theta(n^2)$ \\
+    Chan's algorithm & $\Theta(n \log h)$ & $\Theta(n)$ & $\Theta(n \log n)$ \\
+    \hline
+  \end{tabular}
+\end{center}
+
 \end{frame}
 
 \end{document}
