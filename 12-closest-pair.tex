@@ -23,11 +23,11 @@
 
 \newcommand{\stanza}{ \\~\ }
 
-\title{11. Convex Hull and Closest Pair}
-\subtitle{CPSC 535 $\sim$ Spring 2019}
+\title{12. Convex Hull and Closest Pair}
+\subtitle{CPSC 535 $\sim$ Fall 2020}
 \author{Kevin A. Wortman}
 \institute{ \includegraphics[height=2cm]{csuf-logo-cmyk} }
-\date{November 18, 2019 \stanza
+\date{December 2, 2020 \stanza
 
 \includegraphics[height=14pt]{by} \\
 
@@ -42,191 +42,13 @@ This work is licensed under a
   \titlepage
 \end{frame}
 
-\begin{frame} \frametitle{Convex Hulls}
-\emph{convex hull problem} \\
-\textbf{input}: set of $n \geq 3$ points $Q$ \\
-\textbf{output}: $CH(Q)$, the subset of $Q$ that is the set of vertices on
-  the convex hull of $Q$ \stanza
-
-Convex hull $\equiv$ boundary of convex polygon enclosing all of $Q$ \stanza
-
-Applications
-\begin{itemize}
-  \item object intersection in raytracing, video games, GUIs
-  \item drawing implicit regions in GIS
-  \item finding farthest points
-  \item component of other algorithms
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Approaches to Convex Hulls}
-Like the sorting problem, many algorithm patterns work for convex hulls,
-and there is a rich literature of competitive algorithms. \stanza
-
-\begin{itemize}
-  \item Greedy pattern: line-sweep, update hull as we go
-  \item Divide-and-conquer: divide $Q$ in half, compute convex hulls for each
-    half, merge two convex hulls into one
-  \item Iterative improvement: start with a superset of $CH(Q)$; refine by repeatedly eliminating
-    a constant fraction of the points until only $CH(Q)$ remains
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Baseline Algorithm}
-\textbf{Observe}
-\begin{itemize}
-  \item any two input points define a line $\ell$
-  \item when those points are both in $CH(Q),$ remaining $n-2$ points are all on
-    the same side of $\ell$ \emph{(geometric property)}
-  \item $\implies$ for each pair of input points $p, q$, see whether all other points
-    are on the same side of $\ell$
-  \item if so include $p, q$ in $CH(Q)$
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Baseline Pseudocode}
-  {\small
-\begin{algorithmic}[1]
-  \Function{NAIVE-CONVEX-HULL}{$Q$}
-    \State $H=\emptyset$
-    \For { distinct points $p, q \in Q$ }
-      \State form line $\ell$ intersecting $p$ and $q$
-      \State $k = $ \# points above $\ell$
-      \If { $k=(n-2)$ or $k=0$ }
-        \State $H = H \cup \{p, q\}$
-      \EndIf
-    \EndFor
-    \State \Return $H$
-  \EndFunction
-\end{algorithmic}
-}
-
-\textbf{Analysis}: $\Theta(n^3)$ time
-\end{frame}
-
-\begin{frame} \frametitle{Graham Scan Idea}
-\begin{itemize}
-  \item greedy pattern, reduction-to-sorting
-  \item Heuristic: when touring the hull in counter-clockwise order, we
-    \textbf{only make left turns}
-  \item right turn $=$ exiting a concavity; middle point not in hull
-  \item $\therefore$ sweep counter-clockwise, keep points that participate in left
-    turns, drop points in the middle of right turns
-  \item alternative kind of line sweep: rotating the line (not left-to-right)
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Graham Scan Greedy Heuristic}
-\begin{itemize}
-  \item $p_1, \ldots, p_m = Q$ sorted into counter-clockwise order, eliminating ties
-  \item stack $S$ of points; contains hull of points visited \emph{already}
-  \item base case: push first 3 points onto $S$
-  \begin{itemize}
-    \item for any three points $p, q, r$ forming a non-degenerate triangle,
-      $CH(\{p, q, r\}) = \{p, q, r\}$
-    \end{itemize}
-  \item inductive case:
-    \begin{itemize}
-      \item examine next input point $p_i$, top of stack $t$, next-lowest stack point $r$
-      \item if $\angle r t p_i$ is not a left turn $\implies t$ not on hull
-    \end{itemize}
-  \item Note: need stack data structure w/ accessor to top \textbf{two} elements
-  \end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Graham Scan Pseudocode}
-  {\small
-\begin{algorithmic}[1]
-  \Function{GRAHAM-SCAN}{$Q$} \Comment{guaranteed $|Q| \geq 3$}
-    \State $p_0 = $ lowest point in $Q$ (break ties by choosing leftmost point)
-    \State $p_1 \ldots p_m = $ sort $Q-\{p_0\}$ into counter-clockwise order,
-      by polar angle with $p_0$; break ties by keeping only the point farthest from $p_0$
-    \State $S$ = new stack
-    \State $S.PUSH(p0)$
-    \State $S.PUSH(p1)$
-    \State $S.PUSH(p2)$
-    \For { $i$ from $3$ through $m$ }
-      \While { $\angle p_i, S.TOP, S.BELOWTOP$ is non-left turn }
-        \State $S.POP()$
-      \EndWhile
-      \State $S.PUSH(p_i)$
-    \EndFor
-    \State \Return $S$
-  \EndFunction
-\end{algorithmic}
-}
-\end{frame}
-
-\begin{frame} \frametitle{Graham Scan Analysis}
-\begin{itemize}
-  \item find $p_0$: $\Theta(n)$
-  \item sort: $\Theta(n \log n)$
-  \item eliminate tied points: $\Theta(n)$
-  \item each stack operation is $\Theta(1)$
-  \item \textbf{for} loop repeats $m < n$ times
-  \item turn angle test, stack operations are $\Theta(1)$
-  \item $\Rightarrow \Theta(n \log n)$ time
-  \item dominating term is sort, organizing data structure is arrayed stack
-    $\Rightarrow$ good constant factors
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Jarvis March}
-\textbf{Alternative greedy heuristic}: moving around the hull counter-clockwise,
- each step from one vertex to the next is
- \emph{the input point whose angle is shallowest} (``gift wrapping'') \stanza
-
-Jarvis march
-\begin{enumerate}
-  \item Find the lowest and highest points in $Q$.
-  \item (right chain) Starting from the lowest point, and until we reach the highest point:
-    \begin{enumerate}
-      \item Linear search $Q$ for the next point, minimizing the angle between
-        the two points.
-      \item Add the first point to $CH(Q)$ and move to the second point.
-    \end{enumerate}
-  \item (left chain) Starting from the highest point, repeat this process until we
-    reach the lowest point.
-  \item Return $CH(Q)$
-\end{enumerate}
-\end{frame}
-
-\begin{frame} \frametitle{Jarvis March Analysis}
-  Preprocessing to find highest/lowest: $\Theta(n)$ \stanza
-
-  Each iteration of the left/right-chain loops identifies one hull point \\
-  $\implies$ in total they iterate $h$ times,
-  where $h \equiv $ number of points on the hull. \stanza
-
-  linear search inside the loops takes $\Theta(n)$ time. \stanza
-
-  $\therefore$ $\Theta(nh)$ total time. \stanza
-
-  Faster than Graham scan's $\Theta(n \log n)$ when $h \in o(\log n).$ \stanza
-
-  \textbf{Optimal output-sensitive}: Chan's algorithm, $\Theta(n \log h)$.
-\end{frame}
-
-\begin{frame} \frametitle{Summary of Convex Hull Algorithms}
-\begin{center}
-  \begin{tabular}{|l|l|l|}
-    \hline
-    \textbf{Algorithm} & \textbf{Time} & \textbf{Main Idea} \\ \hline
-    Graham Scan & $\Theta(n \log n)$ & sort, skip right turns \\
-    Jarvis March & $\Theta(nh)$ & gift-wrapping \\
-    Chan's algorithm & $\Theta(n \log h)$ & divide w/ Graham, merge w/ Jarvis \\
-    \hline
-  \end{tabular}
-\end{center}
-\end{frame}
-
 \begin{frame} \frametitle{Closest Pair Problem}
   \emph{closest pair problem} \\
   \textbf{input}: set of $n \geq 2$ points $Q$ \\
   \textbf{output}: two points $p, q \in Q$ minimizing $d(p, q)$ \stanza
 
-  $d(p, q)$ is standard Euclidean distance \\
-  $d( (x_p, y_p), (x_q, y_q) ) \equiv \sqrt{(x_p-x_q)^2+(y_p-y_q)^2}$ \stanza
+  $d(p, q)$ is standard Euclidean distance
+  \[ d( (x_p, y_p), (x_q, y_q) ) \equiv \sqrt{(x_p-x_q)^2+(y_p-y_q)^2} \]
 
   Applications
   \begin{itemize}
@@ -235,6 +57,12 @@ Jarvis march
     \item match predicted user preference to products
     \item match players for fair contest
   \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Example}
+  \begin{center}
+    \includegraphics[height=2.5in]{closest-pair-example.jpg}
+  \end{center}
 \end{frame}
 
 \begin{frame} \frametitle{Baseline Algorithm}
@@ -246,7 +74,7 @@ Jarvis march
     \For { distinct $a, b \in Q$ }
       \State $\delta_{ab} = d(a, b)$
       \If { $\delta_{ab} < \delta$ }
-        \State $p=a, \, q=b, \, \delta=\delta_{pq}$
+        \State $p=a, \, q=b, \, \delta=\delta_{ab}$
       \EndIf
     \EndFor
     \State \Return $p, q$
@@ -275,6 +103,24 @@ Jarvis march
 \end{itemize}
 \end{frame}
 
+\begin{frame} \frametitle{Divide-and-Conquer: Closest Pair on the Left}
+  \begin{center}
+    \includegraphics[height=2.5in]{closest-pair-on-left.jpg}
+  \end{center}
+\end{frame}
+
+\begin{frame} \frametitle{Divide-and-Conquer: Closest Pair on the Right}
+  \begin{center}
+    \includegraphics[height=2.5in]{closest-pair-on-right.jpg}
+  \end{center}
+\end{frame}
+
+\begin{frame} \frametitle{Divide-and-Conquer: Closest Pair on the Boundary}
+  \begin{center}
+    \includegraphics[height=2.5in]{closest-pair-on-boundary.jpg}
+  \end{center}
+\end{frame}
+
 \begin{frame} \frametitle{Narrowing Search at Boundary}
 \begin{itemize}
   \item \textbf{Claim}: only need to check $O(n)$ pairs of straddling points, not $\Theta(n^2)$
@@ -282,12 +128,29 @@ Jarvis march
     pair entirely in $L$ or entirely in $R$
   \item suppose $\exists p_S$ left of $\ell,$ $q_S$ right of $\ell,$ with $p_S, q_S$ closer than $\delta$
   \item such $p_S, q_S$ must reside in a $2\delta \times \delta$ rectangle centered on $\ell$
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Region that Could Contain a Closest Straddling Pair}
+  \begin{center}
+    \includegraphics[height=2.5in]{closest-pair-straddling.jpg}
+  \end{center}
+\end{frame}
+
+\begin{frame} \frametitle{Narrowing Search at Boundary}
+\begin{itemize}
   \item \emph{packing argument:} since non-straddling point pairs are separated by $\geq \delta,$
     there are at most 8 non-straddling points in this rectangle (4 per corner of each square)
   \item $\therefore$ for each point $p$ within $\delta$ of $\ell$, test $p$ against
     the 7 points nearest $p$ in $y$-direction
   \item $\leq n$ points within $\delta$ of $\ell$ so $\leq 7n$ pairs of points $\in O(n)$
 \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Densest Packing of 8 Points all $\delta$ Apart}
+  \begin{center}
+    \includegraphics[height=2.5in]{closest-pair-packing.jpg}
+  \end{center}
 \end{frame}
 
 \begin{frame} \frametitle{Divide-and-Conquer Second Draft}
@@ -323,10 +186,10 @@ Jarvis march
   \item base case is $\Theta(1)$
   \item each sort is $\Theta(n \log n)$
   \item compute $\ell$ is $\Theta(1)$ (given sorted $X$)
-  \item form $L, R$ is $\Theta(n)$
+  \item build $L, R$ is $\Theta(n)$
   \item straddling \textbf{for} loop is $\Theta(7n) = \Theta(n)$
-  \item $T(n) = 2 T(n/2) + n \log n$
-  \item by master theorem, $\Theta(n^2 \log n)$
+  \item $T(n) = 2 T(n/2) + \Theta(n \log n)$
+  \item by master theorem, $\Theta(n \log^2 n)$
   \item \textbf{bottleneck} is sorting $X, Y$; can do this once before recursion
 \end{itemize}
 \end{frame}
@@ -392,7 +255,7 @@ Jarvis march
 \begin{frame} \frametitle{Closest Pair Summary}
 Divide-and-conquer algorithm takes $\Theta(n \log n)$ time. \stanza
 
-Depends on
+Builds on
 \begin{itemize}
   \item geometric packing argument: checking only $7n$ pairs of straddling points suffices
   \item sort in $\Theta(n \log n)$
