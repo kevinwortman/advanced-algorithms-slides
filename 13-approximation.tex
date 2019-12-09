@@ -27,7 +27,7 @@
 \subtitle{CPSC 535 $\sim$ Fall 2019}
 \author{Kevin A. Wortman}
 \institute{ \includegraphics[height=2cm]{csuf-logo-cmyk} }
-\date{May 6, 2019 \stanza
+\date{December 9  , 2019 \stanza
 
 \includegraphics[height=14pt]{by} \\
 
@@ -64,10 +64,10 @@ Sometimes we can \emph{negotiate} on the definition of the problem
 \textbf{Approximation}: output is \emph{nearly-optimal} but not necessarily
 truly optimal.
 \begin{itemize}
-  \item proximity to optimality is quantified, \textbf{proven}
+  \item quality is quantified, \textbf{proven}
   \item ``approximation'', ``approximate'' are technical terms; use other words
-    like ``decent'' for informal ideas about near-optimality
-  \item suitable for business scenarios where approximate solutions are adequate
+    like ``decent'' for informal ideas about quality
+  \item suitable for use cases where approximate solutions are adequate
   \item need to rewrite problem definition
   \item every optimization problem has corresponding approximation problems; but these
     are distinct problems
@@ -91,7 +91,7 @@ truly optimal.
 \end{frame}
 
 \begin{frame} \frametitle{Approximation vs. Other Approaches}
-Other ways of dealing with unsolvable problems:
+Other ways of dealing with hard problems:
 \begin{itemize}
   \item say ``no''
   \item when $n$ is small enough, just use exponential-time algorithm
@@ -100,7 +100,6 @@ Other ways of dealing with unsolvable problems:
       \item machine learning algorithms (also, in M.L. humans don't need to precisely define what counts as ``correct'')
       \item fast heuristic algorithms
       \item Monte Carlo algorithms
-      \item other AI algorithms
     \end{itemize}
 \end{itemize}
 
@@ -119,7 +118,7 @@ and optimal output; smaller is better
     quality $C,$ by definition $C^\star \geq C,$ and define
     \[ \rho(n) = \frac{C^\star}{C} \]
   \item for \textbf{minimization} problem: if optimal quality is $C^\star$ and alg. produces
-    quality $C,$ by definition $C \geq C^\star$ and define
+    quality $C,$ by definition $C^\star \leq C$ and define
     \[ \rho(n) = \frac{C}{C^\star} \]
 \end{itemize}
 Recall 3-approx. vertex cover: output \# colors $\leq 3 k^\star$
@@ -135,7 +134,7 @@ Ex.: algorithm that solves 3-approx. vertex cover would have fixed $\rho(n)=3$
 In general, better (smaller) ratios require slower algorithms. \\
 (note 1-approximation algorithms produce optimal solutions.) \stanza
 
-Deriving a different $\rho(n)$ vs. time trade-offs requires designing an
+Deriving a different quality-vs.-time trade-off requires designing an
 entirely different algorithm.
 \end{frame}
 
@@ -173,6 +172,24 @@ e.g. $O((1/\epsilon)^2 n^3)$
 See Wiki page: \url{https://en.wikipedia.org/wiki/Vertex_cover}
 \end{frame}
 
+\begin{frame} \frametitle{Vertex Cover Hardness}
+  \begin{itemize}
+    \item vertex cover is $NP$-complete
+    \item baseline algorithm:
+    \begin{itemize}
+      \item exhaustive search
+      \item for each subset $C$ of vertices, check whether every edge has an
+        endpoint in $C$
+      \item return the smallest $C$ that is a valid cover
+      \item $\Theta(2^n m)$ time, exponential, slow
+    \end{itemize}
+    \item goal of a 2-approximate vertex cover algorithm:
+    \begin{itemize}
+      \item get a decent (though imperfect) cover much faster
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
 \begin{frame} \frametitle{A Greedy Approximation Algorithm}
 Idea:
 \begin{itemize}
@@ -190,7 +207,7 @@ Idea:
   \begin{algorithmic}[1]
     \Function{APPROX-VERTEX-COVER}{$G=(V,E)$}
       \State $C=\emptyset$
-      \State $T=E$
+      \State $T=E$ \Comment{$T = $ edges that may be taken}
       \While { $T \ne \emptyset$ }
         \State Let $e=(u, v)$ be an arbitrary edge in $T$
         \State $C = C \cup \{u, v \}$
@@ -199,8 +216,9 @@ Idea:
       \State \Return $C$
     \EndFunction
   \end{algorithmic}
-
-\textbf{Efficiency Analysis}: $O(m+n),$ using proper data structures
+\vspace{.5cm}
+\textbf{Efficiency Analysis}: $O(m+n)$ time (assuming efficient data structures
+for $G, T,$ and $C$)
 \end{frame}
 
 \begin{frame} \frametitle{Vertex Cover Performance Ratio}
@@ -255,7 +273,7 @@ Idea:
 \end{frame}
 
 \begin{frame} \frametitle{TSP}
-\emph{traveling salesperon problem (TSP)} \\
+\emph{traveling salesperson problem (TSP)} \\
 \textbf{input}: a complete undirected graph $G=(V,E)$ where each edge has weight $w(e) \geq 0$ \\
 \textbf{output}: a sequence of vertices $H$ forming a Hamiltonian cycle, minimizing
 total edge weight
@@ -278,7 +296,7 @@ Recall:
 \begin{frame} \frametitle{Triangle Inequality}
 Triangle inequality in general: for distance function $d$ and sites $a, b, c,$
 \[ d(a, c) \leq d(a, b) + d(b, c) \]
-$\Rightarrow$ direct path $a \rightarrow b$ always cheaper than two-step path
+$\Rightarrow$ direct path $a \rightarrow c$ always cheaper than two-step path
 $a \rightarrow b \rightarrow c$ (or tied) \stanza
 
 Triangle inequality in a complete graph: for vertices $x, y, z$ and edge weights $w,$
@@ -291,7 +309,7 @@ $\Rightarrow$ automatically holds for Euclidean graphs
 
 \textbf{input}: a complete undirected graph $G=(V,E)$ where each edge has weight $w(e) \geq 0$;
 and for any $x, y, z \in V$, $w(x, z) \leq w(x, y) + w(y, z)$ \\
-\textbf{output}: (same) \stanza
+\textbf{output}: (same as conventional TSP) \stanza
 \begin{itemize}
   \item \textbf{renegotiating} TSP
   \item different problem; $NP$-completeness and $APX$-completeness proofs may not apply
