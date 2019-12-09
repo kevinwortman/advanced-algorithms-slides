@@ -90,7 +90,15 @@ truly optimal.
   where $k^\star$ is the fewest colors possible for $G$}
 \end{frame}
 
-\begin{frame} \frametitle{Approximation vs. Other Approaches}
+\begin{frame} \frametitle{Graph Coloring Example}
+  \begin{center}
+    \includegraphics[height=100pt]{13-graph-uncolored.jpg}
+    \includegraphics[height=100pt]{13-graph-colored-suboptimal.jpg}
+    \includegraphics[height=100pt]{13-graph-colored-optimal.jpg}
+  \end{center}
+\end{frame}
+
+\begin{frame} \frametitle{Approximation vs. Other Renegotiation Approaches}
 Other ways of dealing with hard problems:
 \begin{itemize}
   \item say ``no''
@@ -170,6 +178,20 @@ e.g. $O((1/\epsilon)^2 n^3)$
   \stanza
 
 See Wiki page: \url{https://en.wikipedia.org/wiki/Vertex_cover}
+\end{frame}
+
+\begin{frame} \frametitle{Vertex Cover Example}
+  \begin{center}
+    \includegraphics[height=80pt]{13-vertex-cover-1.png}
+    \includegraphics[height=80pt]{13-vertex-cover-2.png}
+  \end{center}
+
+  {\tiny
+  Images credit: Wikipedia user Miym,
+  \href{https://creativecommons.org/licenses/by-sa/3.0)}{CC BY-SA 3.0},
+  \url{https://commons.wikimedia.org/wiki/File:Vertex-cover.svg},
+  \url{https://commons.wikimedia.org/wiki/File:Minimum-vertex-cover.svg}
+  }
 \end{frame}
 
 \begin{frame} \frametitle{Vertex Cover Hardness}
@@ -293,6 +315,13 @@ Recall:
 \end{itemize}
 \end{frame}
 
+\begin{frame} \frametitle{TSP}
+  \begin{center}
+    \includegraphics[height=120pt]{13-tsp-input.jpg}
+    \includegraphics[height=120pt]{13-tsp-output.jpg}
+  \end{center}
+\end{frame}
+
 \begin{frame} \frametitle{Triangle Inequality}
 Triangle inequality in general: for distance function $d$ and sites $a, b, c,$
 \[ d(a, c) \leq d(a, b) + d(b, c) \]
@@ -334,6 +363,18 @@ and for any $x, y, z \in V$, $w(x, z) \leq w(x, y) + w(y, z)$ \\
 \end{itemize}
 \end{frame}
 
+\begin{frame} \frametitle{Review: Minimum Spanning Trees (MST)}
+  \begin{center}
+    \includegraphics[height=160pt]{13-mst.jpg}
+  \end{center}
+\end{frame}
+
+\begin{frame} \frametitle{Review: Preorder Traversal}
+  \begin{center}
+    \includegraphics[height=160pt]{13-preorder.jpg}
+  \end{center}
+\end{frame}
+
 \begin{frame} \frametitle{Approximate TSPTI Pseudocode}
   \begin{algorithmic}[1]
     \Function{APPROX-TSPTI}{$G=(V,E), w$}
@@ -342,12 +383,31 @@ and for any $x, y, z \in V$, $w(x, z) \leq w(x, y) + w(y, z)$ \\
       \For { vertex $v$ in preorder traversal of tree $T$ }
         \State $H.ADDBACK(v)$
       \EndFor
+      \State $H.ADDBACK(H[0])$
       \State \Return $H$
     \EndFunction
   \end{algorithmic}
 \vspace{.5 cm}
 \textbf{Analysis}: Prim's algorithm takes $O(m + n \log n)$ (w/ Fibonacci heap),
 traversal takes $O(m + n)$, total $O(m + n \log n)$ time
+\end{frame}
+
+\begin{frame} \frametitle{Approximate TSPTI: MST}
+  \begin{center}
+    \includegraphics[height=160pt]{13-tspti-mst.jpg}
+  \end{center}
+\end{frame}
+
+\begin{frame} \frametitle{Approximate TSPTI: Preorder Traversal}
+  \begin{center}
+    \includegraphics[height=160pt]{13-tspti-preorder.jpg}
+  \end{center}
+\end{frame}
+
+\begin{frame} \frametitle{Approximate TSPTI: Solution}
+  \begin{center}
+    \includegraphics[height=160pt]{13-tspti-output.jpg}
+  \end{center}
 \end{frame}
 
 \begin{frame} \frametitle{TSPTI Performance}
@@ -367,12 +427,19 @@ traversal takes $O(m + n)$, total $O(m + n \log n)$ time
 \end{frame}
 
 \begin{frame} \frametitle{Summary}
+Vertex cover:
+\begin{itemize}
+  \item NP-complete
+  \item exact exhaustive search alg. takes $\Theta(2^n m)$ time
+  \item 2-approximate alg. takes $\Theta(n+m)$ time \stanza
+\end{itemize}
 
-There is a 2-approximation algorithm for vertex cover that takes $O(m+n)$ time.
-\stanza
-
-There is a 2-approximation algorithm for TSP with the triangle inequality
-that takes $O(m + n \log n)$ time.
+TSP:
+\begin{itemize}
+  \item NP-complete
+  \item exact exhaustive search alg. takes $\Theta(n!)$ or $\Theta(2^m(n+m))$ time
+  \item 2-approximate algorithm takes $O(m + n \log n)$ time
+\end{itemize}
 \end{frame}
 
 \end{document}
