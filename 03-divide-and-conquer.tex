@@ -136,12 +136,26 @@ Recall merge sort divides into $k=2$ pieces, merge takes $\Theta(n)$ time:
   \end{itemize}
 \end{frame}
 
+\begin{frame} \frametitle{Examples}
+  The optimal subarray may involve negative elements:
+  \[ \langle 100, -1, -1, -1, 5, 3 \rangle \]
+
+  Application: when to open/close a cafe:
+  \begin{center}
+    \includegraphics[height=1.5in]{profit-loss.jpg}
+  \end{center}  
+\end{frame}
+
 \begin{frame} \frametitle{Greedy fails}
   Straightforward greedy algorithm would be:
   \begin{itemize}
     \item buy at the lowest price \underline{or} sell at the highest price
     \item incorrect; best "run" could be elsewhere
-    \item (example)
+    \item example: $\langle 0, 1, 10, 4, 4, 4, 4\rangle$
+      \begin{itemize}
+      \item $\langle 1, 10 \rangle$ is the biggest trough-to-peak; sum 11
+      \item but slow-and-steady $\langle 4, 4, 4, 4\rangle$ has sum 12
+        \end{itemize}
     \item not always correct $\implies$ not actually an algorithm
   \end{itemize}
 
