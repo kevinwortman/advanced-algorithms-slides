@@ -18,7 +18,7 @@
 \subtitle{CPSC 535 $\sim$ Fall 2019}
 \author{Kevin A. Wortman}
 \institute{ \includegraphics[height=2cm]{csuf-logo-cmyk} }
-\date{September 16, 2019 \stanza
+\date{September 14, 2020 \stanza
 
 \includegraphics[height=14pt]{by} \\
 
@@ -123,11 +123,15 @@ adding works normally with two caveats
         $= O(n^2) \text{ worst-case } + O(n^2) \text{ worst-case } = O(n^2)$ worst-case
     \end{itemize}
 \end{enumerate}
+\end{frame}
 
+\begin{frame} \frametitle{Worst-Case versus Expected Time Bounds}
 Ordinarily
 \begin{itemize}
-  \item $O(T)$ worst-case time is better than $O(T)$ expected time
+\item $O(T)$ worst-case time is better than $O(T)$ expected time
+  \item e.g. $O(n \log n)$ worst-case is better than $O(n \log n)$ expected
   \item faster expected-time is better than slower worst-case time
+    \item e.g. $O(n)$ expected is better than $O(n \log n)$ worst-case
 \end{itemize}
 \end{frame}
 
@@ -225,15 +229,20 @@ worst case $\Theta(n)$ times
 \end{frame}
 
 \begin{frame} \frametitle{Balls and Bins}
+  \begin{center}
+    \includegraphics[height=1.5in]{balls-bins.jpg}
+  \end{center}  
+
 Story to help think about probabilities:
 \begin{itemize}
   \item $b$ bins that can hold balls
   \item throw $n$ balls
   \item a ball is equally likely to fall into each bin
-  \item (sketch)
   \item corresponds to a game called \emph{plinko}
 \end{itemize}
+\end{frame}
 
+\begin{frame} \frametitle{Balls and Bins Q \& A}
 Answers to questions:
 \begin{itemize}
   \item \emph{Q: After $n$ throws, how many balls does a given bin have?} expected $n/b$
@@ -343,20 +352,20 @@ Trade-off:
 \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Application: Skip Lists}
-  \begin{itemize}
-    \item \emph{skip list:} alternative to a binary search tree
-    \item \emph{layer 1} (bottom) is a sorted linked list
-    \item layer 2: contains subset of layer 1; each layer-1 element is present
-      with probability $\frac{1}{2}$
-    \item layer $i$: contains subset of layer $(i-1);$ each lower element is
-      present with probability $\frac{1}{2}$
-    \item (sketch)
-    \item search takes time $\Theta(\text{\# layers})$
-    \item \# layers = length of streak after $n$ flips = $\Theta(\log n)$
-    \item $\implies$ searching a skip list takes $\Theta(\log n)$ expected time
-  \end{itemize}
-\end{frame}
+%\begin{frame} \frametitle{Application: Skip Lists}
+%  \begin{itemize}
+%    \item \emph{skip list:} alternative to a binary search tree
+%    \item \emph{layer 1} (bottom) is a sorted linked list
+%    \item layer 2: contains subset of layer 1; each layer-1 element is present
+%      with probability $\frac{1}{2}$
+%    \item layer $i$: contains subset of layer $(i-1);$ each lower element is
+%      present with probability $\frac{1}{2}$
+%    \item (sketch)
+%    \item search takes time $\Theta(\text{\# layers})$
+%    \item \# layers = length of streak after $n$ flips = $\Theta(\log n)$
+%    \item $\implies$ searching a skip list takes $\Theta(\log n)$ expected time
+%  \end{itemize}
+%\end{frame}
 
 \begin{frame} \frametitle{Hash Tables}
 Review hash tables
@@ -370,12 +379,22 @@ Review hash tables
   \item many variants with trade-offs: chaining vs. open addressing, universal vs.
     tabular functions, cuckoo, robin hood, etc.
 \end{itemize}
+\end{frame}
 
-\textbf{Reduce to hash tables pattern}:
+\begin{frame} \frametitle{Hash Table Operations}
+  \begin{itemize}
+  \item HASH-TABLE-CREATE($T$): initialize $T$ as an empty hash table
+    \item HASH-TABLE-INSERT($T, x$): insert key $x.key$ associated with value $x$ 
+    \item HASH-TABLE-SEARCH($T, k$): return the element $x$ with $x.key=k$, or NIL if no such element exists
+    \item HASH-TABLE-DELETE($T, x$): remove $x$ and $x.key$ from $T$; no effect if they were absent
+  \end{itemize}
+  \end{frame}
+
+\begin{frame} \frametitle{Reduce-to-Hash-Tables Pattern}
 \begin{itemize}
   \item make critical use of a hash set or hash map
   \item good: fast, simple (when hash internals are encapsulated)
-  \item bad: introduces expected qualifier
+  \item bad: time efficiency becomes \emph{expected}
 \end{itemize}
 \end{frame}
 
@@ -391,12 +410,12 @@ Review hash tables
   {\footnotesize
   \begin{algorithmic}[1]
     \Function{REMOVE-DUPLICATES}{$A$}
-    \State $S$ = new hash map
-    \State $D$ = hew list
+    \State HASH-TABLE-CREATE($S$)
+    \State $D$ = new list
     \For { $x$ in $A$ }
-      \If { not $S$.contains($x$) }
+      \If { HASH-TABLE-SEARCH($S, x$) = NIL }
         \State $D$.add($x$)
-        \State $S$.insert($x$)
+        \State HASH-TABLE-INSERT($S, x$)
       \EndIf
     \EndFor
     \State \Return { $D$ }
