@@ -103,11 +103,15 @@ linear time; so SOLVE-MAX-FLOW is usually the bottleneck.
 \begin{frame} \frametitle{Formulation in General}
   To formulate $A$ as a $B$ instance, need to explain
   \begin{itemize}
-  \item how to map input-for-A to input-for-B
-  \item how to map solution-for-B to solution-for-A
-  \item how all the ``rules'' of A are enforced...
-  \item ...by the B problem itself, and/or how we create input-for-B
+  \item \emph{Input mapping:} how to map input-for-A to input-for-B
+  \item \emph{Output mapping:} how to map solution-for-B to solution-for-A
+  \item \emph{Correctness:} how
+    \begin{itemize}
+    \item all the ``rules'' of A are enforced...
+    \item ......by the B problem itself, and/or our input mapping
+    \end{itemize}
   \item ``rules:'' constraints on the output
+  \item \emph{Overhead:} analyze whether the input/output mapping becomes the bottleneck
   \end{itemize}
 
   \vspace{.5cm}
