@@ -224,8 +224,8 @@ This work is licensed under a
       \State $n_1 = (q-p+1), \, n_2 = (r-q)$
       \State let $L[1 \ldots n_1+1]$ and $R[1 \ldots n_2 + 1]$ be new arrays
       \State $L[1 \ldots n_1] = A[p \ldots q]$
-      \State $R[1 \ldots n_2] = A[p+1 \ldots q]$
-      \State $L[n_1+1] = R[n_2+2] = \infty$
+      \State $R[1 \ldots n_2] = A[q+1 \ldots r]$
+      \State $L[n_1+1] = R[n_2+1] = \infty$
       \State $i = j = 1$
       \For{$k=p$ to $r$}
           \If{$L[i] \leq R[j]$}
