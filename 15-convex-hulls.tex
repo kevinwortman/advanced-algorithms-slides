@@ -49,9 +49,12 @@ This work is licensed under a
   the convex hull of $Q$ \stanza
 
 convex hull $\equiv$ boundary of convex polygon enclosing all of $Q$\\
- \textbf{(sketch)} \stanza
+  \begin{center}
+    \includegraphics[width=4cm]{convex_hull.jpg}
+  \end{center}
+\end{frame}
 
-Applications
+\begin{frame} \frametitle{Convex Hull Applications}
 \begin{itemize}
   \item object intersection in raytracing, video games, GUIs
   \item drawing implicit regions in GIS
@@ -76,15 +79,21 @@ and there is a rich literature of competitive algorithms. \stanza
 \begin{frame} \frametitle{Baseline Algorithm}
 \textbf{Observe}
 \begin{itemize}
-  \item any two input points define a line $\ell$ \textbf{(sketch)}
+  \item any two input points define a line $\ell$
   \item when those points are both in $CH(Q),$ remaining $n-2$ points are all on
     the same side of $\ell$ \textbf{(a geometric property)}
   \item $\implies$ for each pair of input points $p, q$, see whether all other points
     are on the same side of $\ell$
-  \item if so include $p, q$ in $CH(Q)$ \textbf{(sketch)}
+  \item if so include $p, q$ in $CH(Q)$
 \end{itemize}
 \end{frame}
 
+\begin{frame} \frametitle{Baseline Algorithm}
+  \begin{center}
+    \includegraphics[width=6cm]{convex_hull_line.jpg}
+  \end{center}
+\end{frame}
+  
 \begin{frame} \frametitle{Baseline Pseudocode}
   {\small
 \begin{algorithmic}[1]
@@ -110,12 +119,22 @@ $\Longrightarrow \Theta(n^3)$ time
 \begin{itemize}
   \item greedy pattern, reduction-to-sorting
   \item \textbf{Geometric property}: when touring a CH in counter-clockwise order, we
-    \textbf{only make left turns} \textbf{(sketch)}
-  \item right turn $=$ exiting a concavity, middle point not in hull \textbf{(sketch)}
+    \textbf{only make left turns}
+  \item right turn $=$ exiting a concavity, middle point not in hull
   \item $\therefore$ sweep counter-clockwise, keep points that participate in left
-    turns, drop points in the middle of right turns \textbf{(sketch)}
+    turns, drop points in the middle of right turns 
   \item alternative kind of line sweep: rotating the line (not left-to-right)
 \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Graham Scan Idea}
+  \begin{center}
+    \includegraphics[width=4cm]{convex_hull_left_turns.jpg}
+    \hspace{.5cm}
+    \includegraphics[height=4cm]{convex_hull_concavity.jpg}
+    \hspace{.5cm}
+    \includegraphics[width=3cm]{convex_hull_input.jpg}
+  \end{center}
 \end{frame}
 
 \begin{frame} \frametitle{Graham Scan Greedy Heuristic}
@@ -177,15 +196,21 @@ $\Longrightarrow \Theta(n^3)$ time
 \begin{frame} \frametitle{Jarvis March}
 \textbf{Alternative greedy heuristic}: moving around the hull counter-clockwise,
  each step from one vertex to the next is
- \emph{the input point whose angle is shallowest.}  \textbf{(sketch)} \stanza
+ \emph{the input point whose angle is shallowest.} \stanza
 
  $\Rightarrow$ we can start from a $CH$ point, then incrementally find one more $CH$
  point until we're done. \stanza
 
  Called ``gift wrapping'' b/c this resembles carefully wrapping up an irregular
- object in paper or foil. \textbf{(sketch)} \stanza
+ object in paper or foil. \stanza 
 
  (Jarvis march is sometimes called the \emph{gift-wrapping algorithm.})
+\end{frame}
+
+\begin{frame} \frametitle{Jarvis March}
+  \begin{center}
+    \includegraphics[width=4cm]{convex_hull_input.jpg}
+  \end{center}
 \end{frame}
 
 \begin{frame} \frametitle{Jarvis March Pseudocode}
@@ -242,11 +267,16 @@ What is the relationship between $n$ and $h$?
 
   For fixed $n,$
   \begin{itemize}
-    \item minimum $h = 3$ when all input points are enclosed in a triangle \textbf{(sketch)}
-    \item maximum $h = n$ when all input points happen to be convex hull vertices \textbf{(sketch)}
+    \item minimum $h = 3$ when all input points are enclosed in a triangle
+    \item maximum $h = n$ when all input points happen to be convex hull vertices
+    \item $ 3 \leq h \leq n $
   \end{itemize}
 
-  \[ 3 \leq h \leq n \]
+  \begin{center}
+    \includegraphics[width=2cm]{convex_hull_smallest_output.jpg}
+    \hspace{.5cm}
+    \includegraphics[width=2cm]{convex_hull_largest_output.jpg}
+  \end{center}
 
 \end{frame}
 
