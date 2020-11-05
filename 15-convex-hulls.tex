@@ -167,7 +167,7 @@ $\Longrightarrow \Theta(n^3)$ time
     \State $S.PUSH(p1)$
     \State $S.PUSH(p2)$
     \For { $i$ from $3$ through $m$ }
-      \While { $\angle p_i, S.TOP, S.BELOWTOP$ is non-left turn }
+      \While { $\angle S.BELOWTOP, S.TOP, p_i$ is non-left turn }
         \State $S.POP()$
       \EndWhile
       \State $S.PUSH(p_i)$
