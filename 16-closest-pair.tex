@@ -23,8 +23,8 @@
 
 \newcommand{\stanza}{ \\~\ }
 
-\title{15. Closest Pair Problem}
-\subtitle{CPSC 535 $\sim$ Fall 2019}
+\title{16. Closest Pair Problem}
+\subtitle{CPSC 535}
 \author{Kevin A. Wortman}
 \institute{ \includegraphics[height=2cm]{csuf-logo-cmyk} }
 \date{\includegraphics[height=14pt]{by} \\
@@ -40,23 +40,16 @@ This work is licensed under a
   \titlepage
 \end{frame}
 
-\begin{frame} \frametitle{Today's Agenda}
-\begin{enumerate}
-  \item return Midterm 2
-  \item Student Opinion Questionairres (SOQs)
-  \item closest pair problem \stanza
-\end{enumerate}
-(this presentation is shorter than usual)
-\end{frame}
-
 \begin{frame} \frametitle{Closest Pair Problem}
   \emph{closest pair problem} \\
-  \textbf{input}: set of $n \geq 2$ points $Q$ \\
+  \textbf{input}: set of $n \geq 2$ planar points $Q$ \\
   \textbf{output}: two points $p, q \in Q$ minimizing $d(p, q)$ \stanza
 
   $d(p, q)$ is standard Euclidean distance
   \[ d( (x_p, y_p), (x_q, y_q) ) \equiv \sqrt{(x_p-x_q)^2+(y_p-y_q)^2} \]
+\end{frame}
 
+\begin{frame} \frametitle{Closest Pair Applications}
   Applications
   \begin{itemize}
     \item find two objects at greatest risk of collision
