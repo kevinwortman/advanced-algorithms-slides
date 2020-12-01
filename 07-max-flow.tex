@@ -386,7 +386,7 @@ Edmonds-Karp Algorithm is
   {\footnotesize
   \begin{algorithmic}[1]
     \Function{EDMONDS-KARP}{$G=(V, E), s, t$}
-    \State initialize each edge's capacity to 0
+    \State initialize each edge's flow to 0
     \Repeat
       \For{ $k = 2, 3, \ldots, |V|$ }
         \If { $\exists \text{ augmenting path } p \text { of length k }$ }
