@@ -225,7 +225,7 @@ Suggested process to design a dynamic programming algorithm:
       \State $q = -\infty$
       \For { $i = 1 $ to $j$ }
       \Comment{only references initialized elements}
-        \State $q = \max(q, p[i] + r[j-1])$ 
+        \State $q = \max(q, p[i] + r[j-i])$ 
       \EndFor
       \State $r[j] = q$
       \EndFor
