@@ -148,8 +148,9 @@ $\Longrightarrow \Theta(n^3)$ time
     \end{itemize}
   \item inductive case:
     \begin{itemize}
-      \item examine next input point $p_i$, top of stack $t$, next-lowest stack point $r$
-      \item if $\angle r t p_i$ is not a left turn $\implies t$ not on hull
+      \item examine three points: 1) next input point $p_i,$ 2) top of
+        stack $t,$ and 3) element just below the top $r$
+        \item if $\angle r t p_i$ is not a left turn $\implies t$ not on hull
     \end{itemize}
   \item Note: need stack data structure w/ accessor to top \textbf{two} elements
   \end{itemize}
