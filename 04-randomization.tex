@@ -15,12 +15,10 @@
 \newcommand{\stanza}{ \\~\ }
 
 \title{04. Randomization}
-\subtitle{CPSC 535 $\sim$ Fall 2019}
+\subtitle{CPSC 535}
 \author{Kevin A. Wortman}
 \institute{ \includegraphics[height=2cm]{csuf-logo-cmyk} }
-\date{September 14, 2020 \stanza
-
-\includegraphics[height=14pt]{by} \\
+\date{\includegraphics[height=14pt]{by} \\
 
 {\tiny
 This work is licensed under a
@@ -231,7 +229,7 @@ worst case $\Theta(n)$ times
 \begin{frame} \frametitle{Balls and Bins}
   \begin{center}
     \includegraphics[height=1.5in]{balls-bins.jpg}
-  \end{center}  
+  \end{center}
 
 Story to help think about probabilities:
 \begin{itemize}
@@ -384,7 +382,7 @@ Review hash tables
 \begin{frame} \frametitle{Hash Table Operations}
   \begin{itemize}
   \item HASH-TABLE-CREATE($T$): initialize $T$ as an empty hash table
-    \item HASH-TABLE-INSERT($T, x$): insert key $x.key$ associated with value $x$ 
+    \item HASH-TABLE-INSERT($T, x$): insert key $x.key$ associated with value $x$
     \item HASH-TABLE-SEARCH($T, k$): return the element $x$ with $x.key=k$, or NIL if no such element exists
     \item HASH-TABLE-DELETE($T, x$): remove $x$ and $x.key$ from $T$; no effect if they were absent
   \end{itemize}
