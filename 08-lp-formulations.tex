@@ -23,7 +23,7 @@
 
 \newcommand{\stanza}{ \\~\ }
 
-\title{12. Linear Programming Formulations}
+\title{08. Linear Programming Formulations}
 \subtitle{CPSC 535}
 \author{Kevin A. Wortman}
 \institute{ \includegraphics[height=2cm]{csuf-logo-cmyk} }
@@ -396,7 +396,7 @@ subject to
         \item i.e. identify edges definining the shortest path and $d_t$
         \item find the constraints where
         \[ d_v = d_x + w(x, v) \]
-        (not $\leq$); these vertices $x, v$ are part of the shortest path
+        (not $<$); these vertices $x, v$ are part of the shortest path
         \item use BFS or DFS, limited to on-path vertices, to order these vertices
       \end{itemize}
     \end{itemize}
