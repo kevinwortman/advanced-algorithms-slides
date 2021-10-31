@@ -151,7 +151,7 @@ The idea:
       \item constraints: $a_{i,j} x_j \Rightarrow a_{i,j} (x_j'-x_j'') = a_{i, j} x_j' - a_{i, j} x_j''$
     \end{itemize}
     \item after solving standard LP, to complete general LP evaluate $x_j=x_j'-x_j''$
-    \item $n, m$ at most double $\Rightarrow$ still $\Theta(nm)$ space
+    \item $n$ at most doubles, $m$ unchanged $\Rightarrow$ still $\Theta(nm)$ space
     \item $O(nm)$ time with care (do all substitutions in one pass)
   \end{itemize}
 \end{frame}
