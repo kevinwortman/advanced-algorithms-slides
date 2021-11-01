@@ -125,6 +125,133 @@ This work is licensed under a
   \end{itemize}
 \end{frame}
 
+\begin{frame} \frametitle{Vertex Cover}
+  \emph{vertex cover problem} \\
+  \textbf{input:} an undirected graph $G=(V, E)$ \\
+  \textbf{output:} a vertex cover $C$ of minimum size
+  \stanza
+
+  \emph{vertex cover:} a subset $C \subseteq V$ such that, if $(u, v) \in E,$ then $u \in C$ or $v \in C$ (or both)
+ 
+  \begin{center}
+    \includegraphics[height=1in]{vertex-cover.png} \\
+    {\tiny Image credit: \url{https://commons.wikimedia.org/wiki/File:Minimum-vertex-cover.svg} }
+  \end{center}
+
+\end{frame}
+
+\begin{frame} \frametitle{Formulating Vertex Cover}
+  \textbf{Recall:}
+  \begin{itemize}
+    \item vertex cover is $NP$-complete
+    \item if vertex cover can be formulated as a MIP problem, then MIP is $NP$-hard
+    \stanza
+  \end{itemize}
+
+  ``Rules'' to represent:
+    \begin{itemize}
+      \item each vertex is either in $C$ or not
+      \item each edge has at least one end in $C$
+      \item minimize $|C|$
+    \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Formulating Vertex Cover}
+\textbf{Variables:} for each $v \in V$, create an integer variable $v_c$ such that
+\[ x_v = 1 \Leftrightarrow v \in C \]
+
+\textbf{Objective:} minimize
+\[ \sum_{v \in V} x_v \]
+
+\textbf{Constraints:}
+\begin{tabular}{lll}
+  $0 \leq x_v \leq 1$ & $\forall v \in V$ & (0 or 1 indicator) \\
+  $x_u + x_v \geq 1$ & $\forall (u, v) \in E$ & (each edge is covered)
+\end{tabular}
+
+\end{frame}
+
+\begin{frame} \frametitle{Vertex Cover Outcomes}
+  \begin{itemize}
+    \item \textbf{Infeasible:}
+      \begin{itemize}
+      \item never happens
+      \item $\exists$ a solution: setting all $x_v=1$ satisfies all constraints
+      \end{itemize}
+    \item \textbf{Unbounded:}
+    \begin{itemize}
+      \item never happens
+      \item objective is bounded: observe that $\sum_{v \in V} x_v \leq |V|,$ and $|V|$ is a finite number
+    \end{itemize}
+    \item \textbf{Solution:} Construct $C$ as
+      \[ C = \{ v \,|\, v \in V \text{ and } x_v=1 \} \]
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame} \frametitle{TSP}
+    \emph{traveling salesperson problem (TSP)} \\
+    \textbf{input:} a complete, weighted, undirected graph $G=(V, E)$ \\
+    \textbf{output:} a tour $T$ of minimum weight
+    \stanza
+
+    \emph{tour:} a sequence of vertices $\langle t_1, \ldots, t_n \rangle$
+    that visits each vertex exactly once \emph{Hamiltonian cycle}
+    \stanza
+  
+    Define: \\
+    \[ n \equiv |V| \]
+    \[ w(u, v) \equiv \text{ the weight of the edge from } u \text{ to } v \]
+  \end{frame}
+  
+  \begin{frame} \frametitle{Formulating TSP}
+    ``Rules'' to represent:
+      \begin{itemize}
+        \item each vertex is visited exactly once
+        \item minimize total weight
+      \end{itemize}
+  \end{frame}
+  
+  \begin{frame} \frametitle{Formulating TSP}
+  \textbf{Variables:} for each $u \in V$ and $v \in V,$ create an integer variable $x_{u, v}$ such that
+  \[ x_{u,v} = 1 \Leftrightarrow \text{ the tour steps from } u \text{ to } v \]
+  
+  \textbf{Objective:} minimize
+  \[ \sum_{u, v \in V} w(u, v) \cdot x_{u, v} \]
+  
+  \textbf{Constraints:}
+  \begin{tabular}{lll}
+    $0 \leq x_{u, v} \leq 1$ & $\forall u, v \in V$ & (0 or 1 indicator) \\
+    $\sum_{u \in V} x_{u, v} = 1 $ & $\forall v \in V$ & (each vertex is entered once) \\
+    $\sum_{v \in V} x_{u, v} = 1 $ & $\forall u \in V$ & (each vertex is exited once) \\
+    $\sum_{u, v \in V} x_{u, v} = n+1$ & & (tour has $n+1$ edges) 
+  \end{tabular}
+  
+  \end{frame}
+  
+  \begin{frame} \frametitle{TSP Outcomes}
+    \begin{itemize}
+      \item \textbf{Infeasible:}
+        \begin{itemize}
+        \item never happens
+        \item $\exists$ a solution: $G$ is complete, so certainly contains at least one tour
+        \end{itemize}
+      \item \textbf{Unbounded:}
+      \begin{itemize}
+        \item never happens
+        \item objective is bounded: observe that $\sum_{u, v \in V} w(u, v) \cdot x_{u, v}$
+          is a sum of a finite set of finite numbers, so is finite
+      \end{itemize}
+      \item \textbf{Solution:} Construct $T=\langle t_1, \ldots, t_n \rangle$ as
+       \[
+        t_i =
+        \begin{cases}
+          \text{an arbitrary } v \in V & i=1 \\
+          v \text{ such that } x_{t_{i-1}, v}=1 & i>1 
+        \end{cases}
+       \]
+      \end{itemize}
+    \end{frame}
+  
 \begin{frame} \frametitle{Formulating Sudoku}
   \textbf{Sudoku:} input is a $9 x 9$ grid, some cells are integers $\{1, \ldots, 9\},$ others are blank
 
@@ -248,6 +375,9 @@ Add constraints:
 \end{frame}
 
 \begin{frame} \frametitle{References}
+  \url{https://en.wikipedia.org/wiki/Integer_programming}
+  \stanza
+  
   \url{http://profs.sci.univr.it/~rrizzi/classes/PLS2015/sudoku/doc/497_Olszowy_Wiktor_Sudoku.pdf}
   \stanza
 
