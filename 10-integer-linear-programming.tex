@@ -181,7 +181,9 @@ This work is licensed under a
     \item \textbf{Unbounded:}
     \begin{itemize}
       \item never happens
-      \item objective is bounded: observe that $\sum_{v \in V} x_v \leq |V|,$ and $|V|$ is a finite number
+      \item objective is bounded: the objective function is to minimize 
+        \[ \sum_{v \in V} x_v; \]
+        since every $x_v \geq 0$, the minimum objective value is zero, which is finite, so the program is never unbounded
     \end{itemize}
     \item \textbf{Solution:} Construct $C$ as
       \[ C = \{ v \,|\, v \in V \text{ and } x_v=1 \} \]
@@ -223,7 +225,7 @@ This work is licensed under a
     $0 \leq x_{u, v} \leq 1$ & $\forall u, v \in V$ & (0 or 1 indicator) \\
     $\sum_{u \in V} x_{u, v} = 1 $ & $\forall v \in V$ & (each vertex is entered once) \\
     $\sum_{v \in V} x_{u, v} = 1 $ & $\forall u \in V$ & (each vertex is exited once) \\
-    $\sum_{u, v \in V} x_{u, v} = n+1$ & & (tour has $n+1$ edges) 
+    $\sum_{u, v \in V} x_{u, v} = n$ & & (tour has $n$ edges) 
   \end{tabular}
   
   \end{frame}
@@ -239,7 +241,7 @@ This work is licensed under a
       \begin{itemize}
         \item never happens
         \item objective is bounded: observe that $\sum_{u, v \in V} w(u, v) \cdot x_{u, v}$
-          is a sum of a finite set of finite numbers, so is finite
+          is minimized when every $x_{u,v}$ is zero; so the minimum objective value is zero; which is finite.
       \end{itemize}
       \item \textbf{Solution:} Construct $T=\langle t_1, \ldots, t_n \rangle$ as
        \[
