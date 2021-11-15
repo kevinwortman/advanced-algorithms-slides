@@ -173,7 +173,7 @@ This work is licensed under a
     \end{itemize}
     \item \textbf{bottom-up}
     \begin{itemize}
-      \item clean-sheed redesign
+      \item clean-sheet redesign
       \item nested loops explicitly solve problems in sorted order
       \item base case, larger subproblems, \dots, full problem
       \item store subproblems in array (not hash table)
@@ -243,7 +243,7 @@ Ways of cutting $\Box\Box\Box\Box$:
   \item example of an \textbf{incorrect} greedy heuristic: find length $i$ with highest unit price $p_i/i$, then make $\lceil n/i \rceil$ pieces of length $i$
   \item fails when the leftover $n-\lceil n/i \rceil$ inches could be used better
   \item Recall: the designer of a greedy algorithm has the burden of \textbf{proving} their heuristic is correct
-  \item \textbf{Tip:} if you are tasked with designing a dynamic programming algorithm, don't waste time with greedy algorithms
+  \item \textbf{Tip:} if you are told to design a dynamic programming algorithm, don't waste time with greedy algorithms
 \end{itemize}
 \end{frame}
 
@@ -252,7 +252,7 @@ Ways of cutting $\Box\Box\Box\Box$:
   \item Identify the problem's \textbf{solution} and \textbf{value}, and note which is our \textbf{goal}.
   \stanza
 \end{enumerate}
-\emph{rod cutting problem} \\
+\emph{rod cutting value problem} \\
 \textbf{input:} an array of non-negative prices $P=\langle p_1, \ldots, p_n \rangle$ \\
 \textbf{output:} the maximum total price that can be achieved by cutting an $n$-inch rod into pieces
 \begin{itemize}
@@ -291,13 +291,13 @@ Ways of cutting $\Box\Box\Box\Box$:
   \end{enumerate}
 
   \begin{algorithmic}[1]
-    \Function{CUT-ROD-DC}{P[1..n]}
+    \Function{CUT-ROD-DC}{P, n}
     \If{ n ==0 }
       \State \Return{ 0 }
     \EndIf
     \State $q = -\infty$
     \For {$i$ from 1 to $n$}
-      \State $q = \max(q, P[i] + \text{CUT-ROD-DC(p, n-i)})$
+      \State $q = \max(q, P[i] + \text{CUT-ROD-DC(P, n-i)})$
     \EndFor
     \State \Return{$q$}
     \EndFunction
@@ -345,12 +345,12 @@ Ways of cutting $\Box\Box\Box\Box$:
 \begin{frame} \frametitle{Rod Cutting Step 4.a}
   {\scriptsize
   \begin{algorithmic}[1]
-    \Function{CUT-ROD-MEMOIZED}{P[1..n]}
+    \Function{CUT-ROD-MEMOIZED}{P, n}
     \State HASH-TABLE-CREATE($T$)
-    \State \Return{CUT-ROD-MEMO-REC($T, P$)}
+    \State \Return{CUT-ROD-MEMO-REC($T, P, n$)}
     \EndFunction
-    \Function{CUT-ROD-MEMO-REC}{$T, P[1..n]$}
-    \State $q = $ HASH-TABLE-SEARCH($T, i$)
+    \Function{CUT-ROD-MEMO-REC}{$T, P, n$}
+    \State $q = $ HASH-TABLE-SEARCH($T, n$)
     \If{ $q \ne$ NIL }
       \State \Return{ $q$ }
     \EndIf
@@ -359,7 +359,7 @@ Ways of cutting $\Box\Box\Box\Box$:
     \Else
       \State $q=-\infty$
       \For {$i$ from 1 to $n$}
-        \State $q = \max(q, P[i] + \text{CUT-ROD-MEMO-REC(T, P[1..n-i])})$
+        \State $q = \max(q, P[i] + \text{CUT-ROD-MEMO-REC(T, P, n - i)})$
       \EndFor
     \EndIf
     \State $q.key = n$
@@ -436,7 +436,7 @@ Ways of cutting $\Box\Box\Box\Box$:
     \textbf{Factor} & \textbf{Naive} & \textbf{TDDP} & \textbf{BUDP} \\ \hline
     Ease of design & easiest & difficult & very difficult \\
     Ease of analysis & medium & difficult & easy \\
-    Time efficiency & $O(2^{n-1})$ & $\Theta(n^2)$ & $\Theta(n^2)$ w/ fast const. \\
+    Time efficiency & $O(2^{n-1})$ & $\Theta(n^2)$ exp. & $\Theta(n^2)$ w/ fast const. \\
     Space overhead & n/a & $O(n)$ hashtable & $O(n)$ array \\
   \end{tabular}
 \end{center}
