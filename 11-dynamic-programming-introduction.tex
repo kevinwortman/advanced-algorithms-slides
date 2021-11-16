@@ -19,6 +19,9 @@
 
 \newcommand{\stanza}{ \\~\ }
 
+\newcommand{\naive}{na\"{i}ve~}
+\newcommand{\Naive}{Na\"{i}ve~}
+
 \title{11. Dynamic Programming Introduction}
 \subtitle{CPSC 535}
 \author{Kevin A. Wortman}
@@ -50,7 +53,7 @@ This work is licensed under a
   \begin{itemize}
     \item dynamic programming only applies to problems with \emph{overlapping subproblems}
     \item rare
-    \item huge speedup over naive algorithms for such problems
+    \item huge speedup over \naive algorithms for such problems
   \end{itemize}
 \end{itemize}
 \end{frame}
@@ -149,7 +152,7 @@ This work is licensed under a
     \item dynamic programming works on a problem where\dots
     \begin{itemize}
       \item a solution has a \textbf{recursive structure}
-      \item so we \emph{could} design a naive divide-and-conquer algorithm
+      \item so we \emph{could} design a \naive divide-and-conquer algorithm
       \item \textbf{but,} subproblems \textbf{overlap}
       \item so divide-and-conquer would do the same work repeatedly
       \item would be slow (often exponential time)
@@ -433,7 +436,7 @@ Ways of cutting $\Box\Box\Box\Box$:
 \begin{frame} \frametitle{Trade-Offs}
 \begin{center}
   \begin{tabular}{llll}
-    \textbf{Factor} & \textbf{Naive} & \textbf{TDDP} & \textbf{BUDP} \\ \hline
+    \textbf{Factor} & \textbf{\Naive} & \textbf{TDDP} & \textbf{BUDP} \\ \hline
     Ease of design & easiest & difficult & very difficult \\
     Ease of analysis & medium & difficult & easy \\
     Time efficiency & $O(2^{n-1})$ & $\Theta(n^2)$ exp. & $\Theta(n^2)$ w/ fast const. \\
