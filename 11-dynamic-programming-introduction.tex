@@ -402,7 +402,7 @@ Ways of cutting $\Box\Box\Box\Box$:
     \State $R[0] = 0$
     \For{$j$ from 1 to $n$}
       \State $q=-\infty$
-      \For{$i$ from 1 to $n$}
+      \For{$i$ from 1 to $j$}
         \State{$q = \max(q, P[i] + R[j-i])$}
       \EndFor
       \State $R[j] = q$
@@ -546,7 +546,7 @@ Ways of cutting $\Box\Box\Box\Box$:
     \State $R[0] = 0$
     \For{$j$ from 1 to $n$}
       \State $q=-\infty$
-      \For{$i$ from 1 to $n$}
+      \For{$i$ from 1 to $j$}
         \If{ $q < (P[i] + R[j-1])$ }
           \State{$q = P[i] + R[j-i]$}
           \State{$S[j] = i$}
