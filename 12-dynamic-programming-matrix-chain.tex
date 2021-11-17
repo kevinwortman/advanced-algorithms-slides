@@ -155,14 +155,14 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
 
 \begin{frame} \frametitle{Matrix Chain Multiplication Problem}
   \emph{matrix chain multiplication problem} \\
-  \textbf{input:} a sequence $\langle A_1, A_1, \ldots, A_n \rangle$ of $n>0$ compatible matrices,
+  \textbf{input:} a sequence $\langle A_1, A_2, \ldots, A_n \rangle$ of $n>0$ compatible matrices,
     and sequence $p=\langle p_0, p_1, \ldots, p_n \rangle$ of integers, where
     matrix $A_i$ has $p_{i-1}$ rows and $p_i$ columns \\
   \textbf{output:} a parenthesization of $A_1 A_2 \ldots A_n$ that minimizes scalar multiplications
   \stanza
 
   \emph{matrix chain multiplication value problem} \\
-  \textbf{input:} a sequence $\langle A_1, A_1, \ldots, A_n \rangle$ of $n>0$ compatible matrices,
+  \textbf{input:} a sequence $\langle A_1, A_2, \ldots, A_n \rangle$ of $n>0$ compatible matrices,
     and sequence $p=\langle p_0, p_1, \ldots, p_n \rangle$ of integers, where
     matrix $A_i$ has $p_{i-1}$ rows and $p_i$ columns \\
   \textbf{output:} the minimum number of scalar multiplies necessary to multiply $A_1 A_2 \ldots A_n$ 
@@ -188,7 +188,7 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
   \stanza
 \end{enumerate}
 \emph{matrix chain multiplication value problem} \\
-\textbf{input:} a sequence $\langle A_1, A_1, \ldots, A_n \rangle$ of $n>0$ compatible matrices,
+\textbf{input:} a sequence $\langle A_1, A_2, \ldots, A_n \rangle$ of $n>0$ compatible matrices,
   and sequence $p=\langle p_0, p_1, \ldots, p_n \rangle$ of integers, where
   matrix $A_i$ has $p_{i-1}$ rows and $p_i$ columns \\
 \textbf{output:} the minimum number of scalar multiplies necessary to multiply $A_1 A_2 \ldots A_n$ 
