@@ -346,7 +346,7 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
         \For{$k$ from $i$ to $j-1$}
           \State $q = \min(q, m[i][k] + m[k+1][\,j] + p[i] \times p[k] \times p[\,j])$
         \EndFor
-        \State $m[i][\,j][k] = q$
+        \State $m[i][\,j] = q$
       \EndFor
     \EndFor
     \State \Return $m[1, n]$
@@ -362,5 +362,84 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
     \item bottom-up algorithm: $\Theta(n^3)$ time with faster constant factors
   \end{itemize}
 \end{frame}
+
+\begin{frame} \frametitle{Matrix Chain Multiplication Step 5}
+  \begin{enumerate}
+    \setcounter{enumi}{4}
+    \item (if goal is a solution algo.) Design a dynamic programming algorithm that computes an \textbf{optimal solution}.
+    \stanza
+  \end{enumerate}
+
+  \emph{matrix chain multiplication value problem} \\
+  \textbf{input:} a sequence $\langle A_1, A_2, \ldots, A_n \rangle$ of $n>0$ compatible matrices,
+    and sequence $p=\langle p_0, p_1, \ldots, p_n \rangle$ of integers, where
+    matrix $A_i$ has $p_{i-1}$ rows and $p_i$ columns \\
+  \textbf{output:} the minimum number of scalar multiplies necessary to multiply $A_1 A_2 \ldots A_n$ 
+  \stanza
+
+  \emph{matrix chain multiplication problem} \\
+  \textbf{input:} (same) \\
+  \textbf{output:} a parenthesization of $A_1 A_2 \ldots A_n$ that minimizes scalar multiplications
+
+\end{frame}
+
+\begin{frame} \frametitle{Matrix Chain Multiplication Step 5}
+  \begin{enumerate}
+    \setcounter{enumi}{4}
+    \item (if goal is a solution algo.) Design a dynamic programming algorithm that computes an \textbf{optimal solution}.
+    \stanza
+  \end{enumerate}
+
+  \begin{itemize}
+    \item \textbf{idea:} for each $(i, j),$ record which $k$ defines the minimum $m[i][\, j]$
+    \item happens inside the inner-most $k$ loop
+    \item define
+      \[ s[i][\, j] = \text{ the index } k \text{ that minimizes } r_{i, k} + r_{k+1, \, j} + p_i p_k p_j  \]
+    \item rewrite $\min(q, \ldots)$ statement as an \textbf{if} so we can update $s[i][\, j]$
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Matrix Chain Multiplication Step 5}
+  {\scriptsize
+  \begin{algorithmic}[1]
+    \Function{MATRIX-CHAIN-SOLUTION}{p[0..n]}
+    \State Create arrays $m[1..n][1..n]$ and $s[1..n][1..n]$
+    \For{$i$ from 1 to $n$}
+      \State $m[i][i] = 0$ \Comment{base case, length=1}
+    \EndFor
+    \For{$\ell$ from 2 to $n$} \Comment{$\ell$ = general-case length}
+      \For{$i$ from $1$ to $(n-\ell+1)$}
+        \State $j = i + \ell - 1$
+        \State $q=\infty$
+        \For{$k$ from $i$ to $j-1$}
+          \State $q' = m[i][k] + m[k+1][\,j] + p[i] \times p[k] \times p[\,j]$
+          \If{ $q' < q$ }
+            \State $q = q'$
+            \State $s[i][\, j] = k$
+          \EndIf
+        \EndFor
+        \State $m[i][\,j] = q$
+      \EndFor
+    \EndFor
+    \State \Return $\text{MC-BTRACK}(s, 1, n)$
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
+\begin{frame} \frametitle{Matrix Chain Multiplication Step 5}
+  {\scriptsize
+  \begin{algorithmic}[1]
+    \Function{MC-PARENS}{$s[1..n][1..n], i, j$}
+    \If{ $i==j$ } \Comment{single matrix}
+      \State \Return{ "$A_i$" }
+    \EndIf
+    \State $k = s[i][\, j]$
+    \State \Return{ $\text{"("} + \text{MC-BTRACK}(s, i, k) + \text{"()"} + \text{MC-BTRACK}(s, k, j) + \text{")"}$ }
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
 
 \end{document}
