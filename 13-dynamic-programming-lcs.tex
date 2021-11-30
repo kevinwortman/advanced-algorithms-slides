@@ -23,7 +23,7 @@
 
 \newcommand{\stanza}{ \\~\ }
 
-\title{20. Longest Common Subsequence}
+\title{13. Dynamic Programming for Longest Common Subsequence}
 \subtitle{CPSC 535}
 \author{Kevin A. Wortman}
 \institute{ \includegraphics[height=2cm]{csuf-logo-cmyk} }
@@ -40,23 +40,21 @@ This work is licensed under a
   \titlepage
 \end{frame}
 
-\begin{frame} \frametitle{1D vs 2D Dynamic Programming}
+\begin{frame} \frametitle{Big Idea: Alternative Kinds of Solutions}
   \begin{itemize}
-  \item Previous class: rod cutting
+  \item So far
     \begin{itemize}
-    \item Recursive solution:
-      $r_n = \max_{1 \leq i \leq n} (p_i + r_{n-i}) $
-    \item References a 1D sequence $r_j:$
-      $r_n = \ldots r_{n-i} \ldots$
-    \item $\therefore$ initializing $r[j]$ involves one non-nested loop; $\Theta(n)$
-    \item Call this \textbf{1D dynamic programming}
+      \item Step 2. Derive a \textbf{recurrence} for an optimal value.
+      \item Recall rod cutting:
+        \[ r_i = \max_{1 \leq i \leq n} (p_i + r_{n-i}) \]
+      \item Recall matrix chain multiplication:
+        \[ r_{i, j} = \min_{1 \leq k \leq \, j} r_{i, k} + r_{k+1, \, j} + p_i p_k p_j \]
     \end{itemize}
   \item Now: longest common subsequence (LCS)
     \begin{itemize}
-    \item Recursive solution: $c[i][j] = \ldots c[i-1,j-1]+1 \ldots c[i,j-1] \ldots c[i-1,j] \ldots$
-    \item References a 2D matrix $c[i][j]$
-    \item $\therefore$ initializing $c[i][j]$ involves two nested loops; $\Theta(n^2)$
-    \item Call this \textbf{2D dynamic programming}
+      \item not simply minimizing/maximizing one expression
+      \item instead, choose between \textbf{three alternatives}
+      \item \textbf{2D table}, like matrix chain
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -65,6 +63,9 @@ This work is licensed under a
   \begin{itemize}
   \item Let $X=\langle x_1, x_2, \ldots, x_m \rangle$ and $Y=\langle y_1, y_2, \ldots, y_n \rangle$ be two sequences
   \item Define \textbf{prefix} notation: $X_k = \langle x_1, \ldots, x_k \rangle; X_0 = \langle \rangle$
+  \begin{itemize}
+    \item if $X=\langle 2, 7, 8, 1, 7, 1, 2 \rangle$ then $X_3 = \langle 2, 7, 8 \rangle $
+  \end{itemize}
   \item Informally: a \textbf{subsequence} of $Y$ is a copy of $Y$ with some elements removed
   \item Formally: $X$ is a \textbf{subsequence} of $Y$ if there exists an increasing sequence of indices $\langle i_1, i_2, \ldots, i_k \rangle$ such that, for all $j \in [1, k], x_j = y_{i_j}$
   \item Example: for $X=\langle B, C, D, B\rangle$ and $Y=\langle A, B, C, B, D, A, B \rangle,$ $X$ is a subsequence of $Y$ with index sequence $\langle 2, 3, 5, 7 \rangle$
@@ -93,165 +94,296 @@ This work is licensed under a
   
 \end{frame}
 
-\begin{frame} \frametitle{Step 1: Characterize a baseline solution}
-  \begin{itemize}
-  \item \textbf{Idea:} brute force
-  \item Enumerate every subsequence $Z$ of $X$; check if each $Z$ is also a subsequence of $Y$; keep the maximum-length acceptable $Z$
-  \item $\Theta((m+n)2^m)$ time
-  \item Exponential; too slow
-  \end{itemize}
-\end{frame}    
+\begin{frame} \frametitle{Design Process}
+  \begin{enumerate}
+    \item Identify the problem's \textbf{solution} and \textbf{value}, and note which is our \textbf{goal}.
+    \item Derive a \textbf{recurrence} for an optimal value.
+    \item Design a divide-and-conquer algorithm that computes an \textbf{optimal value}.
+    \item Design a dynamic programming algorithm that computes an \textbf{optimal value}.
+    \begin{enumerate}
+      \item \textbf{top-down} alternative: add table base case (\textbf{memoization})
+      \item \textbf{bottom-up} alternative: rewrite to use bottom-up loops instead of recursion
+    \end{enumerate}
+    \item (if goal is a solution algo.) Design a dynamic programming algorithm that computes an \textbf{optimal solution}.
+  \end{enumerate}
+  \end{frame}
 
-\begin{frame} \frametitle{Step 1: Characterize a a solution recursively}
-  \begin{itemize}
-  \item Recall input: $X=\langle x_1, x_2, \ldots, x_m \rangle$ and $Y=\langle y_1, y_2, \ldots, y_n \rangle$
-  \item Recall \emph{prefix:} $X_i$ is first $i$ elements of $X$
-  \item We want to compute sequence $LCS(X, Y)$; need to define this recursively
-  \item \textbf{Idea:} If last symbols $x_m=y_n$ match, then extend a shorter common subsequence:
-    $LCS(X, Y) = LCS(X_{m-1}, Y_{n-1}) + \langle x_m \rangle$
-  \item Else ($x_m \ne y_n$), have to omit $x_m$ or $y_n$ (or both)
+  \begin{frame} \frametitle{Longest Common Subsequence Step 1}
+    \begin{enumerate}
+      \item Identify the problem's \textbf{solution} and \textbf{value}, and note which is our \textbf{goal}.
+      \stanza
+    \end{enumerate}
+
     \begin{itemize}
-    \item Omit $x_m$ (or both): $LCS(X, Y) = LCS(X_{m-1}, Y)$
-    \item Omit $y_n$ (or both): $LCS(X, Y) = LCS(X, Y_{n-1})$
-    \item Want \textbf{longest} so $LCS(X, Y) = \text{ longer of } LCS(X_{m-1}, Y) \text{ and } LCS(X, Y_{n-1})$
+      \item \textbf{solution:} a sequence e.g. $\langle B, C, B, A \rangle$
+      \item \textbf{value:} integer length of a sequence e.g. 4
+      \item eventual goal is solution
+      \item start with value
     \end{itemize}
-  \end{itemize}
-\end{frame}
+  \end{frame}
+  
+  \begin{frame} \frametitle{Longest Common Subsequence Step 2}
+    \begin{enumerate}
+      \setcounter{enumi}{1}
+      \item Derive a \textbf{recurrence} for an optimal value.
+      \stanza
+    \end{enumerate}
+    \begin{itemize}
+      \item Recall input: $X=\langle x_1, x_2, \ldots, x_m \rangle$ and $Y=\langle y_1, y_2, \ldots, y_n \rangle$
+      \item Recall \emph{prefix:} $X_i$ is first $i$ elements of $X$
+      \item We want to compute sequence $LCS(X, Y)$; need to define this recursively
+      \end{itemize}
 
-\begin{frame} \frametitle{Example}
+      \end{frame}
+      \begin{frame} \frametitle{Longest Common Subsequence Step 2}
+        \begin{enumerate}
+          \setcounter{enumi}{1}
+          \item Derive a \textbf{recurrence} for an optimal value.
+          \stanza
+        \end{enumerate}
+        \begin{itemize}
+          \item \textbf{Idea:} If last symbols $x_m=y_n$ match, then extend a shorter common subsequence:
+            $LCS(X, Y) = LCS(X_{m-1}, Y_{n-1}) + \langle x_m \rangle$
+          \item Else ($x_m \ne y_n$), have to omit $x_m$ or $y_n$ (or both)
+            \begin{itemize}
+            \item Omit $x_m$ (or both): $LCS(X, Y) = LCS(X_{m-1}, Y)$
+            \item Omit $y_n$ (or both): $LCS(X, Y) = LCS(X, Y_{n-1})$
+            \item Want \textbf{longest} so 
+            \[ LCS(X, Y) = \text{ longer of } LCS(X_{m-1}, Y) \text{ and } LCS(X, Y_{n-1})) \]
+              \end{itemize}
+          \end{itemize}
+    \end{frame}
+
+    \begin{frame} \frametitle{Example}
+      \begin{itemize}
+      \item Suppose $X=\langle A, B, A, D \rangle$ and $Y = \langle B, B, A, C, D \rangle$
+      \item Last symbols match,  $x_4=y_5=D,$ so
+        \begin{align*}
+          LCS(X,Y) &= LCS(X_{m-1}, Y_{n-1}) \\
+          &= LCS(\langle A, B, A \rangle, \langle B, B, A, C \rangle) + \langle D \rangle
+        \end{align*}
+      \item Now suppose $X=\langle A, B, A, C \rangle$ and $Y = \langle B, B, A, C, D \rangle$
+      \item Last symbols differ, $x_4=C$ but $y_5=D,$ so
+        \begin{align*}
+          LCS(X, Y) &= \text{ longer of } LCS(X_{m-1}, Y) \text{ and } LCS(X, Y_{n-1}) \\
+          &= \text{longer of } LCS(\langle A, B, A \rangle, Y) \text{ and } LCS(X, \langle B, B, A, C \rangle)
+        \end{align*}
+      \end{itemize}
+      
+    \end{frame}
+    
+  \begin{frame} \frametitle{Longest Common Subsequence Step 2}
+    \begin{enumerate}
+      \setcounter{enumi}{1}
+      \item Derive a \textbf{recurrence} for an optimal value.
+      \stanza
+    \end{enumerate}
+
+\[ LCS(X_m, Y_n) =
+    \begin{cases}
+      0 & m=0 \\
+      0 & n=0 \\
+      LCS(X_{m-1}, Y_{n-1}) + 1 & x_m=x_n \\
+      \max(LCS(X_{m-1}, Y_n), LCS(X_m, Y_{n-1})) & \text{otherwise}
+    \end{cases}
+  \]
+  \end{frame}
+
+  \begin{frame} \frametitle{Longest Common Subsequence Step 3}
+    \begin{enumerate}
+      \setcounter{enumi}{2}
+      \item Design a divide-and-conquer algorithm that computes an \textbf{optimal value}.
+      \stanza
+    \end{enumerate}
+  
+    {\scriptsize
+    \begin{algorithmic}[1]
+      \Function{LCS-DC}{$X[1..m], Y[1..n]$}
+      \If{ $m==0$ or $n==0$ }
+        \State \Return{ 0 }
+      \ElsIf{ $X[m] == Y[n]$ }
+        \State \Return{ $\text{LCS-DC}(X[1..m-1], Y[1..n-1]) + 1$ }
+      \Else
+        \State \Return{ $\max(\text{LCS-DC}(X[1..m-1], Y[1..n]), \text{LCS-DC}(X[1..m], Y[1..n-1])$ }
+      \EndIf
+      \EndFunction
+    \end{algorithmic}
+    }
+  \end{frame}
+    
+  \begin{frame} \frametitle{Matrix Chain Multiplication Step 4.a}
+    \begin{enumerate}
+      \setcounter{enumi}{3}
+      \item Design a dynamic programming algorithm that computes an \textbf{optimal value}.
+      \begin{enumerate}
+        \item \textbf{top-down} alternative: add table base case (\textbf{memoization})
+        \stanza
+      \end{enumerate}
+  \end{enumerate}
+
   \begin{itemize}
-  \item Suppose $X=\langle A, B, A, D \rangle$ and $Y = \langle B, B, A, C, D \rangle$
-  \item Last symbols match,  $x_4=y_5=D,$ so
-    \begin{align*}
-      LCS(X,Y) &= LCS(X_{m-1}, Y_{n-1}) \\
-      &= LCS(\langle A, B, A \rangle, \langle B, B, A, C \rangle) + \langle D \rangle
-    \end{align*}
-  \item Now suppose $X=\langle A, B, A, C \rangle$ and $Y$ is the same
-  \item Last symbols differ, $x_4=C$ but $y_5=D,$ so
-    \begin{align*}
-      LCS(X, Y) &= \text{ longer of } LCS(X_{m-1}, Y) \text{ and } LCS(X, Y_{n-1}) \\
-      &= \text{longer of } LCS(\langle A, B, A \rangle, Y) \text{ and } LCS(X, \langle B, B, A, C \rangle)
-    \end{align*}
+    \item Recall \textbf{memoization:} use a hash dictionary to make a ``memo'' of pre-calculated solutions
+    \item create hash table $T$
+    \item use pair $(m, n)$ as key in table $T,$ storing $LCS(X_m, Y_n)$
   \end{itemize}
   
-\end{frame}
+\end{frame}  
 
-\begin{frame} \frametitle{Step 2: Recursive solution}
+\begin{frame} \frametitle{Matrix Chain Multiplication Step 4.a}
+  {\scriptsize
   \begin{algorithmic}[1]
-    \Function{LCS-LENGTH}{$X[0..m], Y[0..n]$}
+    \Function{LCS-MEMOIZED}{$X[1..m], Y[1..n]$}
+    \State HASH-TABLE-CREATE($T$)
+    \State \Return{LCS-M($T, X, Y$)}
+    \EndFunction
+    \Function{LCS-M}{$T, X[1..m], Y[1..n]$}
+    \State $q = $ HASH-TABLE-SEARCH($T, (m, n)$)
+    \If{ $q \ne$ NIL }
+      \State \Return{ $q$ }
+    \EndIf
     \If{ $m==0$ or $n==0$ }
-      \State \Return 0
+      \State $q=0$
+    \ElsIf{ $X[m] == Y[n]$ }
+      \State $q = \text{LCS-M}(T, X[1..m-1], Y[1..m-1]) + 1$
+    \Else
+      \State $q = \max(\text{LCS-M}(X[1..m-1], Y[1..n]), \text{LCS-M}(X[1..m], Y[1..n-1])$
     \EndIf
-    \If{ $x_m == y_n$ }
-    \State \Return $LCS-LENGTH(X[0..m-1], Y[0..n-1]) + 1$
-    \EndIf
-    \State $a = LCS-LENGTH(X[0..m-1], Y)$
-    \State $b = LCS-LENGTH(X, Y[0..n-1])$
-    \State \Return $\max(a, b)$
-    \EndFunction
-  \end{algorithmic}  
-\end{frame}
-
-\begin{frame} \frametitle{Step 2: Recursive table definition}
-  \begin{itemize}
-  \item (Switching to \textbf{value} problem --- find length not subsequence)
-  \item Create table (2D array) $c[i][j]$ with invariant
-    \[ c[i][j] = \text{length of a LCS of } X_i \text{ and } Y_j \]
-  \item Base cases: if $i=0$ or $j=0$, $c[i][j]=0$
-  \item General cases:
-    \begin{itemize}
-    \item if $x_i=y_j$: $c[i][j] = c[i-1][j-1]+1$
-    \item else, $c[i][j] = \max(c[i][j-1], c[i-1][j])$
-    \end{itemize}
-  \end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Step 3: Pseudocode for \textbf{Bottom-Up} Dyn. Prog. Alg.}
-  \begin{algorithmic}[1]
-    \Function{LCS-LENGTH}{$X[0..m], Y[0..n]$}
-    \State Create new 2D array $c[0..m][0..n]$
-    \State \textbf{for} $i=0$ to $m:$ $c[i][0] = 0$
-    \State \textbf{for} $j=1$ to $n:$ $c[0][j] = 0$
-    \For { $i = 1 $ to $m$ }
-      \For { $j = 1 $ to $n$ }
-        \If{ $x_i == y_j$ }
-          \State $c[i][j] = c[i-1][j-1]+1$
-        \Else
-          \State $c[i][j] = \max(c[i][j-1], c[i-1][j])$
-        \EndIf
-      \EndFor  
-    \EndFor
-    \State \Return $c[m][n]$
-    \EndFunction
-  \end{algorithmic}
-\end{frame}
-
-\begin{frame} \frametitle{Analysis}
-  \begin{itemize}
-  \item 2D array $c: \Theta(mn)$ space
-  \item Base cases $j=0: \Theta(m)$ time
-  \item Base cases $i=0: \Theta(n)$ time
-  \item General cases: $\Theta(mn)$ time
-  \item Total: $\Theta(m+n+mn)=\Theta(mn)$ time
-  \item \textbf{Huge speedup:} $\Theta((m+n) 2^m) \longrightarrow \Theta(mn)$
-  \item Exponential $\longrightarrow$ polynomial
-  \end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Improving Space Complexity}
-  \begin{itemize}
-  \item \textbf{Observe:} in the general-case loop, the only row indices used are $i$ and $i-1$
-    \begin{itemize}
-    \item Either $c[i][j] = c[i-1][j-1]+1$
-    \item Or $c[i][j] = \max(c[i][j-1], c[i-1][j])$
-    \end{itemize}
-  \item $\therefore$ we only need two rows at a time
-    \begin{itemize}
-    \item 1) the current row $i$ we are initializing
-    \item 2) the previous row $i-1$
-    \end{itemize}
-  \item Keep a \textbf{window} of only two rows
-  \item This idea applies to many dynamic programming algorithms
-  \end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Space-Efficient Bottom-Up LCS}
-  {\small
-  \begin{algorithmic}[1]
-    \Function{LCS-LENGTH}{$X[0..m], Y[0..n]$}
-    \State Create arrays $prev[0..n]$ and $now[0..n]$, both filled with zeroes
-    \For { $i = 1 $ to $m$ }
-      \State swap($prev, now$)  
-      \For { $j = 1 $ to $n$ }
-        \If{ $x_i == y_j$ }
-          \State $now[j] = prev[j-1]+1$
-        \Else
-          \State $now[j] = \max(now[j-1], prev[j])$
-        \EndIf
-      \EndFor
-      \EndFor
-    \State \Return $now[n]$
+    \State $q.key = (m, n)$
+    \State HASH-TABLE-INSERT($q$)
+    \State \Return{$q$}
     \EndFunction
   \end{algorithmic}
   }
 \end{frame}
 
-\begin{frame} \frametitle{Space-Efficient Analysis}
+\begin{frame} \frametitle{Memoized Algorithm Analysis}
   \begin{itemize}
-  \item Space:
-    \begin{itemize}
-    \item Each array is $\Theta(n)$ space
-    \item Total $\Theta(n)$ space
-    \item (Better than $\Theta(mn)$)
-    \end{itemize}
-  \item Time:
-    \begin{itemize}
-    \item Initialize arrays: $\Theta(n)$
-    \item General case loops: $\Theta(mn)$ time
-    \item Total $\Theta(mn)$ time
-    \item (Same as previous version)
-    \end{itemize}
+    \item $T$ contains $\Theta(n^2)$ pairs $(m, n)$
+    \item each entry is inserted exactly once
+    \item in the general case, LCS-M takes $\Theta(1)$ expected time
+    \item $\Rightarrow$ LCS-MEMOIZED takes $\Theta(n^2)$ expected time
   \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Longest Common Subsequence Step 4.b}
+  \begin{enumerate}
+    \setcounter{enumi}{3}
+    \item Design a dynamic programming algorithm that computes an \textbf{optimal value}.
+    \begin{enumerate}
+      \item \textbf{top-down} alternative: add table base case (\textbf{memoization})
+      \item \textbf{bottom-up} alternative: rewrite to use bottom-up loops instead of recursion
+      \stanza
+    \end{enumerate}
+\end{enumerate}
+
+\begin{itemize}
+  \item create 2D array $c$ where $c[i][\, j] = LCS(X_i, Y_j)$
+  \item \textbf{bottom-up:} write an explicit \textbf{for} loop that computes and stores every general case
+  \item need to order loops so we never use an uninitialized element
+  \item $\therefore$ initialize all base cases before any general case
+\end{itemize}
+\end{frame}
+  
+\begin{frame} \frametitle{Longest Common Subsequence Step 4.b}
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{LCS-BU}{$X[1..m], Y[1..n]$}
+    \State Create array $c[0..m][0..n]$ \Comment{unusual index range}
+    \For{$i$ from 0 to $m$}
+      \State $c[i][0] = 0$
+    \EndFor
+    \For{$j$ from 1 to $n$} \Comment{only initialize $c[0][0]$ once}
+      \State $c[0][j] = 0$
+    \EndFor
+    \For{$i$ from 1 to $m$}
+      \For{$j$ from $1$ to $n$}
+        \If{ $X[i]==Y[j]$ }
+          \State $c[i][j] = c[i-1][j-1] + 1$
+        \Else
+          \State $c[i][j] = \max(c[i-1][j], c[i][j-1])$
+        \EndIf
+      \EndFor
+    \EndFor
+    \State \Return $c[m][n]$
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
+\begin{frame} \frametitle{Bottom-Up Analysis}
+  \begin{itemize}
+    \item LCS-BU is clearly $\Theta(n^2)$ time
+    \item (easy analysis)
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Longest Common Subsequence Step 5}
+  \begin{enumerate}
+    \setcounter{enumi}{4}
+    \item (if goal is a solution algo.) Design a dynamic programming algorithm that computes an \textbf{optimal solution}.
+    \stanza
+  \end{enumerate}
+
+  \begin{itemize}
+    \item \textbf{idea:} for each $(i, j),$ record which alternative sub-solution defines $c[i][\, j]:$
+      \begin{itemize}
+        \item $\nwarrow \equiv c[i-1][\, j-1]$
+        \item $\uparrow \equiv c[i-1][\, j]$
+        \item $\leftarrow \equiv c[i][\, j - 1]$
+      \end{itemize}
+    \item define
+      \[ b[i][\, j] \in \{ \nwarrow, \uparrow, \leftarrow \} \]
+    \item rewrite $\max(c[i-1][j], c[i][j-1])$ as \textbf{if}/\textbf{else} so we can update $b[i][\, j]$
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Longest Common Subsequence Step 5}
+  {\tiny
+  \begin{algorithmic}[1]
+    \Function{LCS-SOLUTION}{$X[1..m], Y[1..n]$}
+    \State Create arrays $c[0..m][0..n]$ and $b[1..m][1..n]$ \Comment{different index ranges}
+    \For{$i$ from 0 to $m$}
+      \State $c[i][0] = 0$
+    \EndFor
+    \For{$j$ from 1 to $n$} \Comment{only initialize $c[0][0]$ once}
+      \State $c[0][j] = 0$
+    \EndFor
+    \For{$i$ from 1 to $m$}
+      \For{$j$ from $1$ to $n$}
+        \If{ $X[i]==Y[j]$ }
+          \State $c[i][j] = c[i-1][\, j-1] + 1$
+          \State $b[i][j] = \nwarrow$
+        \ElsIf{ $c[i-1][j] \geq c[i][\, j-1]$ }
+          \State $c[i][j] = c[i-1][\, j]$
+          \State $b[i][j] = \uparrow$
+        \Else
+        \State $c[i][j] = c[i][\, j-1]$
+        \State $b[i][j] = \leftarrow$
+      \EndIf
+      \EndFor
+    \EndFor
+    \State \Return $\text{LCS-BTRACK}(b, X, i, j)$
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
+\begin{frame} \frametitle{Longest Common Subsequence Step 5}
+  {\small
+  \begin{algorithmic}[1]
+    \Function{LCS-BTRACK}{$b[1..m][1..n], X[1..m], i, j$}
+    \If{ $i==0$ or $j==0$ }
+      \State \Return{$\langle \rangle$} \Comment{empty sequence}
+    \EndIf
+    \If{ $b[i][j]==\nwarrow$ }
+      \State \Return{$\text{LCS-BTRACK}(b, X, i-1, j-1) + \langle x_i \rangle$} \Comment{append}
+    \ElsIf{ $b[i][j]==\uparrow$ }
+      \State \Return{$\text{LCS-BTRACK}(b, X, i-1, j)$}
+    \Else
+    \State \Return{$\text{LCS-BTRACK}(b, X, i, j-1)$}
+    \EndFunction
+  \end{algorithmic}
+  }
 \end{frame}
 
 \end{document}
