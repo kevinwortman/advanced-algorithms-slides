@@ -218,7 +218,7 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
       \item given $A_i A_{i+1} \ldots A_j$, split w/ parenthesis at index $k:$
         \[ A_i A_{i+1} \ldots A_j = (A_i A_{i+1} \ldots A_k) (A_{k+1} A_{k+2} \ldots A_j) \]
       \item try every option and keep the optimal one
-      \[ r_{i, j} = \min_{1 \leq k \leq \, j} r_{i, k} + r_{k+1, \, j} + p_i p_k p_j \]
+      \[ r_{i, j} = \min_{i \leq k \leq \, j} r_{i, k} + r_{k+1, \, j} + p_{i-1} p_k p_j \]
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -240,8 +240,8 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
       \State \Return{ 0 }
     \EndIf
     \State $q = \infty$
-    \For {$k$ from 1 to $j-1$}
-      \State $q = \min(q, \text{MC-DC}(p, i, k) + \text{MC-DC}(p, k+1, j) + p[i] \times p[k] \times p[\, j])$
+    \For {$k$ from $i$ to $j-1$}
+      \State $q = \min(q, \text{MC-DC}(p, i, k) + \text{MC-DC}(p, k+1, j) + p[i-1] \times p[k] \times p[\, j])$
     \EndFor
     \State \Return{$q$}
     \EndFunction
@@ -280,7 +280,7 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
   \begin{algorithmic}[1]
     \Function{MATRIX-CHAIN-VALUE-MEMOIZED}{$p[0..n]$}
     \State HASH-TABLE-CREATE($T$)
-    \State \Return{MC-M($T, p, 0, n$)}
+    \State \Return{MC-M($T, p, 1, n$)}
     \EndFunction
     \Function{MC-M}{$T, p[0..n], i, j$}
     \State $q = $ HASH-TABLE-SEARCH($T, (i, j)$)
@@ -291,8 +291,8 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
       \State $q=0$
     \Else
       \State $q = \infty$
-      \For {$k$ from 1 to $j-1$}
-        \State $q = \min(q, \text{MC-M}(p, i, k) + \text{MC-M}(p, k+1, j)+ p[i] \times p[k] \times p[\, j])$
+      \For {$k$ from $i$ to $j-1$}
+        \State $q = \min(q, \text{MC-M}(p, i, k) + \text{MC-M}(p, k+1, j)+ p[i-1] \times p[k] \times p[\, j])$
       \EndFor
     \EndIf
     \State $q.key = (i, j)$
@@ -332,7 +332,7 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
 \end{frame}
 
 \begin{frame} \frametitle{Matrix Chain Multiplication Step 4.b}
-  {\small
+  {\footnotesize
   \begin{algorithmic}[1]
     \Function{MATRIX-CHAIN-BU}{p[0..n]}
     \State Create array $m[1..n][1..n]$
@@ -344,7 +344,7 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
         \State $j = i + \ell - 1$
         \State $q=\infty$
         \For{$k$ from $i$ to $j-1$}
-          \State $q = \min(q, m[i][k] + m[k+1][\,j] + p[i] \times p[k] \times p[\,j])$
+          \State $q = \min(q, m[i][k] + m[k+1][\,j] + p[i-1] \times p[k] \times p[\,j])$
         \EndFor
         \State $m[i][\,j] = q$
       \EndFor
@@ -394,7 +394,7 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
     \item \textbf{idea:} for each $(i, j),$ record which $k$ defines the minimum $m[i][\, j]$
     \item happens inside the inner-most $k$ loop
     \item define
-      \[ s[i][\, j] = \text{ the index } k \text{ that minimizes } r_{i, k} + r_{k+1, \, j} + p_i p_k p_j  \]
+      \[ s[i][\, j] = \text{ the index } k \text{ that minimizes } r_{i, k} + r_{k+1, \, j} + p_{i-1} p_k p_j  \]
     \item rewrite $\min(q, \ldots)$ statement as an \textbf{if} so we can update $s[i][\, j]$
   \end{itemize}
 \end{frame}
@@ -412,7 +412,7 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
         \State $j = i + \ell - 1$
         \State $q=\infty$
         \For{$k$ from $i$ to $j-1$}
-          \State $q' = m[i][k] + m[k+1][\,j] + p[i] \times p[k] \times p[\,j]$
+          \State $q' = m[i][k] + m[k+1][\,j] + p[i-1] \times p[k] \times p[\,j]$
           \If{ $q' < q$ }
             \State $q = q'$
             \State $s[i][\, j] = k$
@@ -435,7 +435,7 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
       \State \Return{ "$A_i$" }
     \EndIf
     \State $k = s[i][\, j]$
-    \State \Return{ $\text{"("} + \text{MC-BTRACK}(s, i, k) + \text{"()"} + \text{MC-BTRACK}(s, k, j) + \text{")"}$ }
+    \State \Return{ $\text{"("} + \text{MC-BTRACK}(s, i, k) + \text{")("} + \text{MC-BTRACK}(s, k, j) + \text{")"}$ }
     \EndFunction
   \end{algorithmic}
   }

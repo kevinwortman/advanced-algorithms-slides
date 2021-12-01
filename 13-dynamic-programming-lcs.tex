@@ -48,7 +48,7 @@ This work is licensed under a
       \item Recall rod cutting:
         \[ r_i = \max_{1 \leq i \leq n} (p_i + r_{n-i}) \]
       \item Recall matrix chain multiplication:
-        \[ r_{i, j} = \min_{1 \leq k \leq \, j} r_{i, k} + r_{k+1, \, j} + p_i p_k p_j \]
+        \[ r_{i, j} = \min_{i \leq k \leq \, j} r_{i, k} + r_{k+1, \, j} + p_{i-1} p_k p_j \]
     \end{itemize}
   \item Now: longest common subsequence (LCS)
     \begin{itemize}
@@ -74,9 +74,9 @@ This work is licensed under a
 
 \begin{frame} \frametitle{Common Subsequence}
   \begin{itemize}
-  \item $Z$ is a \textbf{common subsequence} of $X$ and $Y$ if $Z$ is a subsequence of both $X$ and $Y$
+  \item $Z$ is a \textbf{common subsequence} of $X$ and $Y,$ if $Z$ is a subsequence $X$ and $Z$ is a subsequence of $Y$
   \item a \textbf{longest common subsequence} is a common subsequence of maximum length
-  \item Example: let $X=\langle A, B, C, B, D, A, B \rangle $ (same) and $Y=\langle B, D, C, A, B, A \rangle$ (different)
+  \item Example: let $X=\langle A, B, C, B, D, A, B \rangle $  and $Y=\langle B, D, C, A, B, A \rangle$ 
   \item $Z=\langle B, C, A \rangle$ is a common subsequence
   \item $Z=\langle B, C, B, A \rangle$ is a longest common subsequence
   \end{itemize}
@@ -84,14 +84,14 @@ This work is licensed under a
 
 \begin{frame} \frametitle{Longest Common Subsequence}
 
-  \emph{Longest Common Subsequence (LCS) value problem} \\
-  \textbf{input:} sequences $X=\langle x_1, x_2, \ldots, x_m \rangle$ and $Y=\langle y_1, y_2, \ldots, y_n \rangle$
-  \textbf{output:} the length of a longest common subsequence of $X$ and $Y$ \stanza
-
   \emph{Longest Common Subsequence (LCS) solution problem} \\
-  \textbf{input:} (same) \\
+  \textbf{input:} sequences $X=\langle x_1, x_2, \ldots, x_m \rangle$ and $Y=\langle y_1, y_2, \ldots, y_n \rangle$
   \textbf{output:} a longest common subsequence of $X$ and $Y$ \stanza
   
+  \emph{Longest Common Subsequence (LCS) value problem} \\
+  \textbf{input:} (same) \\
+  \textbf{output:} the length of a longest common subsequence of $X$ and $Y$ \stanza
+
 \end{frame}
 
 \begin{frame} \frametitle{Design Process}
@@ -131,7 +131,8 @@ This work is licensed under a
     \begin{itemize}
       \item Recall input: $X=\langle x_1, x_2, \ldots, x_m \rangle$ and $Y=\langle y_1, y_2, \ldots, y_n \rangle$
       \item Recall \emph{prefix:} $X_i$ is first $i$ elements of $X$
-      \item We want to compute sequence $LCS(X, Y)$; need to define this recursively
+      \item Define $LCS(X, Y) \equiv$ length of longest common subsequence of $X$ and $Y$
+      \item We need to define $LCS$ recursively
       \end{itemize}
 
       \end{frame}
@@ -143,33 +144,36 @@ This work is licensed under a
         \end{enumerate}
         \begin{itemize}
           \item \textbf{Idea:} If last symbols $x_m=y_n$ match, then extend a shorter common subsequence:
-            $LCS(X, Y) = LCS(X_{m-1}, Y_{n-1}) + \langle x_m \rangle$
-          \item Else ($x_m \ne y_n$), have to omit $x_m$ or $y_n$ (or both)
+            $LCS(X, Y) = LCS(X_{m-1}, Y_{n-1}) + 1$
+          \item Else ($x_m \ne y_n$), have to omit $x_m$ or $y_n$
             \begin{itemize}
-            \item Omit $x_m$ (or both): $LCS(X, Y) = LCS(X_{m-1}, Y)$
-            \item Omit $y_n$ (or both): $LCS(X, Y) = LCS(X, Y_{n-1})$
+            \item Omit $x_m$: $LCS(X, Y) = LCS(X_{m-1}, Y)$
+            \item Omit $y_n$: $LCS(X, Y) = LCS(X, Y_{n-1})$
             \item Want \textbf{longest} so 
-            \[ LCS(X, Y) = \text{ longer of } LCS(X_{m-1}, Y) \text{ and } LCS(X, Y_{n-1})) \]
+            \[ LCS(X, Y) = \max(LCS(X_{m-1}, Y), LCS(X, Y_{n-1})) \]
               \end{itemize}
           \end{itemize}
     \end{frame}
 
     \begin{frame} \frametitle{Example}
       \begin{itemize}
-      \item Suppose $X=\langle A, B, A, D \rangle$ and $Y = \langle B, B, A, C, D \rangle$
-      \item Last symbols match,  $x_4=y_5=D,$ so
-        \begin{align*}
-          LCS(X,Y) &= LCS(X_{m-1}, Y_{n-1}) \\
-          &= LCS(\langle A, B, A \rangle, \langle B, B, A, C \rangle) + \langle D \rangle
-        \end{align*}
-      \item Now suppose $X=\langle A, B, A, C \rangle$ and $Y = \langle B, B, A, C, D \rangle$
-      \item Last symbols differ, $x_4=C$ but $y_5=D,$ so
-        \begin{align*}
-          LCS(X, Y) &= \text{ longer of } LCS(X_{m-1}, Y) \text{ and } LCS(X, Y_{n-1}) \\
-          &= \text{longer of } LCS(\langle A, B, A \rangle, Y) \text{ and } LCS(X, \langle B, B, A, C \rangle)
-        \end{align*}
-      \end{itemize}
-      
+        \item Suppose $X=\langle A, B, A, D \rangle$ and $Y = \langle B, B, A, C, D \rangle$
+        \item Last symbols match,  $x_4=y_5=D,$ so
+          \begin{align*}
+            LCS(X,Y) &= LCS(X_{m-1}, Y_{n-1}) + 1 \\
+            &= LCS(\langle A, B, A \rangle, \langle B, B, A, C \rangle) + 1
+          \end{align*}
+        \item Now suppose $X=\langle A, B, A, D \rangle$ and $Y = \langle B, B, A, C, C \rangle$
+        \item Last symbols differ ($x_4=D$ but $y_5=C$), so
+          {\footnotesize
+          \begin{align*}
+            LCS(X,Y)
+            &= \max(LCS(X_{m-1}, Y_n), LCS(X_m, Y_{n-1})) \\
+            &= \max(\langle A, B, A \rangle, \langle B, B, A, C, C \rangle), LCS(\langle A, B, A, D \rangle, \langle B, B, A, C \rangle)) 
+          \end{align*}
+          }
+        \end{itemize}
+        
     \end{frame}
     
   \begin{frame} \frametitle{Longest Common Subsequence Step 2}
@@ -362,7 +366,7 @@ This work is licensed under a
       \EndIf
       \EndFor
     \EndFor
-    \State \Return $\text{LCS-BTRACK}(b, X, i, j)$
+    \State \Return $\text{LCS-BTRACK}(b, X, m, n)$
     \EndFunction
   \end{algorithmic}
   }
@@ -380,7 +384,8 @@ This work is licensed under a
     \ElsIf{ $b[i][j]==\uparrow$ }
       \State \Return{$\text{LCS-BTRACK}(b, X, i-1, j)$}
     \Else
-    \State \Return{$\text{LCS-BTRACK}(b, X, i, j-1)$}
+      \State \Return{$\text{LCS-BTRACK}(b, X, i, j-1)$}
+    \EndIf
     \EndFunction
   \end{algorithmic}
   }
