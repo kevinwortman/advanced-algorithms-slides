@@ -23,7 +23,7 @@
 
 \newcommand{\stanza}{ \\~\ }
 
-\title{17. Approximation and Vertex Cover}
+\title{14. Approximation and Vertex Cover}
 \subtitle{CPSC 535}
 \author{Kevin A. Wortman}
 \institute{ \includegraphics[height=2cm]{csuf-logo-cmyk} }
@@ -45,16 +45,20 @@ Sometimes we want to solve a problem, but there is an obstacle
 \begin{itemize}
   \item computational complexity: problem is $NP$-hard or undecidable
   \item ill-posed: don't know how to phrase problem as precise input/output statement
+  \stanza
 \end{itemize}
 
-These are insurmountable; progress not possible. \stanza
+These are insurmountable; progress is impossible.
+\end{frame}
 
-Sometimes we can \emph{negotiate} on the definition of the problem
+\begin{frame} \frametitle{Big Idea: Renegotiating Problems}
+  Sometimes we can \emph{negotiate} on the definition of the problem
 \begin{itemize}
   \item adjust input/output def'n to correspond to an easier problem
-  \item more specific input; or more general output
-  \item ideally, computational problem still helps with the business problem
-  \item combines CS hard skills with business soft skills
+  \item more specific input
+  \item or, more general output
+  \item ideally, still helps with the domain problem
+  \item combines CS hard skills with domain soft skills
 \end{itemize}
 \end{frame}
 
@@ -84,7 +88,7 @@ truly optimal.
 \textbf{input}: connected graph $G=(V,E)$ \\
 \textbf{output}: coloring $c$ using $k$ colors, where each vertex $v \in V$ is assigned color
   $c(v) \in \{1, \ldots k\},$ no pair of adjacent vertices are assigned the
-  same color, \textbf{and the number of colors $k$ satisfied $k \leq 3 k^\star$,
+  same color, \textbf{and the number of colors $k$ satisfies $k \leq 3 k^\star$,
   where $k^\star$ is the fewest colors possible for $G$}
 \end{frame}
 
@@ -100,11 +104,11 @@ truly optimal.
 Other ways of dealing with hard problems:
 \begin{itemize}
   \item say ``no''
-  \item when $n$ is small enough, just use exponential-time algorithm
-  \item no \emph{proof} of solution quality, but nonetheless sometimes good enough:
+  \item when $n$ is tiny, settle for exponential-time algorithm
+  \item no \emph{proof} of solution quality, but sometimes good enough:
     \begin{itemize}
-      \item machine learning algorithms (also, in M.L. humans don't need to precisely define what counts as ``correct'')
-      \item fast heuristic algorithms
+      \item machine learning algorithms (also, humans don't need to precisely define what counts as ``correct'')
+      \item heuristic algorithms
       \item Monte Carlo algorithms
     \end{itemize}
 \end{itemize}
@@ -112,23 +116,39 @@ Other ways of dealing with hard problems:
 Approximation
 \begin{itemize}
   \item pros: \emph{provable} solution quality, often fast
-  \item con: human needs to design and analyze algorithm for each specific problem
+  \item con: relatively difficult alg. design and analysis
 \end{itemize}
 \end{frame}
 
 \begin{frame} \frametitle{Performance Ratios}
 \textbf{Approximation ratio} $\rho(n)$: ratio between quality of algorithm's output
-and optimal output; smaller is better
+and optimal output \stanza
 \begin{itemize}
-  \item for \textbf{maximization} problem: if optimal quality is $C^\star$ and alg. produces
+  \item smaller ratio is better
+  \item 1 is perfect
+  \item $\rho$ is defined differently for minimization, maximization problems
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Performance Ratio for Minimization Problem}
+  For \textbf{minimization} problem: if optimal quality is $C^\star$ and alg. produces
+      quality $C,$ by definition $C^\star \leq C$ and define
+      \[ \rho(n) = \frac{C}{C^\star} \]
+  
+  Recall 3-approx. vertex cover: \# colors $\leq 3 k^\star$
+  \end{frame}
+  
+  \begin{frame} \frametitle{Performance Ratio for Maximization Problem}
+For \textbf{maximization} problem: if optimal quality is $C^\star$ and alg. produces
     quality $C,$ by definition $C^\star \geq C,$ and define
     \[ \rho(n) = \frac{C^\star}{C} \]
-  \item for \textbf{minimization} problem: if optimal quality is $C^\star$ and alg. produces
-    quality $C,$ by definition $C^\star \leq C$ and define
-    \[ \rho(n) = \frac{C}{C^\star} \]
-\end{itemize}
-Recall 3-approx. vertex cover: output \# colors $\leq 3 k^\star$
-\end{frame}
+  
+    (Reciprocal of previous definition.)
+    \stanza
+    
+    Consider approximate matching.
+
+  \end{frame}
 
 \begin{frame} \frametitle{Fixed Approximation Ratios}
 Some approxmation algorithms have a fixed approximation ratio that is
@@ -149,16 +169,26 @@ entirely different algorithm.
 any parameter $\epsilon > 0,$ scheme defines a
 $(1+\epsilon)$-approximate algorithm
 \begin{itemize}
-  \item think of $\epsilon$ as being a \textbf{const} variable
+  \item think of $\epsilon$ as a \textbf{const} variable
   \item time-performance trade-off is fully tuneable at compile time
+  \item user defines $\epsilon$ appropriately for their use case, recompiles
+  \item technically, changing $\epsilon$ defines a distinct algorithm
+  \item hence ``scheme''
 \end{itemize}
+\end{frame}
 
+\begin{frame} \frametitle{PTAS}
 \textbf{Polynomial Time Approximation Scheme (PTAS)}: approx. scheme where runtime
 is polynomial in $n$; nothing said of relationship to $\epsilon$ \\
-e.g. $O(2^{1/\epsilon} n \log n)$ \stanza
+\begin{itemize}
+  \item ex. $O(2^{1/\epsilon} n \log n)$ \stanza
+\end{itemize}
 
-\textbf{Fully PTAS}: runtime is polynomial in $n$ and $1/\epsilon$ \\
-e.g. $O((1/\epsilon)^2 n^3)$
+\textbf{\underline{Fully} PTAS}: runtime is polynomial in $n$ \underline{and} $1/\epsilon$ \\
+\begin{itemize}
+  \item ex. $O((1/\epsilon)^2 n^3)$
+  \item preferable to non-fully-PTAS
+\end{itemize}
 \end{frame}
 
 \begin{frame} \frametitle{Vertex Cover Problem}
@@ -211,18 +241,37 @@ See Wiki page: \url{https://en.wikipedia.org/wiki/Vertex_cover}
 \end{frame}
 
 \begin{frame} \frametitle{A Greedy Approximation Algorithm}
-Idea:
 \begin{itemize}
   \item every edge $e=(u,v)$ needs both $u \in C$ and $v \in C$
   \item so grab an edge $e=(u,v)$ and include $u$ and $v$ in $C$
   \item every other edge touching $u$ or $v$ is now covered, so eliminate them
   \item continue until every edge is either grabbed or eliminated
-  \item good: definitely finds a correct cover $C$
-  \item bad: depending on the order of the ``grabs'', heuristic can get tricked
+\end{itemize}
+\begin{center}
+  \includegraphics[height=100pt]{vertex-cover-greedy.png}
+\end{center}
+\end{frame}
+
+\begin{frame} \frametitle{A Greedy Approximation Algorithm}
+\begin{itemize}
+    \item good: definitely finds a correct cover $C$
+    \item bad: depending on the order of the ``grabs'', heuristic can get tricked
     into picking sub-optimal vertices
 \end{itemize}
 \end{frame}
 
+\begin{frame} \frametitle{Example: Greedy Can Be Suboptimal}
+\begin{center}
+  \includegraphics[height=100pt]{vertex-cover-counterexample.png}
+  \stanza
+  
+  optimal edge choices: $d$ \stanza
+
+  suboptimal edge choices: $a, b$ (and others)
+
+\end{center}
+\end{frame}
+  
 \begin{frame} \frametitle{2-Approximate Vertex Cover Pseudocode}
   \begin{algorithmic}[1]
     \Function{APPROX-VERTEX-COVER}{$G=(V,E)$}
@@ -247,7 +296,7 @@ for $G, T,$ and $C$)
 \textbf{Proof sketch}:
 \begin{itemize}
   \item Let $A$ be the set of edges chosen inside the \textbf{while} loop
-  \item will bound $|C|, |C^\star|$ both in terms of $|A|$
+  \item will bound $|C|$ and $|C^\star|$ both in terms of $|A|$
 \end{itemize}
 \end{frame}
   
@@ -258,7 +307,7 @@ for $G, T,$ and $C$)
     $u \in C^\star$ and/or $v \in C^\star$
   \item the ``Remove from $T$'' step guarantees that, after $(u, v)$ is chosen,
     no other edge incident on $u$ or $v$ will be chosen and added to $A$
-  \item $\Rightarrow$ each vertex $x \in C^\star$ covers \emph{exactly} one edge in $A$
+  \item $\Rightarrow$ each vertex $x \in C^\star$ covers \emph{at most one} edge in $A$
   \item $\Rightarrow |C^\star| \geq |A|$
 \end{itemize}
 \end{frame}
@@ -271,15 +320,19 @@ for $G, T,$ and $C$)
     in $C$
   \item $\Rightarrow |C| = 2|A|$ (note exact equality)
   \item \textbf{combining (1) and (2)}
-  \[ |C| = 2|A| \leq 2|C^\star| \]
+  \begin{align*}
+    |C| &= 2|A| \\
+    & \leq 2(|C^\star|)
+  \end{align*}
   \item QED
 \end{itemize}
 \end{frame}
 
 \begin{frame} \frametitle{Commentary on this Proof}
 \begin{itemize}
-  \item note that us analysts do not know concretely which vertices are in $C^\star$
-  \item the algorithm certainly doesn't know what $C^\star$ is, either
+  \item optimal set cover $C^\star$ is opaque
+  \item us analysts cannot know which vertices will be in a $C^\star$
+  \item the algorithm doesn't know what $C^\star$ is, either
   \item all we do know is that, due to the definition of vertex cover, and
     the logic of our algorithm,
     \begin{center}
