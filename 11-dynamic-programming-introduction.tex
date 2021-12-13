@@ -547,7 +547,7 @@ Ways of cutting $\Box\Box\Box\Box$:
     \For{$j$ from 1 to $n$}
       \State $q=-\infty$
       \For{$i$ from 1 to $j$}
-        \If{ $q < (P[i] + R[j-1])$ }
+        \If{ $q < (P[i] + R[j-i])$ }
           \State{$q = P[i] + R[j-i]$}
           \State{$S[j] = i$}
         \EndIf
