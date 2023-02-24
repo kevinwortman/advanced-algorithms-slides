@@ -42,6 +42,49 @@ This work is licensed under a
   \titlepage
 \end{frame}
 
+
+\begin{frame} \frametitle{Big Idea: Problem Duality}
+  \textbf{problem duality:} when the input/output mathematical definition of a
+  problem can be interpreted by humans in two (or more) very different ways
+  \begin{itemize}
+    \item one algorithm can solve multiple problems with different ``stories''
+    \item algorithms, computers, don't actually care what data values mean
+    \item turns out max-flow and min-cut are two different stories for the same problem
+    \item max-flow and min-cut are the \emph{dual of each other}
+  \end{itemize}
+  \end{frame}
+  
+  \begin{frame} \frametitle{Duality Example}
+  \textbf{maximum $y$ coordinate} \\
+  \emph{input: } a set of $(x, y)$ points $S=\{(x, y) \, | \, x, y \in \mathbb{R} \}$ \\
+  \emph{output: } the greatest $y$-coordinate in $S$ \stanza
+  
+  \textbf{highest $y$-intercept point problem} \\
+  \emph{input: } a set of $y=mx+b$ lines $L=\{(m, b) \, | \, m, b \in \mathbb{R} \}$ \\
+  \emph{output: } the greatest $y$-intercept $b$ in $L$ \stanza
+  \end{frame}
+  
+  \begin{frame} \frametitle{Geometry Sketch}
+  \begin{center}
+  \includegraphics{lines.png}
+  \end{center}
+  \end{frame}
+  
+  \begin{frame} \frametitle{}
+  C++ functions for these would be declared like:
+  \lstinline!double maximum_y_coord(vector<pair<double, double>>& points);!
+  \lstinline!double highest_y_intercept(vector<pair<double, double>>& lines);! \stanza
+  
+  As far as the computer is concerned, these are interchangeable! \stanza
+  
+  Only the human story differs.
+  The
+  \textbf{maximum $y$ coordinate}
+  and
+  \textbf{highest $y$-intercept point problem}
+  problems are the dual of each other.
+\end{frame}
+
 \begin{frame} \frametitle{Big Idea: Output Sensitive Algorithm}
   \begin{itemize}
     \item \textbf{input sensitive}: time efficiency is a function of the input
