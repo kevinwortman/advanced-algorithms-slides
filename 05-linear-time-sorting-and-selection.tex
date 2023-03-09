@@ -127,17 +127,17 @@ Turns out this change admits a $\Theta(n)$-time algorithm.
 
 \begin{frame} \frametitle{Counting Sort Pseudocode}
   \begin{algorithmic}[1]
-    \Function{COUNTING-SORT}{A, B, k}
+    \Function{COUNTING-SORT}{A, B, k} \Comment{ A[1..n], B[1..n] }
     \State allocate new array $C[0, \ldots, k]$, initialized to all zeroes
-    \For {$j$ from 1 to $A.length$}
+    \For {$j$ from 1 to $n$}
       \State $C[A[j]]++$ \Comment{ $C[i]$ is the number of elements $=i$ }
     \EndFor
     \For {$i$ from 1 to $k$}
-      \State $C[i] += C[i-1]$ \Comment{ $C[i]$ is the number of elements $\leq i$ }
+      \State $C[i] = C[i] + C[i-1]$ \Comment{ $C[i] = $ count of elements $\leq i$ }
     \EndFor
-    \For { $j$ from $A.length$ down to 1 }
+    \For { $j$ from $n$ down to 1 }
       \State $B[C[A[j]]] = A[j]$
-      \State $C[A[j]]--$
+      \State $C[A[j]] = C[A[j]] - 1$
     \EndFor
     \EndFunction
   \end{algorithmic}
