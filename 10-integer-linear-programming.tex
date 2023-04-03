@@ -63,7 +63,43 @@ This work is licensed under a
   \end{enumerate}
 \end{frame}
 
-\begin{frame} \frametitle{Recall: General LP Problem}
+\begin{frame} \frametitle{Recall: Reduction Algorithm}
+
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{SOLVE-A}{input-for-A}
+    \State input-for-B = pre-process input-for-A
+    \State solution-for-B = solve-B(input-for-B)
+    \State solution-for-A = post-process solution-for-B
+    \State \Return{ solution-for-A }
+    \EndFunction
+  \end{algorithmic}
+  }
+
+\end{frame}
+
+\begin{frame} \frametitle{Algorithms that Reduce to LP}
+
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{SOLVE-A}{input-for-A}
+    \State program = convert input-for-A to linear program
+    \State result = solve-B(input-for-B)
+    \If{ result is "unbounded"}
+      \State return output-for-unbounded-case
+    \ElsIf{ result is "infeasible"}
+      \State return output-for-infeasible-case
+    \Else
+      \State solution-for-A = convert LP solution
+      \State \Return{ solution-for-A }
+    \EndIf
+    \EndFunction
+  \end{algorithmic}
+  }
+
+\end{frame}
+
+\begin{frame} \frametitle{Integer Linear Programming}
   \begin{itemize}
   \item \emph{\textbf{integer} linear programming:} like general form, but all variables are integers instead of real
   \item i.e. each $x_i \in \mathbb{Z}$
