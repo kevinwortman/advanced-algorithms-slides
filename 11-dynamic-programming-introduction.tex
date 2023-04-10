@@ -277,11 +277,12 @@ Ways of cutting $\Box\Box\Box\Box$:
     \item base case: $r_0 = 0$
     \item general case:
     \begin{itemize}
-      \item \textbf{think} divide-and-conquer; define $r_i$ in terms of $r_{<i}$
+      \item let $j \equiv$ current rod length i.e. current value of $n$
+      \item \textbf{think} divide-and-conquer; define $r_j$ in terms of $r_{<j}$
       \item make the problem \textbf{one piece} smaller
       \item try to make one cut, then recursively use the remaining inches
       \item try every option and keep the optimal one
-      \[ r_i = \max_{1 \leq i \leq n} (p_i + r_{n-i}) \]
+      \[ r_j = \max_{1 \leq i \leq j} (p_i + r_{j-i}) \]
     \end{itemize}
   \end{itemize}
 \end{frame}
