@@ -106,7 +106,7 @@ Recall:
   \end{algorithmic}
   }
   
-  \textbf{Analysis:} $\Theta(A.rows \cdot A.columns \cdot B.columns)$
+  \textbf{Analysis:} $\Theta(A.rows \times A.columns \times B.columns)$
 \end{frame}
 
 \begin{frame} \frametitle{Matrix Chain Multiplication}
@@ -349,7 +349,7 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
         \State $m[i][\,j] = q$
       \EndFor
     \EndFor
-    \State \Return $m[1, n]$
+    \State \Return $m[1][n]$
     \EndFunction
   \end{algorithmic}
   }
@@ -435,7 +435,7 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
       \State \Return{ "$A_i$" }
     \EndIf
     \State $k = s[i][\, j]$
-    \State \Return{ $\text{"("} + \text{MC-BTRACK}(s, i, k) + \text{")("} + \text{MC-BTRACK}(s, k, j) + \text{")"}$ }
+    \State \Return{ $\text{"("} + \text{MC-PARENS}(s, i, k) + \text{")("} + \text{MC-PARENS}(s, k, j) + \text{")"}$ }
     \EndFunction
   \end{algorithmic}
   }
