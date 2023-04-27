@@ -150,46 +150,46 @@ For \textbf{maximization} problem: if optimal quality is $C^\star$ and alg. prod
 
   \end{frame}
 
-\begin{frame} \frametitle{Fixed Approximation Ratios}
-Some approxmation algorithms have a fixed approximation ratio that is
-``baked in'' to the design of the algorithm. \stanza
-
-Ex.: algorithm that solves 3-approx. vertex cover would have fixed $\rho(n)=3$
-\stanza
-
-In general, better (smaller) ratios require slower algorithms. \\
-(note 1-approximation algorithms produce optimal solutions.) \stanza
-
-Deriving a different quality-vs.-time trade-off requires designing an
-entirely different algorithm.
-\end{frame}
-
-\begin{frame} \frametitle{Approximation Schemes}
-\textbf{approximation scheme}: family of related algorithms, such that, for
-any parameter $\epsilon > 0,$ scheme defines a
-$(1+\epsilon)$-approximate algorithm
-\begin{itemize}
-  \item think of $\epsilon$ as a \textbf{const} variable
-  \item time-performance trade-off is fully tuneable at compile time
-  \item user defines $\epsilon$ appropriately for their use case, recompiles
-  \item technically, changing $\epsilon$ defines a distinct algorithm
-  \item hence ``scheme''
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{PTAS}
-\textbf{Polynomial Time Approximation Scheme (PTAS)}: approx. scheme where runtime
-is polynomial in $n$; nothing said of relationship to $\epsilon$ \\
-\begin{itemize}
-  \item ex. $O(2^{1/\epsilon} n \log n)$ \stanza
-\end{itemize}
-
-\textbf{\underline{Fully} PTAS}: runtime is polynomial in $n$ \underline{and} $1/\epsilon$ \\
-\begin{itemize}
-  \item ex. $O((1/\epsilon)^2 n^3)$
-  \item preferable to non-fully-PTAS
-\end{itemize}
-\end{frame}
+%\begin{frame} \frametitle{Fixed Approximation Ratios}
+%Some approxmation algorithms have a fixed approximation ratio that is
+%``baked in'' to the design of the algorithm. \stanza
+%
+%Ex.: algorithm that solves 3-approx. vertex cover would have fixed $\rho(n)=3$
+%\stanza
+%
+%In general, better (smaller) ratios require slower algorithms. \\
+%(note 1-approximation algorithms produce optimal solutions.) \stanza
+%
+%Deriving a different quality-vs.-time trade-off requires designing an
+%entirely different algorithm.
+%\end{frame}
+%
+%\begin{frame} \frametitle{Approximation Schemes}
+%\textbf{approximation scheme}: family of related algorithms, such that, for
+%any parameter $\epsilon > 0,$ scheme defines a
+%$(1+\epsilon)$-approximate algorithm
+%\begin{itemize}
+%  \item think of $\epsilon$ as a \textbf{const} variable
+%  \item time-performance trade-off is fully tuneable at compile time
+%  \item user defines $\epsilon$ appropriately for their use case, recompiles
+%  \item technically, changing $\epsilon$ defines a distinct algorithm
+%  \item hence ``scheme''
+%\end{itemize}
+%\end{frame}
+%
+%\begin{frame} \frametitle{PTAS}
+%\textbf{Polynomial Time Approximation Scheme (PTAS)}: approx. scheme where runtime
+%is polynomial in $n$; nothing said of relationship to $\epsilon$ \\
+%\begin{itemize}
+%  \item ex. $O(2^{1/\epsilon} n \log n)$ \stanza
+%\end{itemize}
+%
+%\textbf{\underline{Fully} PTAS}: runtime is polynomial in $n$ \underline{and} $1/\epsilon$ \\
+%\begin{itemize}
+%  \item ex. $O((1/\epsilon)^2 n^3)$
+%  \item preferable to non-fully-PTAS
+%\end{itemize}
+%\end{frame}
 
 \begin{frame} \frametitle{Vertex Cover Problem}
 \emph{vertex cover problem} \\
