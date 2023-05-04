@@ -382,7 +382,7 @@ This work is licensed under a
       \State \Return{$\langle \rangle$} \Comment{empty sequence}
     \EndIf
     \If{ $b[i][j]==\nwarrow$ }
-      \State \Return{$\text{LCS-BTRACK}(b, X, i-1, j-1) + \langle x_i \rangle$} \Comment{append}
+      \State \Return{$\text{LCS-BTRACK}(b, X, i-1, j-1) + \langle X[i] \rangle$} \Comment{append}
     \ElsIf{ $b[i][j]==\uparrow$ }
       \State \Return{$\text{LCS-BTRACK}(b, X, i-1, j)$}
     \Else
@@ -734,7 +734,7 @@ This work is licensed under a
     {\footnotesize
     \begin{algorithmic}[1]
       \Function{OBST-BU}{$p[1..n], q[0..n]$}
-      \State Create array $e[1..n+1][1..n+1]$ \Comment{unusual index range}
+      \State Create array $e[1..n+1][0..n]$ \Comment{unusual index range}
       \For{$i$ from 1 to $n+1$}
         \State $e[i][i-1] = q[i-1]$ \Comment{ base cases }
       \EndFor
@@ -777,7 +777,7 @@ This work is licensed under a
   {\tiny
   \begin{algorithmic}[1]
     \Function{OBST-BU}{$p[1..n], q[0..n]$}
-    \State Create array $e[1..n+1][1..n+1]$ \Comment{unusual index range}
+    \State Create array $e[1..n+1][0..n]$ \Comment{unusual index range}
     \State Create array $w[1..n+1][0..n]$ \Comment{$w[i][j] = W(p, q, i, j)$}
     \For{$i$ from 1 to $n+1$}
       \State $e[i][i-1] = q[i-1]$ \Comment{ base cases }
@@ -789,7 +789,7 @@ This work is licensed under a
         \State $e[i][j] = \infty$
         \State $w[i][j] = w[i][j-1] + p[j] + q[j]$
         \For{$r = i$ to $j$}
-          \State $t = e[i][r-1] + e[r+1][j] + W(p, q, i, j)$
+          \State $t = e[i][r-1] + e[r+1][j] + w[i][j]$
           \If{ $t < e[i][j]$}
             \State $e[i][j] = t$
           \EndIf
