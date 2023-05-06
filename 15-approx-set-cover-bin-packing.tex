@@ -122,25 +122,25 @@ This work is licensed under a
 
 Proof sketch:
 \begin{itemize}
-  \item Let $\mathfrak{C}^\star$ be the optimal cover and $k=|\mathfrak{C}$
-  \item $\mathfrak{C}$ covers all of $X,$ and each $U_i \subseteq X$, so $\mathfrak{C}^\star$ covers every $U_i$
-  \item each $U_i$ can be covered with $\leq k$ sets from $\mathfrak{F}$
-  \item on average, $\mathfrak{C}^\star$ covers $n/k$ elements/set
-  \item so at least one set in $\mathfrak{F}$ covers $\geq n/k$ elements
-  \item APPROX-SET-COVER picks the set that covers the most elements, so each $S$ covers at least $n/k$ additional elements,
-    and \[ U_{i+1} \leq |U_i| - |U_i|/k = |U_i|(1-1/k) \]
+  \item Let $\mathfrak{C}^\star$ be the optimal cover and $k^\star=|\mathfrak{C}^\star|$
+  \item $\mathfrak{C}^\star$ covers all of $X,$ and each $U_i \subseteq X$, so $\mathfrak{C}^\star$ covers each $U_i$
+  \item each $U_i$ can be covered with $\leq k^\star$ sets from $\mathfrak{F}$
+  \item on average, $\mathfrak{C}^\star$ covers $n/k^\star$ elements/set
+  \item so at least one set in $\mathfrak{F}$ covers $\geq n/k^\star$ elements
+  \item APPROX-SET-COVER picks the set that covers the most elements, so each $S$ covers at least $n/k^\star$ additional elements,
+    and \[ U_{i+1} \leq |U_i| - |U_i|/k^\star = |U_i|(1-1/k^\star) \]
 \end{itemize}
 \end{frame}
 
 \begin{frame} \frametitle{Approximation Ratio (continued)}
-  \[ U_{i+1} \leq |U_i|(1-1/k) \]
+  \[ U_{i+1} \leq |U_i|(1-1/k^\star) \]
   \begin{itemize}
     \item algorithm stops when some $|U_i|=0$
     \item as a recurrence,
-      \[ T(n) = (1-1/k)n \]
-    \item algebra and log rules show $T(n) \in O(k \lg n)$
-    \item each iteration adds one set to $\mathfrak{C}$, so APPROX-SET-COVER picks $O(k \lg n)$ sets
-    \item $k$ is the optimal number of sets, so
+      \[ T(n) = (1-1/k^\star)n \]
+    \item algebra and log rules show $T(n) \in O(k^\star \lg n)$
+    \item each iteration adds one set to $\mathfrak{C}$, so APPROX-SET-COVER picks $O(k^\star \lg n)$ sets
+    \item $k^\star$ is the optimal number of sets, so
     \item $\therefore$ APPROX-SET-COVER is a $O(\lg n)$-approximation algorithm $\qedsymbol$
   \end{itemize}
   \end{frame}
@@ -171,7 +171,7 @@ Idea:
 
 \begin{frame} \frametitle{Big Idea: Linear Programming Relaxation}
 \begin{itemize}
-  \item \textbf{LP relaxation:} MIP formulation where no variables are required to be integer
+  \item \textbf{LP relaxation:} MIP formulation with integrality constraints removed
   \item not correct in general
   \item \textbf{but,} sometimes we can prove an approximate performance ratio
   \item next: algorithm that uses LP relaxation to solve vertex cover
@@ -186,9 +186,7 @@ Idea:
    \stanza
   \begin{itemize}
     \item $NP$-complete
-    \item previous slides: greedy algorithm, 2-approximate, $\Theta(m+n)$ time
-    \item goal: better performance ratio (smaller)
-    \item expect algo. to be more complicated, slower, or both
+    \item previous deck: greedy algorithm, 2-approximate, $\Theta(m+n)$ time
   \end{itemize}
 \end{frame}
 
@@ -240,7 +238,7 @@ Idea:
     \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Vertex Cover LP Relaxation}
+\begin{frame} \frametitle{Vertex Cover LP \underline{Relaxation}}
   \textbf{Variables:} for each $v \in V$, create a \underline{real-valued} variable $x_v$ such that
   \[ x_v = 1 \Leftrightarrow v \in C \]
   
@@ -283,7 +281,7 @@ Idea:
   \item solution $\bar{x}$ satisfies all constraints, so
     \[  x_u + x_v \geq 1 \]
     is true and
-    \[ x_u \geq \frac{1}{2} \text{ and } x_v \geq \frac{1}{2} \]
+    \[ x_u \geq \frac{1}{2} \text{ or } x_v \geq \frac{1}{2} \text{ (or both)}\]
   \item so the \textbf{for} loop adds at least one of $u, v$ to $C$
 \end{itemize}
 \end{frame}
@@ -350,6 +348,8 @@ Idea:
   \[ \frac{1}{2} |C| \leq z^\star \leq |C^\star| \]
   or
   \[ |C| \leq 2 \cdot |C^\star| . \]
+
+  QED.
 \end{frame}
 
 \begin{frame} \frametitle{Vertex Cover LP Relaxation Summary}
@@ -373,7 +373,7 @@ Idea:
 
 \begin{frame} \frametitle{Bin Packing: Intuition}
   \begin{itemize}
-    \item have a collection of \textbf{objects}
+    \item have a collection of \textbf{items}
     \item want to \textbf{pack} them tightly into containers
     \item \textbf{puzzle}: which items go together in each container?
   \end{itemize}
@@ -381,34 +381,163 @@ Idea:
 
 \begin{frame} \frametitle{Bin Packing: Formal Definition}
   \emph{bin packing problem} \\
-  \textbf{input}: a multiset $I = \{i \in \mathbb{Q}, 0 < i \leq 1\}$ of items \\
-  \textbf{output}: a partition $I_1, I_2, \ldots, I_k$ of $I$ into $k$ sets, such that the sum of each $I_j$ is at most 1
+  \textbf{input}: a multiset $U = \{u \in \mathbb{Q}, 0 < u\leq 1\}$ of item sizes \\
+  \textbf{output}: a partition $B_1, B_2, \ldots, B_k$ of $U$ into $k$ multisets, such that the sum of each $B_i$ is at most 1
   \stanza
 
   \begin{itemize}
     \item bin capacity is 1
-    \item each item $i \in I$ has a fractional size
-    \item ex. $I=\{\frac{2}{3}, \frac{1}{2}, \frac{1}{9}, \frac{1}{2}, \ldots \}$
+    \item each size $u \in U$ is a fraction between 0 and 1
+    \item ex. $U=\{\frac{2}{3}, \frac{1}{2}, \frac{1}{9}, \frac{1}{2}, \ldots \}$
     \item $k = \text{number of bins used}$
   \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Bin Packing Examples}
+\begin{frame} \frametitle{Example Applications}
+  \begin{itemize}
+    \item Given a sink full of dirty dishes, how to load the dishwasher to clean all the dishes in the fewest loads?
+    \item Given an Amazon order for items of varying weights, how to pack the items into the fewest shipping boxes?
+    \item Given a set of virtual machines (VMs) of varying memory sizes, how to host them on the fewest physical servers?
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Generalizations of Bin Packing}
+  Problem statement can be generalized to be more realistic:
+  \begin{itemize}
+    \item items are 2D shapes instead of numbers (physical object shipping)
+    \item items can partially overlap (VM shared memory can overlap)
+    \item one bin, different values: \emph{knapsack problem}
+    \item minimize bins, and also waste: \emph{cutting stock problem}
+  \end{itemize}
 \end{frame}
 
 \begin{frame} \frametitle{Bin Packing Hardness}
+  \begin{itemize}
+    \item bin packing is $NP$-complete
+    \item generalizations (ex. 2D shapes) are even harder
+    \item baseline algorithm:
+      \begin{itemize}
+        \item loop through each possible number of bins $k=1, \ldots, n$
+        \item for each item $u \in U:$ try placing $u$ in all $k$ bins, then recursively place the remaining items
+      \end{itemize}
+    \item $\Theta(n \cdot n!)$ time, extremely slow
+    \item (exponential time is possible too)
+  \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Bin Packing Approximation Algorithm}
+\begin{frame} \frametitle{Greedy Algorithm Idea}
+  \begin{itemize}
+    \item keep a list of bins
+    \item for each item $u:$ find any bin with enough room for $u,$ and put it there
+    \item if no bin has enough room: start a new bin holding just $u$
+    \item \textbf{``first fit''} algorithm
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{First-Fit Algorithm}
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{FIRST-FIT-BIN-PACK}{$U$}
+      \State $B = \emptyset$ \Comment{the bins}
+      \For{ $u \in U$ }
+        \State $packed = false$
+        \For{ $B_i \in B$ }
+          \If{ $(u + \sum B_i ) \leq 1$ } \Comment{ does $u$ fit in $B_i$? }
+            \State $B_i = B_i \cup \{ u \}$
+            \State $packed = true$
+            \State \textbf{break} loop
+          \EndIf
+        \EndFor
+        \If{ $packed == false$ }
+          \State $B_k = \{ u \} $ \Comment{$u$ in its own new bin}
+          \State $B = B \cup \{ B_k \}$
+        \EndIf
+      \EndFor
+      \State \Return $B$
+    \EndFunction
+  \end{algorithmic}
+  }
 \end{frame}
 
 \begin{frame} \frametitle{Efficiency Analysis}
+\begin{itemize}
+  \item outer \textbf{for} loop: $\Theta(n)$ iterations
+  \item $|B| \leq n$, so
+  \item inner \textbf{for} loop: $\Theta(n)$ iterations
+  \item $\sum B_i: \Theta(n)$ time
+  \item other statements are $\Theta(1)$ time
+  \item $\therefore \enspace \Theta(n^3)$ total time
+  \item can speed up to $\Theta(n \log n)$ by caching totals and storing bins in a BST
+\end{itemize}
 \end{frame}
 
 \begin{frame} \frametitle{Approximation Ratio}
+\textbf{Theorem}: FIRST-FIT-BIN-PACK is a 2-approximation algorithm.
+
+Proof sketch:
+\begin{itemize}
+  \item Recall $k=|B|$
+  \item Let $B^\star$ be an optimal multiset of bins, and $k^\star=|B^\star|$
+  \item (again) use ``common ground'' comparison between $k$ and $k^\star$
+  \item Let $t = \sum U$ be the sum of all items; use $t$ as common ground
+  \item Best possible packing fills every single bin with no leftover space, so
+    \[ k^\star \geq \frac{\text{total size of items}}{\text{size of each bin}} = \frac{(t)}{(1)} = t \]
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{There Is At Most One Light Bin}
+  \begin{itemize}
+    \item Call a bin $B_i$ \textbf{``light''} when $\sum B_i \leq \frac{1}{2},$ otherwise \textbf{``heavy''}
+    \item Invariant: there is at most one light bin
+    \item Induction on number of items in bins
+    \item Base case: zero items $\implies$ zero bins $\implies$ no light bin
+    \item Inductive case: given new item $u,$ four cases:
+  \end{itemize}
+  \begin{center}
+  \begin{tabular}{l | p{1in} | p{1in} }
+        & $u \leq \frac{1}{2}$ & $u > \frac{1}{2}$ \\ \hline
+        no light bin & $u$ starts only light bin & $u$ starts new heavy bin \\ \hline
+        $\exists$ light bin $B_i$ & $u$ joins $B_i$ & $u$ either joins $B_i$ making it heavy; or starts a new heavy bin \\ \hline
+  \end{tabular}
+  \end{center}
+  \end{frame}
+    
+\begin{frame} \frametitle{Approximation Ratio (continued)}
+  \begin{itemize}
+    \item worst case is one light bin and $k-1$ barely-heavy bins
+    \item $k$ is at most
+      \[ k \leq \frac{\text{total size of items}}{\text{size of each bin}} + 1 < \frac{(t)}{(1/2)} + 1 = 2t+1 \]
+    \item we showed $k^\star \geq t,$ so
+      \[ k < 2t+1 \leq 2(k^\star)+1 \]
+    \item for large $n,$
+      \[ k \propto 2 k^\star \]
+    \item QED
+  \end{itemize}
+\end{frame}
+    
+\begin{frame} \frametitle{Tight Approximation Ratio}
+  \begin{itemize}
+    \item (Johnson, Demers, Ullman, Garey, Graham 1974)
+    \item FIRST-FIT-BIN-PACK is a 1.7-approximation algorithm
+    \begin{itemize}
+      \item More elaborate case analysis
+    \end{itemize}
+    \item There is a $U$ for which FIRST-FIT-BIN-PACK achieves only a 1.7 performance ratio
+    \begin{itemize}
+      \item $U = \{ \frac{6}{101} \times 7, \frac{10}{101} \times 7, \frac{16}{101} \times 3, \frac{34}{101} \times 10, \frac{51}{101} \times 10 \}$
+      \item $k^\star = 10$
+      \item $k = 17$
+    \end{itemize}
+    \item $\therefore \enspace$ the $1.7 k^\star$ bound is tight
+  \end{itemize}
 \end{frame}
 
 \begin{frame} \frametitle{Bin Packing Summary}
+\begin{itemize}
+  \item bin packing is $NP$-complete, exact algorithm takes exponential time
+  \item $\Theta(n \log n)$ time, 1.7-approximation algorithm
+  \item we only proved $\Theta(n^3)$ time, 2-approximation
+\end{itemize}
 \end{frame}
 
 
