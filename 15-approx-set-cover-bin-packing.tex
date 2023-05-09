@@ -89,7 +89,7 @@ This work is licensed under a
 \begin{frame} \frametitle{Set Cover Approximation Algorithm}
   \begin{algorithmic}[1]
     \Function{APPROX-SET-COVER}{$X, \mathfrak{F}$}
-      \State $U_0=\emptyset$ \Comment{still-uncovered elements}
+      \State $U_0 = X$ \Comment{still-uncovered elements}
       \State $\mathfrak{C} = \emptyset$
       \State $i=0$
       \While { $U_i \ne \emptyset$ }
@@ -128,12 +128,12 @@ Proof sketch:
   \item on average, $\mathfrak{C}^\star$ covers $n/k^\star$ elements/set
   \item so at least one set in $\mathfrak{F}$ covers $\geq n/k^\star$ elements
   \item APPROX-SET-COVER picks the set that covers the most elements, so each $S$ covers at least $n/k^\star$ additional elements,
-    and \[ U_{i+1} \leq |U_i| - |U_i|/k^\star = |U_i|(1-1/k^\star) \]
+    and \[ |U_{i+1}| \leq |U_i| - |U_i|/k^\star = |U_i|(1-1/k^\star) \]
 \end{itemize}
 \end{frame}
 
 \begin{frame} \frametitle{Approximation Ratio (continued)}
-  \[ U_{i+1} \leq |U_i|(1-1/k^\star) \]
+  \[ |U_{i+1}| \leq |U_i|(1-1/k^\star) \]
   \begin{itemize}
     \item algorithm stops when some $|U_i|=0$
     \item as a recurrence,
