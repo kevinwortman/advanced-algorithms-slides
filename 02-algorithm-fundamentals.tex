@@ -358,4 +358,100 @@ Intuitively,
 
 \end{frame}
 
+\begin{frame} \frametitle{Kinds of Time Bounds}
+  Suppose algorithm $A$ takes...
+  \begin{itemize}
+    \item $\Theta(n)$ \textbf{worst-case time}: for \emph{every} input, $A$ takes $\Theta(n)$ time
+    \item $\Theta(n)$ \textbf{amortized time}: for any sequence of $k$ executions, the total time is $\Theta(k \cdot n)$, so the average time of a single execution is $\Theta(n)$
+    \item $\Theta(n)$ \textbf{expected time}: $A$'s run time is a random variable whose expected value is $\Theta(n)$ 
+    \item $\Theta(n)$: no explicit qualifier; by default, this means $\Theta(n)$ worst-case time
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Repeated Trials of $O(1)$ Worst-Case Time}
+  \includegraphics[width=4in]{LineGraphWorstCase.png}
+\end{frame}
+
+\begin{frame} \frametitle{Repeated Trials of $O(1)$ Amortized Time}
+  \includegraphics[width=4in]{LineGraphAmortized.png}
+\end{frame}
+
+\begin{frame} \frametitle{Repeated Trials of $O(1)$ Expected Time}
+  \includegraphics[width=4in]{LineGraphExpected.png}
+\end{frame}
+
+\begin{frame} \frametitle{Kinds of Time Bounds and Goal Setting}
+Predictability is desireable, so in general, our preference is
+\begin{enumerate}
+  \item worst-case
+  \item amortized
+  \item expected \\
+\end{enumerate}
+
+
+Improving the kinds of time bounds is a research area \\
+
+Example:
+\begin{itemize}
+  \item Conventional chained hash tables take $O(1)$ expected time to search, insert, or delete
+  \item \emph{Cuckoo hash tables} take $O(1)$ worst-case time to search or delete, and $O(1)$ expected time to insert
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Combining Different Kinds of Time Bounds}
+  In general:
+  \begin{center}
+    an "amortized" or "expected" qualifier is "contagious"
+  \end{center}
+
+  Examples:
+  \begin{itemize}
+    \item $\Theta(n)$ worst-case $+$ $\Theta(n)$ amortized = $\Theta(n)$ amortized
+    \item $\Theta(n)$ worst-case $+$ $\Theta(n)$ expected = $\Theta(n)$ expected
+    \item $\Theta(n)$ amortized $+$ $\Theta(n)$ expected = $\Theta(n)$ amortized expected
+    \item $\Theta(n)$ worst-case $\times$ $\Theta(n)$ expected = $\Theta(n^2)$ expected
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Exception: Dropping "Amortized"}
+  \begin{itemize}
+    \item Recall: $\Theta(n)$ \textbf{amortized time}: for any sequence of $k$ executions, the total time is $\Theta(k \cdot n)$, so the average time of a single execution is $\Theta(n)$
+    \item Observe: the total time is worst-case
+    \item So \textbf{when an amortized operation is repeated $\omega(1)$ times, the total time drops "amortized" to become worst-case}
+    \item Examples:
+    \begin{itemize}
+      \item $n$ repetitions of $O(1)$ amortized = $O(n)$ worst-case
+      \item $n$ repetitions of $O(\log n)$ amortized = $O(n \log n)$ worst-case
+      \item $2$ repetitions of $O(\log n)$ amortized = $O(\log n)$ amortized
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Exception: Dropping "Expected"}
+  \begin{itemize}
+    \item A randomzied algo. has both
+    \begin{itemize}
+      \item a faster expected-time bound, and
+      \item a slower worst-case time bound
+    \end{itemize}
+    \item Example: quick sort takes $\Theta(n \log n)$ expected time and $\Theta(n^2)$ worst-case time
+    \item We may choose to use either one
+    \item When adding an expected time bound to a non-expected one,
+      \begin{center}\textbf{choose the randomized algo's worst-case bound if that wouldn't be the dominating term}\end{center}
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Example: Dropping "Expected"}
+  Algo.: insertion sort then quick sort 
+  \\
+
+  Choosing quick sort's expected time bound:
+  \[  \Theta(n^2) + \Theta(n \log n)\text{ expected} = \Theta(n^2)\text{ expected} \]
+
+  Choosing quick sort's worst-case time bound:
+  \[  \Theta(n^2) + \Theta(n^2) = \Theta(n^2) \]
+
+  Second choice is more favorable
+\end{frame}
+  
 \end{document}
