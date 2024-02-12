@@ -654,15 +654,15 @@ Then
     \frac{1}{2} &\leq c \\
   \end{align*}
 
-  Any $c \geq \frac{1}{2}$ can work; arbitrarily choose $c=1.$
+  Any $c$ satisfying $\frac{1}{2} \leq c < 1$ can work; arbitrarily choose $c=\frac{3}{4}.$
 \end{frame}
 
 \begin{frame} \frametitle{Step 2 alternative 3: Justify Case 3 (cont'd)}
  Justification: ``We have $f(n)=n^2$ and $n^{\log_b a} = n^{\log_{(2)} (2)} = n^{(1)} = n.$
  Let $\epsilon=1;$
   then $f(n) = \Omega(n^{\log_b a + \epsilon}) = \Omega(n^{(1)+(1)}) = \Omega(n^2).$
- Let $c=1;$ then
-  $af(n/b) = (2)f(n/(2)) = 2(n/2)^2 = 2(n^2/4) = n^2/2 \leq cf(n) = (2)n^2$ for sufficiently large $n$.
+ Let $c=\frac{3}{4};$ then
+  $af(n/b) = (2)f(n/(2)) = 2(n/2)^2 = 2(n^2/4) = n^2/2 \leq cf(n) = (\frac{3}{4})n^2$ for sufficiently large $n$.
   Case 3 of the master theorem applies, so $T(n)=\Theta(f(n)) = \Theta(n^2).$ ''
  \end{frame}
 
