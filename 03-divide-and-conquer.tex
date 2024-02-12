@@ -533,4 +533,155 @@ In each case study,
 \end{itemize}
 \end{frame}
 
+\begin{frame} \frametitle{Master Method}
+  \begin{itemize}
+    \item \textbf{Master method:} plug-and-chug process for solving some recurrences
+    \begin{itemize}
+      \item doesn't work for \emph{all}
+      \item but works for \emph{typical} D\&C recurrences
+    \end{itemize}
+  \item \textbf{Master theorem:} proof that the method is sound
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Master Theorem}
+Let $a \geq 1, b>1$ be constants, $f(n)$ be a function, and $T(n)$ be the recurrence
+\[ T(n) = a T(n/b) +f(n) . \]
+Then
+\begin{enumerate}
+  \item If $\exists \epsilon>0$ such that $f(n) = O(n^{log_b a-\epsilon}),$ then $T(n)=\Theta(n^{\log_b a}).$
+  \item If $f(n) = O(n^{log_b a}),$ then $T(n)=\Theta(n^{\log_b a} \log n).$
+  \item If $\exists \epsilon>0$ such that $f(n) = \Omega(n^{log_b a+\epsilon}),$
+    and $a f(n/b) \leq cf(n)$ for some $c<1$ and sufficiently large $n,$
+    then $T(n)=\Theta(f(n)).$
+\end{enumerate}
+\end{frame}
+
+\begin{frame} \frametitle{Step 1: Identify Relevant Case}
+  3 cases: $f(n)$ is asymptotically
+  \begin{enumerate}
+    \item less than,
+    \item equal,
+    \item greater than
+  \end{enumerate}
+  the benchmark $ n^{\log_b a} .$
+  \vspace{10pt}
+
+  So identify $a$ and $b,$ substitute into $n^{\log_b a},$ simplify, and decide among the cases.
+  \vspace{10pt}
+
+  If unsure, take the limit
+  \[ \lim_{n \rightarrow \infty} \frac{f(n)}{n^{\log_b a}} . \]
+\end{frame}
+
+\begin{frame} \frametitle{Step 1: Identify Relevant Case}
+  Example:
+  \[ T(n) = 2 T(n/2) + 7 \]
+
+  Identify: $a=2,$ $b=2$
+
+  Plug and chug:
+  \[ n^{\log_b a} = n^{\log_{(2)} (2)} = n^{(1)} = n \]
+
+  Is $7$ less than, equal, or greater than $n$? \vspace{10pt}
+
+  Intuition: less than \vspace{10pt}
+
+  Check:
+  \[ \lim_{n \rightarrow \infty} \frac{7}{n} = 0 \]
+ \end{frame}
+
+ \begin{frame} \frametitle{Step 2 alternative 1: Justify Case 1}
+  Need to Prove: If $\exists \epsilon>0$ such that $f(n) = O(n^{log_b a-\epsilon}),$ then $T(n)=\Theta(n^{\log_b a}).$
+  \vspace{10pt}
+
+  Prove by showing an example of a $\epsilon$ that makes $f(n) = O(n^{log_b a-\epsilon}).$
+  \vspace{10pt}
+
+  Continuing example: show $\epsilon$ s.t. $7 = O(n^{1-\epsilon})$
+  Choose $\epsilon=1,$ so we have $7=O(n^{1-(1)}) = O(n^0) = O(1)$
+  \vspace{10pt}
+
+  Justification: ``We have $f(n)=7$ and $n^{\log_b a} = n^{\log_{(2)} (2)} = n^{(1)} = n.$ Let $\epsilon=1;$
+  then $f(n) = O(n^{\log_b a - \epsilon}) = O(n^{(1)-(1)}) = O(n^{(0)}) = O(1)$, and by case 1 of the master theorem,
+  $T(n) = \Theta(n^{\log_b a}) = \Theta(n).$''
+
+\end{frame}
+
+ \begin{frame} \frametitle{Step 2 alternative 2: Justify Case 2}
+  Need to Prove: If $f(n) = O(n^{\log_b a}),$ then $T(n)=\Theta(n^{\log_b a} \log n).$
+  \vspace{10pt}
+
+  Case 2 is true without qualification; don't need to show anything else.
+  \vspace{10pt}
+
+  Example: $T(n) = 2T(n/2) + 5n,$ so $a=2,$ $b=2,$ and $f(n)=5n.$
+  \vspace{10pt}
+
+  $n^{\log_b a} = n^{\log_{(2)} (2)} = n^{(1)} = n$ is asymptotically equal to $f(n)=5n$ so case 2 applies
+  and $T(n)=\Theta(n^{\log_b a} \log n) = \Theta(n \log n).$
+  \vspace{10pt}
+
+ Justification: ``We have $f(n)=5n$ and $n^{\log_b a} = n^{\log_{(2)} (2)} = n^{(1)} = n.$ Case 2 of the
+ master theorem applies, so $T(n)=\Theta(n^{\log_b a} \log n) = \Theta(n^{(1)} \log n) = \Theta(n \log n).$ ''
+ \end{frame}
+
+
+ \begin{frame} \frametitle{Step 2 alternative 3: Justify Case 3}
+  Need to Prove: If $\exists \epsilon>0$ such that $f(n) = \Omega(n^{log_b a+\epsilon}),$
+  and $a f(n/b) \leq cf(n)$ for some $c<1$ and sufficiently large $n,$
+  then $T(n)=\Theta(f(n)).$
+  \vspace{10pt}
+
+  Prove by showing examples of $\epsilon, c$ that makes $f(n) = O(n^{log_b a+\epsilon})$
+  and $a f(n/b) \leq cf(n)$ for large $n$.
+  \vspace{10pt}
+
+  Example: $T(n) = 2T(n/2) + n^2,$ so $a=2,$ $b=2,$ and $f(n)=n^2.$
+  \vspace{10pt}
+
+  $n^{\log_b a} = n^{\log_{(2)} (2)} = n^{(1)} = n.$ Can choose $\epsilon=1$ to have $\Omega(n^{1+(1)}).$
+  \vspace{10pt}
+\end{frame}
+
+\begin{frame} \frametitle{Step 2 alternative 3: Justify Case 3 (cont'd)}
+  Need
+  \begin{align*}
+    a f(n/b) &\leq cf(n) \\
+    (2) f(\frac{n}{2}) &\leq c(n^2) \\
+    2 \cdot (\frac{n}{2})^2 &\leq c n^2 \\
+    2 \cdot \frac{n^2}{4} &\leq c n^2 \\
+    \frac{1}{2} &\leq c \\
+  \end{align*}
+
+  Any $c \geq \frac{1}{2}$ can work; arbitrarily choose $c=1.$
+\end{frame}
+
+\begin{frame} \frametitle{Step 2 alternative 3: Justify Case 3 (cont'd)}
+ Justification: ``We have $f(n)=n^2$ and $n^{\log_b a} = n^{\log_{(2)} (2)} = n^{(1)} = n.$
+ Let $\epsilon=1;$
+  then $f(n) = \Omega(n^{\log_b a + \epsilon}) = \Omega(n^{(1)+(1)}) = \Omega(n^2).$
+ Let $c=1;$ then
+  $af(n/b) = (2)f(n/(2)) = 2(n/2)^2 = 2(n^2/4) = n^2/2 \leq cf(n) = (2)n^2$ for sufficiently large $n$.
+  Case 3 of the master theorem applies, so $T(n)=\Theta(f(n)) = \Theta(n^2).$ ''
+ \end{frame}
+
+ \begin{frame} \frametitle{Limitations Of The Master Method}
+  Master Theorem is a big ``if/then''
+  \vspace{10pt}
+
+Theorem does not apply when:
+\begin{itemize}
+  \item $T(n)$ not in the necessary form, or
+  \item none of cases 1, 2, 3 apply
+\end{itemize}
+\vspace{10pt}
+
+There are gaps between the cases.
+\vspace{10pt}
+
+\textbf{However,} when an algo. is designed according to the D\&C pattern, the master theorem almost always applies.
+
+\end{frame}
+ 
 \end{document}
