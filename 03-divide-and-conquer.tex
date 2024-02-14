@@ -271,7 +271,7 @@ First try is not using the fact that a \emph{crossing} subarray
     \If { $low$ == $high$ }
       \State \Return $(low, high, P[low])$
     \Else
-      \State $mid = \lceil (low+high)/2 \rceil$
+      \State $mid = \lfloor (low+high)/2 \rfloor$
       \State $(leftlow, lefthigh, leftsum) = MAX-SUBARRAY(P, low, mid)$
       \State $(rightlow, righthigh, rightsum) = MAX-SUBARRAY(P, mid+1, high)$
       \State $(crosslow, crosshigh, crosssum) = MAX-CROSSING-SUBARRAY(A, low, mid, high)$
