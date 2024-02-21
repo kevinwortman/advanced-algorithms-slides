@@ -31,115 +31,73 @@ This work is licensed under a
   \titlepage
 \end{frame}
 
-\begin{frame} \frametitle{Randomization}
+\begin{frame} \frametitle{Big Idea: Randomization}
 
 \emph{Big idea:} a \emph{randomized} algorithm deliberately makes random choices
 \begin{itemize}
-  \item con: behavior and/or performance becomes \emph{stochastic}
+  \item con: behavior and/or performance becomes \emph{stochastic} (unpredictable)
   \item pro: other aspects can get better (speed, simplicity)
   \item often algorithm gets faster/simpler but analysis gets harder
-    (recall this is a win)
+  \item (this is a win)
 \end{itemize}
+\vspace{12pt}
 
-E.g. quicksort, recall
-\begin{itemize}
-  \item every sorting algorithm takes $\Omega(n \log n)$ time
-  \item merge sort takes $\Theta(n \log n)$ worst-case time but $\Theta(n)$
-    temporary space
-  \item quicksort is randomized, takes $\Theta(n \log n)$ expected time but only
-    $\Theta(\log n)$ space \emph{(in-place)}, better constant factors
-\end{itemize}
+\emph A \emph{deterministic algorithm} is not randomized.
 \end{frame}
 
-\begin{frame} \frametitle{Kinds of Time Bounds}
-Suppose algorithm $A$ takes...
-\begin{itemize}
-  \item \underline{$\Theta(n)$ deterministic worst-case time}: for \emph{every} input, $A$ takes $\Theta(n)$ time
-  \item \underline{$\Theta(n)$ average time}: the mean time, \emph{averaging over every
-    possible input,} is $\Theta(n)$
+\begin{frame} \frametitle{Recap: Quicksort}
+  Recall:
     \begin{itemize}
-      \item only relevant when each input is equally likely
-      \item not true for e.g. sorting, maximum subarray
-      \item in principle we could take a weighted average, but we'd need to know
-        the probability distribution of inputs, unlikely
-    \end{itemize}
-  \item \underline{$\Theta(n)$ expected time}: the mean time, \emph{averaging over
-    every sequence of random choices} $A$ could make, is $\Theta(n)$
+    \item every sorting algorithm takes $\Omega(n \log n)$ time
+    \item merge sort takes $\Theta(n \log n)$ worst-case time and $\Theta(n)$
+      space
+    \item \textbf{quicksort:}
     \begin{itemize}
-      \item no assumption about input; still assume worst case
+      \item recursive divide-and-conquer
+      \item pick random pivot $p$
+      \item rearrange list into two zones: $\leq p$ and $> p$
+      \item recurse onto each zone
     \end{itemize}
-  \item by default, ``$\Theta(n)$ time'' means $\Theta(n)$ deterministic worst-case time
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Deterministic versus Randomized Algorithms}
-If alg $A$ is \textbf{deterministic}: its deterministic worst-case time
-and expected time bound are always the same
-\begin{itemize}
-  \item technically, we can say linear search takes ``$\Theta(n)$ expected time''
-  \item but this is kind of misleading/distracting
-\end{itemize}
-$A$ \textbf{is randomized}: usually expected-case is faster than worst-case
-\begin{itemize}
-  \item (because expected-case is an average, worst-case is a maximum)
-  \item hash table insert: $\Theta(1)$ expected time, $\Theta(n)$ worst-case time
-  \item treap insert: $\Theta(\log n)$ expected time, $\Theta(n)$ worst-case time
-  \item quicksort: $\Theta(n \log n)$ expected time, $\Theta(n^2)$ worst-case time
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Multiplying Randomized Bounds}
-\begin{itemize}
-  \item Multiplying works normally
-  \item If running $A$ once takes $O(E)$ expected time and $O(W)$ worst-case time...
-  \item ...then running $A$ $(k)$ times takes $O(kE)$ expected time and $O(kW)$ worst-case time.
-  \item So
-  \begin{itemize}
-    \item $k$ hash table inserts takes $O(k)$ expected time and $O(kn)$ worst-case time
-    \item $n$ hash table inserts takes $O(n)$ expected time and $O(n^2)$ worst-case time
-    \item $n$ treap inserts takes $O(n \log n)$ expected time and $O(n^2)$ worst-case time
+    \item quicksort
+    \begin{itemize}
+      \item is randomized
+      \item $\Theta(n \log n)$ expected time
+      \item $\Theta(n^2)$ worst-case time
+      \item $\Theta(\log n)$ space
+    \end{itemize}
   \end{itemize}
-\end{itemize}
+\end{frame}
+  
+\begin{frame} \frametitle{Recap: Analyzing Randomized Algorithms}
+  For each randomized algorithm we make two separate efficiency claims:
+  \begin{enumerate}
+    \item expected time: the focus
+    \item worst-case time: disclaimer; secondary consideration
+  \end{enumerate}
+  \vspace{12pt}
+
+  ``Quicksort takes $\Theta(n \log n)$ expected time and $\Theta(n^2)$ worst-case time.''
+\end{frame}
+
+\begin{frame} \frametitle{Definition of Expected Time}
+  Definition: 
+  \[ \text{algo.'s expected time} = E[\text{algo.'s worst-case time}] \]
+
+  For random variable $X$ with outcomes $x_1, \ldots, x_n$ of probability $p_1, \ldots, p_n$,
+  \[ E[X] = \sum_{\text{outcome $x_i$}} p_i x_i \]
+
+  So
+  \[ \text{algo.'s expected time} = \sum_{\text{sequence of random choices $i$}} p_i \cdot (\text{worst-case time steps given } i) \]
 
 \end{frame}
 
-\begin{frame} \frametitle{Adding Randomized Bounds}
-adding works normally with two caveats
-\begin{enumerate}
-  \item the \emph{expected} qualifier is ``sticky''
-    \begin{itemize}
-      \item $O(D)$ worst-case time + $O(E)$ expected time = $O(\max\{D,E\})$ expected-time
-      \item $\implies$ insert $n$ elements into hash table, then loop through hash table
-        $= O(n) \text{ expected } + O(n) \text{ worst-case } = O(n)$ expected
-    \end{itemize}
-  \item however, you have the option of using a randomized alg's worst-case bound
-    \begin{itemize}
-      \item $\implies$ insert $n$ elements into hash table, then sort elements with
-        insertion sort
-        $ = O(n) \text{ expected } + O(n^2) \text{ worst-case } = O(n^2)$ expected time
-      \item but we could also use hash tables' worst-case bound and say
-        $= O(n^2) \text{ worst-case } + O(n^2) \text{ worst-case } = O(n^2)$ worst-case
-    \end{itemize}
-\end{enumerate}
-\end{frame}
-
-\begin{frame} \frametitle{Worst-Case versus Expected Time Bounds}
-Ordinarily
-\begin{itemize}
-\item $O(T)$ worst-case time is better than $O(T)$ expected time
-  \item e.g. $O(n \log n)$ worst-case is better than $O(n \log n)$ expected
-  \item faster expected-time is better than slower worst-case time
-    \item e.g. $O(n)$ expected is better than $O(n \log n)$ worst-case
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Maximum}
+\begin{frame} \frametitle{The Hiring Problem}
   {\footnotesize
   \begin{algorithmic}[1]
-    \Function{MAXIMUM}{$A$}
+    \Function{DETERMINISTIC-HIRE-ASSISTANT}{$A$}
     \State best $ = $ NIL
     \For { $x$ in $A$ }
-      \If { best is still NIL or $x > $ best }
+      \If { best is still NIL or $x$ is better than best }
         \State best $= x$
       \EndIf
     \EndFor
@@ -147,58 +105,76 @@ Ordinarily
     \EndFunction
   \end{algorithmic}
   }
+  \vspace{24pt}
+
+  Analyze the number of \textbf{reassignments} (line 6)
+\end{frame}
+
+\begin{frame} \frametitle{Adversarial Analysis}
+  \textbf{Adversarial analysis:} Proof strategy for worst-case analysis
+
+  ``Adversary''
   \begin{itemize}
-  \item (CLRS calls this \emph{hiring,} but it generalizes to any kind of find-the-best process.)
-  \item Suppose the ``best $= x$'' step is expensive (e.g. moving your house).
-  \item \emph{Q: how many times is best reassigned in the best case?}
-  \item \emph{Q: what about the worst case?}
-\end{itemize}
-\end{frame}
+    \item seeks to show algorithm is inefficient
+    \item has full knowledge of algorithm pseudocode
+    \item picks least-flattering input
+  \end{itemize}
+  \vspace{12pt}
 
-\begin{frame} \frametitle{Maximum (continued)}
-  {\footnotesize
-  \begin{algorithmic}[1]
-    \Function{MAXIMUM}{$A$}
-    \State best $ = $ NIL
-    \For { $x$ in $A$ }
-      \If { best is still NIL or $x > $ best }
-        \State best $= x$
-      \EndIf
-    \EndFor
-    \State \Return { best }
-    \EndFunction
-  \end{algorithmic}
-  }
-\vspace{.5cm}
-A best-case: $A$ in decreasing order; reassigned only once \\
-\vspace{.5cm}
-A worst-case: $A$ in increasing order; reassigned $n$ times
-\end{frame}
-
-\begin{frame} \frametitle{Randomized Maximum}
-  {\footnotesize
-  \begin{algorithmic}[1]
-    \Function{RANDOMIZED-MAXIMUM}{$A$}
-    \State permute $A$ randomly \Comment{only change}
-    \State best $ = $ NIL
-    \For { $x$ in $A$ }
-      \If { best is still NIL or $x > $ best }
-        \State best $= x$
-      \EndIf
-    \EndFor
-    \State \Return { best }
-    \EndFunction
-  \end{algorithmic}
-  }
+  \emph{Big idea:}
   \begin{itemize}
-    \item best-case: luckily visit maximum first, only one reassign
-    \item worst-case: unluckily visit in increasing order, reassign $n$ times
-    \item (same)
-    \item \textbf{but what about the expected number of reassigns?}
+    \item randomization makes the adversary's job harder
+    \item so improves the algorithm's expected performance
   \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Randomized Maximum Analysis}
+\begin{frame} \frametitle{Adversarial Analysis of Deterministic Hiring}
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{DETERMINISTIC-HIRE-ASSISTANT}{$A$}
+    \State best $ = $ NIL
+    \For { $x$ in $A$ }
+      \If { best is still NIL or $x$ is better than best }
+        \State best $= x$
+      \EndIf
+    \EndFor
+    \State \Return { best }
+    \EndFunction
+  \end{algorithmic}
+  }
+  \vspace{12pt}
+
+  Q: How cdoes an adversary arrange $A$ to maximize reassignments?
+  \vspace{12pt}
+
+  Q: What is the worst-case number of reassignments?
+\end{frame}
+
+\begin{frame} \frametitle{Randomized Hiring}
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{RANDOMIZED-HIRE-ASSISTANT}{$A$}
+    \State Randomly permute $A$ \Comment{ only change }
+    \State best $ = $ NIL
+    \For { $x$ in $A$ }
+      \If { best is still NIL or $x$ is better than best }
+        \State best $= x$
+      \EndIf
+    \EndFor
+    \State \Return { best }
+    \EndFunction
+  \end{algorithmic}
+  }
+  \vspace{12pt}
+
+  Observe
+  \begin{itemize}
+    \item the same worst-case scenario exists
+    \item \textbf{but}, the adversary cannot force it to occur
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Randomized Hiring Analysis}
 Define
 \[ X_i = \{\text{1 if best is reassigned in iteration } i, 0 \text{ otherwise} \} .\]
 Observe
@@ -207,7 +183,8 @@ and since $A$ is permuted randomly,
 \[ Pr\{X_i=1\} = 1/i \text{ so } E[X_i] = 1/i, \]
 and the total number of reassigns is
 \[ X = 1/1 + 1/2 + 1/3 + 1/4 + \ldots + 1/n \in O(\log n). \]
-$\implies$ expected number of reassigns is $O(\log n).$
+
+\# reassignments is $O(\log n)$ expected and $\Theta(n)$ worst-case.
 \end{frame}
 
 %\begin{frame} \frametitle{Birthday Paradox}
@@ -221,7 +198,7 @@ $\implies$ expected number of reassigns is $O(\log n).$
 analysis
 \vspace{1cm}
 
-\textbf{Best from random order pattern}: maximum only gets reassigned expected $O(\log n)$ times,
+\textbf{Best from random order pattern}: best only gets reassigned expected $O(\log n)$ times,
 worst case $\Theta(n)$ times
 
 \end{frame}
@@ -249,25 +226,58 @@ Answers to questions:
 \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Random Load Balancing}
+\begin{frame} \frametitle{Application: Web Server Load Balancer}
+  \begin{itemize}
+    \item scenario: we have $b$ webservers, $n$ requests coming in, need to route
+      each request to one of the servers $1, \ldots, b$
+    \item adversary could make expensive requests, so if we take turns in a deterministic
+      way, we are vulnerable to a denial-of-service attack
+      \begin{itemize}
+        \item example: round-robin
+      \end{itemize}
+    \item So route requests randomly somehow
+    \item Idea: choose a \textbf{random} server in $\{1, \ldots, b\}$
+    \item Worst-case user experience depends on the heaviest-loaded server
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{With High Probability (WHP)}
+
+\textbf{Terminology:} Let $p(n)$ be the probability that event $X$ occurs as a function of $n;$
+then $X$ occurs \emph{with high probability (w.h.p. or WHP)} when
+\[ \lim_{n \rightarrow \infty} p(n) = 1. \]
+
+Examples of $p(n)$ bounds considered w.h.p.: $O(1-\frac{1}{n})$, $O(1-\frac{1}{n^2})$, $O(1-\frac{1}{n \log n}).$
+\vspace{12pt}
+
+Typically, of the form $O(1-\frac{1}{n^k})$ for $k \geq 1.$
+\vspace{12pt}
+
+Intuition: for sufficiently large $n,$ event $X$ is practically certain.
+\end{frame}
+
+\begin{frame} \frametitle{Analyzing Random Load Balancing}
 \begin{itemize}
   \item suppose $n=b$
-  \item suppose the \#balls in a bin is its \emph{load,} high load is bad
+  \item suppose the \#balls in a bin is its \emph{load}
+  \item high load is bad
   \item \emph{After $n$ throws, what is the maximum load?}
-    \[ \frac{\log n}{\log \log n} \text{ w.h.p. } \]
-  \item ( \emph{w.h.p.} = with high probability = probability of being untrue is $O(1/n^k)$ for $k \geq 1$ )
+    \[ \frac{\log n}{\log \log n} + o(1) \text{ w.h.p. } \]
+  \item Note that for $n \geq 2,$
+    \[ \frac{\log n}{\log \log n} \ll \log n . \]
 \end{itemize}
 \end{frame}
 
 \begin{frame} \frametitle{The Power of Two Random Choices}
 \begin{itemize}
-  \item elegant \href{https://www.eecs.harvard.edu/~michaelm/postscripts/handbook2001.pdf}{result by Michael Mitzenmacher}
   \item \textbf{two random choices}: pick two bins at random, put the ball in
     \emph{the less-loaded bin;} maximum load becomes
     \[ \frac{\log \log n}{\log 2} + \Theta(1) \text{ w.h.p. } \]
+  \item Note that $\frac{\log \log n}{\log 2} \ll \frac{\log n}{\log \log n}$; the choosing dramatically decreases maximum load
+  \item Intuition: what random events lead to a high load in each scenario?
   \item generally, if we make \textbf{$d$ random choices}, maximum load is
     \[ \frac{\log \log n}{\log d} + \Theta(1) \text { w.h.p. } \]
-  \item almost constant; truly constant if we set $d \in \Omega(\log n)$
+  \item almost constant
 \end{itemize}
 \end{frame}
 
@@ -286,58 +296,8 @@ Trade-off:
   \item one random choice: choosing bin involves only one random number,
   $\Theta(1)$ time, and
     does not involve state of bins; \emph{but} load can be more uneven
-  \item $d$ random choices: choosing bin involves $d$ random numbers,
-  $\Theta(d)$ time, and needs to know current load of bins; but
-  load is distributed very evenly
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Application: Web Server Load Balancer}
-\begin{itemize}
-  \item scenario: we have $b$ webservers, $n$ requests coming in, need to route
-    each request to one of the servers $1, \ldots, b$
-  \item adversary could make expensive requests, so if we take turns in a deterministic
-    way, we are vulnerable to a denial-of-service attack
-  \item $\therefore$ route requests randomly somehow
-  \item choose a random server in $\{1, \ldots, b\}$
-  \begin{itemize}
-    \item very simple
-    \item balls-and-bins: expect $n/b$ requests/server, $b$ requests before
-      a given server is working, $\Theta(b \log b)$ requests before all servers
-      working
-    \item maximum requests/server $\Theta(\frac{\log n}{\log \log n}) $ w.h.p.
-  \end{itemize}
-  \item choose two random servers, ask for their current load, route to
-    the less-loaded server
-    \begin{itemize}
-      \item good: better server utilization, maximum requests/server is lower
-        at $\Theta(\frac{\log \log n}{\log 2})$ w.h.p.
-      \item bad: routing involves querying two servers for current load
-      \item trade-off: which is worse, spending time on these current-load
-        queries, or letting some servers get more overloaded?
-    \end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Application: Chained Hash Tables}
-\begin{itemize}
-  \item Recall \emph{chained hash table:} use a random hash function to
-    map each key to a list of collisions called a \emph{chain}
-  \item search or delete involves looping through one chain (also insert
-    that checks for duplicates)
-  \item chain length is expected $\Theta(1)$ but worst-case $\Theta(n)$
-  \item (sketch)
-  \item power of two random choices:
-    \begin{itemize}
-      \item \textbf{two} random hash functions
-      \item to insert, find \textbf{two} random chains, add to the \emph{shorter} chain
-      \item length is still $\Theta(1)$ expected but worst-case $\Theta(\log \log n)$
-        w.h.p.
-      \item better for applications intolerant to outliers
-    \end{itemize}
-  \item could find $\Theta(\log n)$ random chains for worst-case $\Theta(1)$
-    chain length, but then table operations take $\Theta(\log n)$ time
-    and we might as well use a binary search tree
+  \item $d$ random choices: choosing bin involves querying the state of $\Theta(d)$ servers, but
+  load is distributed \textbf{extremely} evenly
 \end{itemize}
 \end{frame}
 
@@ -349,21 +309,6 @@ Trade-off:
   \item A: expected length of the longest streak is $\Theta(\log n)$
 \end{itemize}
 \end{frame}
-
-%\begin{frame} \frametitle{Application: Skip Lists}
-%  \begin{itemize}
-%    \item \emph{skip list:} alternative to a binary search tree
-%    \item \emph{layer 1} (bottom) is a sorted linked list
-%    \item layer 2: contains subset of layer 1; each layer-1 element is present
-%      with probability $\frac{1}{2}$
-%    \item layer $i$: contains subset of layer $(i-1);$ each lower element is
-%      present with probability $\frac{1}{2}$
-%    \item (sketch)
-%    \item search takes time $\Theta(\text{\# layers})$
-%    \item \# layers = length of streak after $n$ flips = $\Theta(\log n)$
-%    \item $\implies$ searching a skip list takes $\Theta(\log n)$ expected time
-%  \end{itemize}
-%\end{frame}
 
 \begin{frame} \frametitle{Hash Tables}
 Review hash tables
@@ -379,49 +324,259 @@ Review hash tables
 \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Hash Table Operations}
-  \begin{itemize}
-  \item HASH-TABLE-CREATE($T$): initialize $T$ as an empty hash table
-    \item HASH-TABLE-INSERT($T, x$): insert key $x.key$ associated with value $x$
-    \item HASH-TABLE-SEARCH($T, k$): return the element $x$ with $x.key=k$, or NIL if no such element exists
-    \item HASH-TABLE-DELETE($T, x$): remove $x$ and $x.key$ from $T$; no effect if they were absent
-  \end{itemize}
-  \end{frame}
+\begin{frame} \frametitle{Hash Set Operations}
+  \begin{center}
+    \begin{tabular}{llll}
+      \textbf{Operation} & \textbf{Pseudocode Example} & \textbf{Exp. Time} & \textbf{W.C. Time} \\ \hline
+      Create empty hash set & \texttt{S = HashSet()} & $\Theta(1)$ & $\Theta(1)$ \\
+      Insert an element & \texttt{S.insert(x)} & $\Theta(1)$ & $\Theta(n)$ \\
+      Remove an element & \texttt{S.remove(x)} & $\Theta(1)$ & $\Theta(n)$ \\
+      Search for an element & \texttt{if S.contains(x):} & $\Theta(1)$ & $\Theta(n)$ \\
+    \end{tabular}
+  \end{center}
+
+  \vspace{12pt}
+  Recall: A math set cannot have duplicates, so inserting the same $x$ multiple times leaves only one copy in the set.
+\end{frame}
+
+\begin{frame} \frametitle{Hash Map Operations}
+  \begin{center}
+    \begin{tabular}{llll}
+      \textbf{Operation} & \textbf{Pseudocode Example} & \textbf{Exp. Time} & \textbf{W.C. Time} \\ \hline
+      Create empty hash map & \texttt{M = HashMap()} & $\Theta(1)$ & $\Theta(1)$ \\
+      Insert $k, v$ & \texttt{M.insert(k, v)} & $\Theta(1)$ & $\Theta(n)$ \\
+      Remove key $k$ & \texttt{S.remove(k)} & $\Theta(1)$ & $\Theta(n)$ \\
+      Search for key $k$ & \texttt{if S.contains(k):} & $\Theta(1)$ & $\Theta(n)$ \\
+      Lookup key $k$ & \texttt{S.get(k)} & $\Theta(1)$ & $\Theta(n)$ \\
+    \end{tabular}
+  \end{center}
+
+  \vspace{12pt}
+  Recall: Each key must be distinct, so re-inserting a new value for key $k$ overwrites the old value.
+\end{frame}
 
 \begin{frame} \frametitle{Reduce-to-Hash-Tables Pattern}
 \begin{itemize}
   \item make critical use of a hash set or hash map
-  \item good: fast, simple (when hash internals are encapsulated)
+  \item replace a $\Theta(n)$ loop with a $\Theta(1)$ expected-time hash table operation
+  \item good: fast, simple
   \item bad: time efficiency becomes \emph{expected}
 \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Application: Duplicate Removal}
+\begin{frame} \frametitle{Duplicate Removal Problem}
+  \emph{duplicate removal problem} \\
   \textbf{input:} an array $A[1..n]$ of objects\\
   \textbf{output:} a list $D$ of the distinct elements of $A$ (i.e. duplicates
     are removed)\\
-    \vspace{.3cm}
 
-  Baseline uses nested for loops and $\Theta(n^2)$ time. Reducing to hash tables:
-  \vspace{.3cm}
+\end{frame}
 
+\begin{frame} \frametitle{Duplicate Removal -- Baseline Pseudocode}
   {\footnotesize
   \begin{algorithmic}[1]
-    \Function{REMOVE-DUPLICATES}{$A$}
-    \State HASH-TABLE-CREATE($S$)
+    \Function{REMOVE-DUPLICATES-BASELINE}{$A$}
     \State $D$ = new list
+    \For { $a$ in $A$ }
+        \State already-present $ = $ False
+        \For { $d$ in $D$ }
+          \If { $a$ == $d$ }
+            \State already-present $ = $ True
+          \EndIf
+        \EndFor
+        \If { not already-present }
+          \State $D$.add($a$)
+        \EndIf
+    \EndFor
+    \State \Return { $D$ }
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
+\begin{frame} \frametitle{Duplicate Removal -- Baseline Analysis}
+  \begin{itemize}
+    \item outer loop: $n$ iterations
+    \item inner loop: $\Theta(n)$ time
+    \item total $\Theta(n^2)$ time
+    \item bottleneck is the nested loops
+    \item \emph{Reduce-to-Hash-Tables Pattern:} replace the inner loop with a hash table operation
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Duplicate Removal -- Improved Algorithm}
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{REMOVE-DUPLICATES-RANDOMIZED}{$A$}
+    \State $HS$ = HashSet()
     \For { $x$ in $A$ }
-      \If { HASH-TABLE-SEARCH($S, x$) = NIL }
-        \State $D$.add($x$)
-        \State HASH-TABLE-INSERT($S, x$)
+      \If { not $HS$.contains($x$) }
+        \State $HS$.insert($x$)
       \EndIf
     \EndFor
+    \State $D = $ insert each element of $HS$ into a list \Comment{ match \textbf{output:} data type }
     \State \Return { $D$ }
     \EndFunction
   \end{algorithmic}
   }
   \vspace{.3cm}
   $\Theta(n)$ expected time, $\Theta(n^2)$ worst-case time.
+\end{frame}
+
+\begin{frame} \frametitle{Duplicate Removal -- Analyze Trade-Offs}
+  \begin{itemize}
+    \item baseline: $\Theta(n^2)$ time; more complicated; not dependent on hash tables knowledge
+    \item randomized: $\Theta(n)$ expected time, $\Theta(n^2)$ worst-case time; simpler; depends on hash tables
+    \item randomized is superior
+    \item pay-off for learning about data structures!
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Planning a Hash Set}
+\begin{itemize}
+  \item hash set stores \emph{key-value} associations
+  \item each key is linked to a value
+  \item \emph{key:} identity of a thing
+  \item \emph{value:} information associated with that thing
+  \item insert, remove, search
+  \item Strategy: fill in the blanks ``Given \_\_\emph{key}\_\_, update \_\_\emph{value}\_\_ .''
+  \item Strategy: write out concrete data in a table like
+  \begin{center}
+    \begin{tabular}{ll}
+      \textbf{Key} & \textbf{Value} \\ \hline
+      key 1 & value 1 \\
+      key 2 & value 2 \\
+      $\ldots$ & $\ldots$ 
+    \end{tabular}
+  \end{center}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame} \frametitle{Mode Problem}
+  \emph{duplicate removal problem} \\
+  \textbf{input:} a list $A$ of $n$ elements\\
+  \textbf{output:} a most-frequently-ocurring element of $A$ \\
+
+  \vspace{24pt}
+  Note:
+  \begin{itemize}
+    \item $A$ is a list, not a set, so $A$ \textbf{may} have duplicates
+    \item in the event of ties, any of the ties may be output
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame} \frametitle{Mode -- Baseline Pseudocode}
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{MODE-BASELINE}{$A$}
+    \State mode = NIL
+    \State mode-count = 0
+    \For { $a$ in $A$ }
+      \State a-count = 0
+      \For { $b$ in $A$ }
+        \If { $b$ == $a$ }
+          \State a-count++
+        \EndIf
+      \EndFor
+      \If { a-count $>$ mode-count }
+        \State mode = $a$
+        \State mode-count = a-count
+      \EndIf
+    \EndFor
+    \State \Return {mode}
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
+\begin{frame} \frametitle{Mode -- Baseline Analysis}
+  \begin{itemize}
+    \item total $\Theta(n^2)$ time
+    \item again, bottleneck is the nested loops
+    \item \emph{Reduce-to-Hash-Tables Pattern:} replace the inner loop with a hash table operation
+    \item Pre-compute each element's count
+    \item Hash map:  ``Given (an element), update (its count) .''
+    \item Concrete data :
+    \[A = \langle 3, 1, 7, 1, 1, 1, 7 \rangle \]
+    \begin{center}
+      \begin{tabular}{ll}
+        \textbf{Key} & \textbf{Value} \\ \hline
+        3 & 1 \\
+        1 & 4 \\
+        7 & 2 \\
+      \end{tabular}
+    \end{center}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame} \frametitle{Mode -- Second Draft}
+  Hash table is used to speed up first draft, but we haven't initialized it yet.
+  \vspace{12pt}
+
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{MODE-RANDOMIZED}{$A$}
+    \State \emph{(somehow create and populate hash map ElementToCount)}
+    \State mode = $A[0]$
+    \State mode-count = 0
+    \For { $a$ in $A$ }
+        \State a-count = ElementToCount.get($a$)
+        \If { a-count $>$ mode-count }
+          \State mode = $a$
+          \State mode-count = a-count
+      \EndIf
+    \EndFor
+    \State \Return {mode}
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
+
+\begin{frame} \frametitle{Mode -- Final Draft}
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{MODE-RANDOMIZED}{$A$}
+    \State ElementToCount = HashMap()
+    \For { $a$ in $A$ }
+      \If{ ElementToCount.contains($a$) }
+        \State ElementToCount.set($a$, ElementToCount.get($a$) $+ 1$)
+      \Else
+        \State ElementToCount.set($a$, 1)
+      \EndIf
+    \EndFor
+    \State mode = $A[0]$
+    \State mode-count = 0
+    \For { $a$ in $A$ }
+        \State a-count = ElementToCount.get($a$)
+        \If { a-count $>$ mode-count }
+          \State mode = $a$
+          \State mode-count = a-count
+      \EndIf
+    \EndFor
+    \State \Return {mode}
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
+
+\begin{frame} \frametitle{Duplicate Removal -- Analyze Trade-Offs}
+  \begin{itemize}
+    \item baseline: $\Theta(n^2)$ time
+    \item randomized:
+      \begin{itemize}
+        \item first loop: $\Theta(n)$ expected, $\Theta(n^2)$ worst-case
+        \item second loop: same
+        \item everything else: $\Theta(1)$
+        \item total: $\Theta(n)$ expected, $\Theta(n^2)$ worst-case
+        \item again, refactoring two nested loops into two sequential loops speeds things up
+      \end{itemize}
+    \item again, randomized is superior
+  \end{itemize}
 \end{frame}
 
 \end{document}
