@@ -51,7 +51,7 @@ This work is licensed under a
     \item every sorting algorithm takes $\Omega(n \log n)$ time
     \item merge sort takes $\Theta(n \log n)$ worst-case time and $\Theta(n)$
       space
-    \item \textbf{quicksort:}
+    \item \textbf{quicksort synopsis:}
     \begin{itemize}
       \item recursive divide-and-conquer
       \item pick random pivot $p$
@@ -107,14 +107,16 @@ This work is licensed under a
   }
   \vspace{24pt}
 
-  Analyze the number of \textbf{reassignments} (line 6)
+  Analyze the number of \textbf{reassignments} (line 5)
 \end{frame}
 
 \begin{frame} \frametitle{Adversarial Analysis}
   \textbf{Adversarial analysis:} Proof strategy for worst-case analysis
+  \vspace{12pt}
 
   ``Adversary''
   \begin{itemize}
+    \item is a fictional opponent character
     \item seeks to show algorithm is inefficient
     \item has full knowledge of algorithm pseudocode
     \item picks least-flattering input
@@ -144,7 +146,7 @@ This work is licensed under a
   }
   \vspace{12pt}
 
-  Q: How cdoes an adversary arrange $A$ to maximize reassignments?
+  Q: How can an adversary arrange $A$ to maximize reassignments?
   \vspace{12pt}
 
   Q: What is the worst-case number of reassignments?
@@ -277,7 +279,7 @@ Intuition: for sufficiently large $n,$ event $X$ is practically certain.
   \item Intuition: what random events lead to a high load in each scenario?
   \item generally, if we make \textbf{$d$ random choices}, maximum load is
     \[ \frac{\log \log n}{\log d} + \Theta(1) \text { w.h.p. } \]
-  \item almost constant
+  \item very slow-growing, nearly constant
 \end{itemize}
 \end{frame}
 
@@ -461,7 +463,7 @@ Review hash tables
   \vspace{24pt}
   Note:
   \begin{itemize}
-    \item $A$ is a list, not a set, so $A$ \textbf{may} have duplicates
+    \item $A$ is a list, not a set, so $A$ may have duplicates
     \item in the event of ties, any of the ties may be output
   \end{itemize}
 \end{frame}
@@ -573,7 +575,7 @@ Review hash tables
         \item second loop: same
         \item everything else: $\Theta(1)$
         \item total: $\Theta(n)$ expected, $\Theta(n^2)$ worst-case
-        \item again, refactoring two nested loops into two sequential loops speeds things up
+        \item like the maximum subarray algorithm, refactoring two nested loops into two sequential loops speeds things up
       \end{itemize}
     \item again, randomized is superior
   \end{itemize}
