@@ -347,9 +347,9 @@ Review hash tables
       \textbf{Operation} & \textbf{Pseudocode Example} & \textbf{Exp. Time} & \textbf{W.C. Time} \\ \hline
       Create empty hash map & \texttt{M = HashMap()} & $\Theta(1)$ & $\Theta(1)$ \\
       Insert $k, v$ & \texttt{M.insert(k, v)} & $\Theta(1)$ & $\Theta(n)$ \\
-      Remove key $k$ & \texttt{S.remove(k)} & $\Theta(1)$ & $\Theta(n)$ \\
-      Search for key $k$ & \texttt{if S.contains(k):} & $\Theta(1)$ & $\Theta(n)$ \\
-      Lookup key $k$ & \texttt{S.get(k)} & $\Theta(1)$ & $\Theta(n)$ \\
+      Remove key $k$ & \texttt{M.remove(k)} & $\Theta(1)$ & $\Theta(n)$ \\
+      Search for key $k$ & \texttt{if M.contains(k):} & $\Theta(1)$ & $\Theta(n)$ \\
+      Lookup key $k$ & \texttt{M.get(k)} & $\Theta(1)$ & $\Theta(n)$ \\
     \end{tabular}
   \end{center}
 
@@ -412,9 +412,7 @@ Review hash tables
     \Function{REMOVE-DUPLICATES-RANDOMIZED}{$A$}
     \State $HS$ = HashSet()
     \For { $x$ in $A$ }
-      \If { not $HS$.contains($x$) }
         \State $HS$.insert($x$)
-      \EndIf
     \EndFor
     \State $D = $ insert each element of $HS$ into a list \Comment{ match \textbf{output:} data type }
     \State \Return { $D$ }
@@ -434,7 +432,7 @@ Review hash tables
   \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Planning a Hash Set}
+\begin{frame} \frametitle{Planning a Hash Map}
 \begin{itemize}
   \item hash set stores \emph{key-value} associations
   \item each key is linked to a value
@@ -456,7 +454,7 @@ Review hash tables
 
 
 \begin{frame} \frametitle{Mode Problem}
-  \emph{duplicate removal problem} \\
+  \emph{mode problem} \\
   \textbf{input:} a list $A$ of $n$ elements\\
   \textbf{output:} a most-frequently-ocurring element of $A$ \\
 
@@ -522,7 +520,7 @@ Review hash tables
   \begin{algorithmic}[1]
     \Function{MODE-RANDOMIZED}{$A$}
     \State \emph{(somehow create and populate hash map ElementToCount)}
-    \State mode = $A[0]$
+    \State mode = NIL
     \State mode-count = 0
     \For { $a$ in $A$ }
         \State a-count = ElementToCount.get($a$)
@@ -550,7 +548,7 @@ Review hash tables
         \State ElementToCount.set($a$, 1)
       \EndIf
     \EndFor
-    \State mode = $A[0]$
+    \State mode = NIL
     \State mode-count = 0
     \For { $a$ in $A$ }
         \State a-count = ElementToCount.get($a$)
@@ -566,7 +564,7 @@ Review hash tables
 \end{frame}
 
 
-\begin{frame} \frametitle{Duplicate Removal -- Analyze Trade-Offs}
+\begin{frame} \frametitle{Mode -- Analyze Trade-Offs}
   \begin{itemize}
     \item baseline: $\Theta(n^2)$ time
     \item randomized:
