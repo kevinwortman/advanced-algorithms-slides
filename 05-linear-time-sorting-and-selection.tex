@@ -371,18 +371,18 @@ Clearly $\Theta(n \log n)$ time \stanza
 \begin{column}{0.5\textwidth}
   \begin{algorithmic}[1]
     \Function{RPART}{A, p, r}
-    \State $i = $ random in $[p, r]$
-    \State $swap(A[i], A[r])$
-    \State $pivot = A[r]$
-    \State $i = p$
-    \For { $j$ from $p$ to $r-1$ }
-      \If { $A[j] < pivot$ }
-        \State $swap(A[i], A[j])$
-        \State $i++$
+    \State $k = $ random in $[p, r]$ \Comment{pivot index}
+    \State $swap(A[k], A[r])$ \Comment{move pivot aside}
+    \State $pivot = A[r]$ \Comment{pivot value}
+    \State $i = p - 1$ \Comment{$i$ is first $\leq$pivot index}
+    \For { $j$ from $p$ to $r-1$ } 
+      \If { $A[j] \leq pivot$ } 
+      \State $i++$
+      \State $swap(A[i], A[j])$
       \EndIf
     \EndFor
-    \State $swap(A[i], A[r])$
-    \State \Return{ $i$ }
+    \State $swap(A[i+1], A[r])$ \Comment{move pivot back}
+    \State \Return{ $i+1$ }
     \EndFunction
   \end{algorithmic}
 \end{column}
