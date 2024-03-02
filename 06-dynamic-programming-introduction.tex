@@ -1,5 +1,5 @@
 
-\documentclass{beamer}
+\documentclass[10pt,aspectratio=169]{beamer}
 
 \usepackage{algpseudocode, color, colortbl}
 
@@ -22,7 +22,7 @@
 \newcommand{\naive}{na\"{i}ve~}
 \newcommand{\Naive}{Na\"{i}ve~}
 
-\title{11. Dynamic Programming Introduction}
+\title{06. Dynamic Programming Introduction}
 \subtitle{CPSC 535}
 \author{Kevin A. Wortman}
 \institute{ \includegraphics[height=2cm]{csuf-logo-cmyk} }
@@ -75,7 +75,7 @@ This work is licensed under a
 \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Optimization, Value, Solution}
+\begin{frame} \frametitle{Terminology: Optimization, Value, Solution}
 \begin{itemize}
   \item dynamic programming usually applies to \textbf{optimization} problems
   \begin{itemize}
@@ -185,7 +185,7 @@ This work is licensed under a
   \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Design Process}
+\begin{frame} \frametitle{Dynamic Programming Design Process}
 \begin{enumerate}
   \item Identify the problem's \textbf{solution} and \textbf{value}, and note which is our \textbf{goal}.
   \item Derive a \textbf{recurrence} for an optimal value.
@@ -335,13 +335,13 @@ Ways of cutting $\Box\Box\Box\Box$:
 
 \begin{itemize}
   \item \textbf{memoization:} use a hash dictionary to make a ``memo'' of pre-calculated solutions
-  \item use $i$ as key in table $T$ (same API as hash tables in deck 4)
-  \item after we compute an $r_i,$ set $r_i.key = i$ and insert $r_i$ into $T$
-  \item if $T$ does not contain key $i,$ then we haven't computed $r_i$ yet
+  \item use $i$ as key in hash map \texttt{T} (same notation as deck 4)
+  \item after we compute an $r_i,$ do \texttt{T.insert(}$i, r_i$\texttt{)}
+  \item if \texttt{T} does not contain key $i,$ then we haven't computed $r_i$ yet
   \item need two functions
   \begin{itemize}
-    \item public non-recursive function to create $T$ and start recursion
-    \item private recursive function that expects $T$ to exist
+    \item public non-recursive function to create \texttt{T} and start recursion
+    \item private recursive function that expects \texttt{T} to exist
   \end{itemize}
 \end{itemize}
 \end{frame}
@@ -350,13 +350,12 @@ Ways of cutting $\Box\Box\Box\Box$:
   {\scriptsize
   \begin{algorithmic}[1]
     \Function{CUT-ROD-MEMOIZED}{P, n}
-    \State HASH-TABLE-CREATE($T$)
+    \State $T$ = \texttt{HashMap()}
     \State \Return{CUT-ROD-MEMO-REC($T, P, n$)}
     \EndFunction
     \Function{CUT-ROD-MEMO-REC}{$T, P, n$}
-    \State $q = $ HASH-TABLE-SEARCH($T, n$)
-    \If{ $q \ne$ NIL }
-      \State \Return{ $q$ }
+    \If{ \texttt{T.contains(}$n$\texttt{)} }
+      \State \Return{ \texttt{T.get(}$n$\texttt{)} }
     \EndIf
     \If{ n == 0 }
       \State $q=0$
@@ -366,8 +365,7 @@ Ways of cutting $\Box\Box\Box\Box$:
         \State $q = \max(q, P[i] + \text{CUT-ROD-MEMO-REC(T, P, n - i)})$
       \EndFor
     \EndIf
-    \State $q.key = n$
-    \State HASH-TABLE-INSERT($q$)
+    \State \texttt{T.insert(}$n, q$\texttt{)}
     \State \Return{$q$}
     \EndFunction
   \end{algorithmic}
@@ -386,11 +384,11 @@ Ways of cutting $\Box\Box\Box\Box$:
 \end{enumerate}
 
 \begin{itemize}
-  \item observe: in CUT-ROD-MEMOIZED, keys are inserted into $T$ in order $0, 1, \ldots, n$
+  \item observe: in CUT-ROD-MEMOIZED, keys are inserted into \texttt{T} in order $0, 1, \ldots, n$
   \item \textbf{bottom-up:} write an explicit \textbf{for} loop that computes and stores every general case $r_i$ in order $r_1, \ldots, r_n$
   \item base case is computed and stored before the loop
   \item convenient to use an array instead of hash table
-  \item define $R[i] = r_i$
+  \item define $R[i] \equiv r_i$
   \item no more recursion, just loops
 \end{itemize}
 \end{frame}
@@ -424,13 +422,12 @@ Ways of cutting $\Box\Box\Box\Box$:
 \begin{frame} \frametitle{Top-Down Analysis}
     \begin{itemize}
       \item trickier analysis
-      \item observe: hash \textbf{if} statement guarantees that each subproblem is solved exactly once
+      \item observe: first \textbf{if} statement guarantees that each subproblem is solved exactly once
       \item solving subproblem $i,$ not counting recursion: $\Theta(i)$ time due to \textbf{for} loop
       \item total of all subproblems is $\sum_{i=1}^n i \in \Theta(n^2)$
       \item hash operations add ``expected'' qualifier
       \item $\therefore$ CUT-ROD-MEMOIZED takes $\Theta(n^2)$ expected time
-      \item with effort we could replace the hash table with an array for $\Theta(n^2)$ worst-case time
-      \item CUT-ROD-MEMOIZED has worse constant factors due to the overhead of recursive function calls
+      \item CUT-ROD-MEMOIZED also has worse constant factors due to the overhead of recursive function calls
     \end{itemize}
 \end{frame}
 
