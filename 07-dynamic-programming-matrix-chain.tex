@@ -1,5 +1,5 @@
 
-\documentclass{beamer}
+\documentclass[10pt,aspectratio=169]{beamer}
 
 \usepackage{algpseudocode, color, colortbl}
 
@@ -53,6 +53,211 @@ This work is licensed under a
 \end{itemize}
 \end{frame}
 
+
+\begin{frame} \frametitle{Recap: Dynamic Programming Design Process}
+  \begin{enumerate}
+    \item Identify the problem's \textbf{solution} and \textbf{value}, and note which is our \textbf{goal}.
+    \item Derive a \textbf{recurrence} for an optimal value.
+    \item Design a divide-and-conquer algorithm that computes an \textbf{optimal value}.
+    \item Design a dynamic programming algorithm that computes an \textbf{optimal value}.
+    \begin{enumerate}
+      \item \textbf{top-down} alternative: add table base case (\textbf{memoization})
+      \item \textbf{bottom-up} alternative: rewrite to use bottom-up loops instead of recursion
+    \end{enumerate}
+    \item (if goal is a solution algo.) Design a dynamic programming algorithm that computes an \textbf{optimal solution}.
+  \end{enumerate}
+  \end{frame}
+
+\begin{frame} \frametitle{Rod Cutting Step 5}
+  \begin{enumerate}
+    \setcounter{enumi}{4}
+    \item (if goal is a solution algo.) Design a dynamic programming algorithm that computes an \textbf{optimal solution}.
+    \stanza
+  \end{enumerate}
+
+  
+  \emph{rod cutting value problem} \\
+  \textbf{input:} an array of non-negative prices $P=\langle p_1, \ldots, p_n \rangle$ \\
+  \textbf{output:} the maximum total price that can be achieved by cutting an $n$-inch rod into pieces
+  \stanza
+
+  \emph{rod cutting problem} \\
+  \textbf{input:} an array of non-negative prices $P=\langle p_1, \ldots, p_n \rangle$ \\
+  \textbf{output:} the list of cut-lengths of maximum total price for an $n$-inch rod
+
+\end{frame}
+
+\begin{frame} \frametitle{Recap: Rod Cutting Step 4.b}
+  {\small
+  \begin{algorithmic}[1]
+    \Function{CUT-ROD-BU}{P[1..n]}
+    \State Create array $R[0..n]$
+    \State $R[0] = 0$
+    \For{$j$ from 1 to $n$}
+      \State $q=-\infty$
+      \For{$i$ from 1 to $j$}
+        \State{$q = \max(q, P[i] + R[j-i])$}
+      \EndFor
+      \State $R[j] = q$
+    \EndFor
+    \State \Return $R[n]$
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
+\begin{frame} \frametitle{Moving from Values to Solutions}
+  \begin{itemize}
+    \item \textbf{value} version of rod cutting: output is a number (total price)
+    \item \textbf{solution} version: output is a list of cuts
+    \item Example: for input $n=11,$ output might be $\langle 4, 4, 2, 1 \rangle$
+    \item Na\"{i}ve approach: $R[i]$ stores a list of cuts, instead of just a number
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Rod Cutting Step 5 -- First Draft}
+  {\small
+  \begin{algorithmic}[1]
+    \Function{CUT-ROD-SOLUTION}{P[1..n]}
+    \State Create array $R[0..n]$ 
+    \State $R[0] = \langle \rangle$ \Comment{empty sequence}
+    \For{$j$ from 1 to $n$}
+      \State $q= \langle \rangle $
+      \For{$i$ from 1 to $j$}
+        \State cut-i $= R[j-i] \cup \langle j \rangle$ \Comment{copy of $R[j-i]$ with $j$ appended}
+        \If{ TOTAL-PRICE($P,$ cut-i) $>$ TOTAL-PRICE($P, q$) }
+          \State $q = $ cut-i
+        \EndIf
+      \EndFor
+      \State $R[j] = q$
+    \EndFor
+    \State \Return $R[n]$
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
+
+\begin{frame} \frametitle{Rod Cutting Step 5 -- First Draft}
+  {\small
+  \begin{algorithmic}[1]
+    \Function{TOTAL-PRICE}{P[1..n], cuts}
+      \State $x = 0$
+      \For{$j$ in cuts}
+        \State $x = x + P[j]$
+      \EndFor
+      \State \Return $x$
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
+\begin{frame} \frametitle{Analysis}
+\begin{itemize}
+  \item worst-case length of an $R[j]$ is $\Theta(n)$
+    \begin{itemize}
+      \item (all 1-cuts)
+    \end{itemize}
+  \item so TOTAL-PRICE takes $\Theta(n)$ time
+  \item creating each cut-i takes $\Theta(n)$ time
+  \item CUT-ROD-SOLUTION takes $\Theta(n^3)$ time
+  \item \textbf{space} is an issue: CUT-ROD-SOLUTION takes $\Theta(n^2)$ space
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Backtracking}
+  \begin{itemize}
+    \item algorithm computes optimal value, and \textbf{logs (records) how it made each decision}
+    \item after all optimal values have been computed, follow a ``trail'' to create solution object
+    \item trail ends at the optimal solution
+    \item each log entry says how to go one step backwards
+    \item follow them until we get to the start (a base case)
+    \item traverses solution in backwards order; reverse it if order matters
+    \item backtracking is usually only $\Theta(n)$ time, and $\Theta(n)$ space overhead
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Rod Cutting Step 5}
+  \begin{enumerate}
+    \setcounter{enumi}{4}
+    \item (if goal is a solution algo.) Design a dynamic programming algorithm that computes an \textbf{optimal solution}.
+  \end{enumerate}
+
+  \begin{itemize}
+    \item bottom-up algo. makes optimal choices with
+      \[ q = \max(q, P[i] + R[j-i]) \]
+      step
+    \item i.e. it chooses how many inches to cut right now
+    \item \textbf{log} these choices in another array
+    \item recall $R[j] = $ maximum total price starting from $j$ inches
+    \item define $S[j] = $ size of the first optimal cut starting from $j$ inches
+    \item need to update pseudocode to
+    \begin{itemize}
+      \item create $S$
+      \item update $S$ inside the loops
+      \item at the end, backtrack $S$ to compute a list of lengths
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Rod Cutting Step 5 -- Pseudocode}
+  {\small
+  \begin{algorithmic}[1]
+    \Function{CUT-ROD-SOLUTION}{P[1..n]}
+    \State Create arrays $R[0..n]$ and $S[0..n]$
+    \State $R[0] = 0$
+    \For{$j$ from 1 to $n$}
+      \State $q=-\infty$
+      \For{$i$ from 1 to $j$}
+        \If{ $q < (P[i] + R[j-i])$ }
+          \State{$q = P[i] + R[j-i]$}
+          \State{$S[j] = i$}
+        \EndIf
+      \EndFor
+      \State $R[j] = q$
+    \EndFor
+    \State \Return{CUT-ROD-BACKTRACK($S, n$)}
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
+\begin{frame} \frametitle{Rod Cutting Step 5 -- Pseudocode}
+  {\small
+  \begin{algorithmic}[1]
+    \Function{CUT-ROD-BACKTRACK}{$S[0..n], n$}
+    \State cuts = $\langle \rangle$ \Comment{empty sequence}
+    \State $j = n$ \Comment{remaining rod}
+    \While { $j > 0$ }
+      \State cuts.append($S[j]$)
+      \State $j = j - S[j]$
+    \EndWhile
+    \State cuts.reverse() \Comment{put in forward order}
+    \State \Return{cuts}
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
+\begin{frame}{Analysis}
+  \begin{itemize}
+    \item CUT-ROD-SOLUTION solves the \emph{rod cutting problem}
+    \begin{itemize}
+      \item it returns a list of cut-lengths, not a price
+    \end{itemize}
+    \item analysis is actually straightforward
+    \item time efficiency:
+    \begin{itemize}
+      \item nested \textbf{for} loops: $\Theta(n^2)$
+      \item backtracking: \textbf{while} loop iterates at most $n$ times $\Rightarrow \Theta(n)$ time
+      \item reverse soln: $\Theta(n)$
+      \item total $\Theta(n^2+n+n)=\Theta(n^2)$ time
+    \end{itemize}
+    \item space efficiency: $R$ and $S$ take $\Theta(n+n)=\Theta(n)$ space
+    \item (same as the step-4 algorithms)
+  \end{itemize}
+\end{frame}
+
 \begin{frame} \frametitle{Matrix Multiplication}
   for matrices $A_1, A_2:$
   \[ A_1 A_2 \]
@@ -89,6 +294,7 @@ Recall:
 \end{frame}
 
 \begin{frame} \frametitle{\Naive Matrix Multiplication Algorithm}
+
   {\small
   \begin{algorithmic}[1]
     \Function{MATRIX-MULTIPLY}{A, B}
@@ -105,8 +311,10 @@ Recall:
     \EndFunction
   \end{algorithmic}
   }
+  \vspace{14pt}
   
   \textbf{Analysis:} $\Theta(A.rows \times A.columns \times B.columns)$
+
 \end{frame}
 
 \begin{frame} \frametitle{Matrix Chain Multiplication}
@@ -147,8 +355,8 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
   \end{tabular}
 \end{center}
 \begin{itemize}
-  \item $((A_1 A_2)A_3)$ costs $10 \cdot 100 \cdot 5 + 10 \cdot 5 \cdot 50= 5,000+2,500 = 7,500$ scalar multiplies
-  \item $(A_1 (A_2 A_3))$ costs $100 \cdot 5 \cdot 50 + 10 \cdot 100 \cdot 50 = 25,000 + 50,000 = 75,000$ scalar multiplies
+  \item $((A_1 A_2)A_3)$ costs $10 \cdot 100 \cdot 5 + 10 \cdot 5 \cdot 50= 5,000+2,500 = 7,500$ multiply operations
+  \item $(A_1 (A_2 A_3))$ costs $100 \cdot 5 \cdot 50 + 10 \cdot 100 \cdot 50 = 25,000 + 50,000 = 75,000$ mult. operations
   \item first is order of magnitude faster
 \end{itemize}
 \end{frame}
@@ -279,13 +487,12 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
   {\scriptsize
   \begin{algorithmic}[1]
     \Function{MATRIX-CHAIN-VALUE-MEMOIZED}{$p[0..n]$}
-    \State HASH-TABLE-CREATE($T$)
+    \State $T$ = HashTable()
     \State \Return{MC-M($T, p, 1, n$)}
     \EndFunction
     \Function{MC-M}{$T, p[0..n], i, j$}
-    \State $q = $ HASH-TABLE-SEARCH($T, (i, j)$)
-    \If{ $q \ne$ NIL }
-      \State \Return{ $q$ }
+    \If{ $T$.contains($(i, j)$) }
+      \State \Return{ $T$.get($(i, j)$) }
     \EndIf
     \If{ $i==j$ }
       \State $q=0$
@@ -295,8 +502,7 @@ Given three matrices $A_1, A_2, A_3$ with dimensions
         \State $q = \min(q, \text{MC-M}(p, i, k) + \text{MC-M}(p, k+1, j)+ p[i-1] \times p[k] \times p[\, j])$
       \EndFor
     \EndIf
-    \State $q.key = (i, j)$
-    \State HASH-TABLE-INSERT($q$)
+    \State $T$.set($(i, j), q$)
     \State \Return{$q$}
     \EndFunction
   \end{algorithmic}
