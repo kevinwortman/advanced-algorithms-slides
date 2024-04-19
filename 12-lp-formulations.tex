@@ -1,5 +1,5 @@
 
-\documentclass{beamer}
+\documentclass[10pt,aspectratio=169]{beamer}
 
 \usepackage{algpseudocode, color, colortbl}
 
@@ -23,7 +23,7 @@
 
 \newcommand{\stanza}{ \\~\ }
 
-\title{09. Linear Programming Formulations}
+\title{12. Linear Programming Formulations}
 \subtitle{CPSC 535}
 \author{Kevin A. Wortman}
 \institute{ \includegraphics[height=2cm]{csuf-logo-cmyk} }
@@ -53,6 +53,70 @@ This work is licensed under a
   \end{itemize}
 \end{frame}
 
+\begin{frame} \frametitle{LP Formulation Algorithms}
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{SOLVE-PROBLEM-A}{input-to-A}
+    \State $LP$ = map input-to-A to a linear program
+    \State outcome = SIMPLEX-LP-SOLVER($LP$)
+    \If { outcome is "unbounded" }
+      \State \Return \emph{output in unbounded case}
+    \ElsIf { outcome is "infeasible" }
+      \State \Return \emph{output in infeasible case}
+    \Else
+      \State output = map LP solution to A solution
+      \State \Return output
+    \EndIf
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
+\begin{frame} \frametitle{LP Formulation Algorithms (provided the LP is certainly bounded)}
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{SOLVE-PROBLEM-A}{input-to-A}
+    \State $LP$ = map input-to-A to a linear program
+    \State outcome = SIMPLEX-LP-SOLVER($LP$)
+    \If { outcome is "infeasible" }
+      \State \Return \emph{output in infeasible case}
+    \Else
+      \State output = map LP solution to A solution
+      \State \Return output
+    \EndIf
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
+\begin{frame} \frametitle{LP Formulation Algorithms (provided the LP is certainly feasible)}
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{SOLVE-PROBLEM-A}{input-to-A}
+    \State $LP$ = map input-to-A to a linear program
+    \State outcome = SIMPLEX-LP-SOLVER($LP$)
+    \If { outcome is "unbounded" }
+      \State \Return \emph{output in unbounded case}
+    \Else
+      \State output = map LP solution to A solution
+      \State \Return output
+    \EndIf
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
+
+\begin{frame} \frametitle{LP Formulation Algorithms (provided the LP is certainly bounded \& feasible)}
+  {\footnotesize
+  \begin{algorithmic}[1]
+    \Function{SOLVE-PROBLEM-A}{input-to-A}
+    \State $LP$ = map input-to-A to a linear program
+    \State outcome = SIMPLEX-LP-SOLVER($LP$)
+    \State output = map LP solution to A solution
+    \EndFunction
+  \end{algorithmic}
+  }
+\end{frame}
 \begin{frame} \frametitle{Standard Form versus General Form}
 \textbf{general form LP:} a ``real'' LP, more flexible than standard form (previous slides)
 \begin{center}
@@ -223,10 +287,10 @@ The idea:
     \item the objective function, whether it is maximize or minimize
     \item the constraints, \textbf{what they represent}
     \item the entire LP in general form
-    \item how to interpret
+    \item the post-processing process
     \begin{itemize}
-      \item infeasible result
-      \item unbounded result
+      \item say what to do with "infeasible"; \textbf{or} prove every LP is feasible
+      \item say what to do with "unbounded"; \textbf{or} prove every LP is bounded
       \item solution result; how to interpret solution vector $x$ in
         terms of business logic
     \end{itemize}
