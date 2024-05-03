@@ -40,158 +40,7 @@ This work is licensed under a
   \titlepage
 \end{frame}
 
-\begin{frame} \frametitle{Big Idea: Renegotiating Problems}
-Sometimes we want to solve a problem, but there is an obstacle
-\begin{itemize}
-  \item computational complexity: problem is $NP$-hard or undecidable
-  \item ill-posed: don't know how to phrase problem as precise input/output statement
-  \stanza
-\end{itemize}
-
-These are insurmountable; progress is impossible.
-\end{frame}
-
-\begin{frame} \frametitle{Big Idea: Renegotiating Problems}
-  Sometimes we can \emph{negotiate} on the definition of the problem
-\begin{itemize}
-  \item adjust input/output def'n to correspond to an easier problem
-  \item more specific input
-  \item or, more general output
-  \item ideally, still helps with the domain problem
-  \item combines CS hard skills with domain soft skills
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Approximation}
-\textbf{Approximation}: output is \emph{nearly-optimal} but not necessarily
-truly optimal.
-\begin{itemize}
-  \item quality is quantified, \textbf{proven}
-  \item ``approximation'', ``approximate'' are technical terms; use other words
-    like ``decent'' for informal ideas about quality
-  \item suitable for use cases where approximate solutions are adequate
-  \item need to rewrite problem definition
-  \item every optimization problem has corresponding approximation problems; but these
-    are distinct problems
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Example: optimal vs. approximate graph coloring}
-\emph{graph coloring} \\
-\textbf{input}: connected graph $G=(V,E)$ \\
-\textbf{output}: coloring $c$ using $k$ colors, where each vertex $v \in V$ is assigned color
-  $c(v) \in \{1, \ldots k\},$ no pair of adjacent vertices are assigned the
-  same color, and the number of colors $k$ is minimal
-\stanza
-
-\emph{3-approximate graph coloring} \\
-\textbf{input}: connected graph $G=(V,E)$ \\
-\textbf{output}: coloring $c$ using $k$ colors, where each vertex $v \in V$ is assigned color
-  $c(v) \in \{1, \ldots k\},$ no pair of adjacent vertices are assigned the
-  same color, \textbf{and the number of colors $k$ satisfies $k \leq 3 k^\star$,
-  where $k^\star$ is the fewest colors possible for $G$}
-\end{frame}
-
-\begin{frame} \frametitle{Graph Coloring Example}
-  \begin{center}
-    \includegraphics[height=100pt]{13-graph-uncolored.jpg}
-    \includegraphics[height=100pt]{13-graph-colored-suboptimal.jpg}
-    \includegraphics[height=100pt]{13-graph-colored-optimal.jpg}
-  \end{center}
-\end{frame}
-
-\begin{frame} \frametitle{Approximation vs. Other Renegotiation Approaches}
-Other ways of dealing with hard problems:
-\begin{itemize}
-  \item say ``no''
-  \item when $n$ is tiny, settle for exponential-time algorithm
-  \item no \emph{proof} of solution quality, but sometimes good enough:
-    \begin{itemize}
-      \item machine learning algorithms (also, humans don't need to precisely define what counts as ``correct'')
-      \item heuristic algorithms
-      \item Monte Carlo algorithms
-    \end{itemize}
-\end{itemize}
-
-Approximation
-\begin{itemize}
-  \item pros: \emph{provable} solution quality, often fast
-  \item con: relatively difficult alg. design and analysis
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Performance Ratios}
-\textbf{Approximation ratio} $\rho(n)$: ratio between quality of algorithm's output
-and optimal output \stanza
-\begin{itemize}
-  \item smaller ratio is better
-  \item 1 is perfect
-  \item $\rho$ is defined differently for minimization, maximization problems
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Performance Ratio for Minimization Problem}
-  For \textbf{minimization} problem: if optimal quality is $C^\star$ and alg. produces
-      quality $C,$ by definition $C^\star \leq C$ and define
-      \[ \rho(n) = \frac{C}{C^\star} \]
-  
-  Recall 3-approx. vertex cover: \# colors $\leq 3 k^\star$
-  \end{frame}
-  
-  \begin{frame} \frametitle{Performance Ratio for Maximization Problem}
-For \textbf{maximization} problem: if optimal quality is $C^\star$ and alg. produces
-    quality $C,$ by definition $C^\star \geq C,$ and define
-    \[ \rho(n) = \frac{C^\star}{C} \]
-  
-    (Reciprocal of previous definition.)
-    \stanza
-    
-    Consider approximate matching.
-
-  \end{frame}
-
-%\begin{frame} \frametitle{Fixed Approximation Ratios}
-%Some approxmation algorithms have a fixed approximation ratio that is
-%``baked in'' to the design of the algorithm. \stanza
-%
-%Ex.: algorithm that solves 3-approx. vertex cover would have fixed $\rho(n)=3$
-%\stanza
-%
-%In general, better (smaller) ratios require slower algorithms. \\
-%(note 1-approximation algorithms produce optimal solutions.) \stanza
-%
-%Deriving a different quality-vs.-time trade-off requires designing an
-%entirely different algorithm.
-%\end{frame}
-%
-%\begin{frame} \frametitle{Approximation Schemes}
-%\textbf{approximation scheme}: family of related algorithms, such that, for
-%any parameter $\epsilon > 0,$ scheme defines a
-%$(1+\epsilon)$-approximate algorithm
-%\begin{itemize}
-%  \item think of $\epsilon$ as a \textbf{const} variable
-%  \item time-performance trade-off is fully tuneable at compile time
-%  \item user defines $\epsilon$ appropriately for their use case, recompiles
-%  \item technically, changing $\epsilon$ defines a distinct algorithm
-%  \item hence ``scheme''
-%\end{itemize}
-%\end{frame}
-%
-%\begin{frame} \frametitle{PTAS}
-%\textbf{Polynomial Time Approximation Scheme (PTAS)}: approx. scheme where runtime
-%is polynomial in $n$; nothing said of relationship to $\epsilon$ \\
-%\begin{itemize}
-%  \item ex. $O(2^{1/\epsilon} n \log n)$ \stanza
-%\end{itemize}
-%
-%\textbf{\underline{Fully} PTAS}: runtime is polynomial in $n$ \underline{and} $1/\epsilon$ \\
-%\begin{itemize}
-%  \item ex. $O((1/\epsilon)^2 n^3)$
-%  \item preferable to non-fully-PTAS
-%\end{itemize}
-%\end{frame}
-
-\begin{frame} \frametitle{Vertex Cover Problem}
+\begin{frame} \frametitle{Recap: Vertex Cover Problem}
 \emph{vertex cover problem} \\
 \textbf{input}: undirected graph $G=(V,E)$ \\
 \textbf{output}: set of vertices $C \subseteq V$, of minimal size $|C|,$ such
@@ -208,7 +57,7 @@ For \textbf{maximization} problem: if optimal quality is $C^\star$ and alg. prod
 See Wiki page: \url{https://en.wikipedia.org/wiki/Vertex_cover}
 \end{frame}
 
-\begin{frame} \frametitle{Vertex Cover Example}
+\begin{frame} \frametitle{Recap: Vertex Cover Example}
   \begin{center}
     \includegraphics[height=80pt]{13-vertex-cover-1.png}
     \includegraphics[height=80pt]{13-vertex-cover-2.png}
@@ -222,25 +71,7 @@ See Wiki page: \url{https://en.wikipedia.org/wiki/Vertex_cover}
   }
 \end{frame}
 
-\begin{frame} \frametitle{Vertex Cover Hardness}
-  \begin{itemize}
-    \item vertex cover is $NP$-complete
-    \item baseline algorithm:
-    \begin{itemize}
-      \item exhaustive search
-      \item for each subset $C$ of vertices, check whether every edge has an
-        endpoint in $C$
-      \item return the smallest $C$ that is a valid cover
-      \item $\Theta(2^n m)$ time, exponential, slow
-    \end{itemize}
-    \item goal of a 2-approximate vertex cover algorithm:
-    \begin{itemize}
-      \item get a decent (though imperfect) cover much faster
-    \end{itemize}
-  \end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{A Greedy Approximation Algorithm}
+\begin{frame} \frametitle{Recap: A Greedy Approximation Algorithm}
 \begin{itemize}
   \item every edge $e=(u,v)$ needs both $u \in C$ and $v \in C$
   \item so grab an edge $e=(u,v)$ and include $u$ and $v$ in $C$
@@ -252,15 +83,7 @@ See Wiki page: \url{https://en.wikipedia.org/wiki/Vertex_cover}
 \end{center}
 \end{frame}
 
-\begin{frame} \frametitle{A Greedy Approximation Algorithm}
-\begin{itemize}
-    \item good: definitely finds a correct cover $C$
-    \item bad: depending on the order of the ``grabs'', heuristic can get tricked
-    into picking sub-optimal vertices
-\end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Example: Greedy Can Be Suboptimal}
+\begin{frame} \frametitle{Recap: Greedy Can Be Suboptimal}
 \begin{center}
   \includegraphics[height=100pt]{vertex-cover-counterexample.png}
   \stanza
@@ -290,12 +113,36 @@ See Wiki page: \url{https://en.wikipedia.org/wiki/Vertex_cover}
 for $G, T,$ and $C$)
 \end{frame}
 
+\begin{frame} \frametitle{Recap: Performance Ratio for Minimization Problem}
+  For \textbf{minimization} problem: if optimal quality is $C^\star$ and alg. produces
+      quality $C,$ by definition $C^\star \leq C$ and define
+      \[ \rho(n) = \frac{C}{C^\star} \]
+  
+  Recall 3-approx. vertex cover: \# colors $\leq 3 k^\star$
+\end{frame}
+
+\begin{frame} \frametitle{Proof Strategy for 2-Approximate Vertex Cover}
+\begin{itemize}
+  \item \textbf{Want:} prove performance ratio 2
+  \item \textbf{Need:}  $\frac{C}{C^\star} \leq 2$ for all inputs
+  \item \textbf{Problem:} optimal solution $C^\star$ is unknowable
+  \item \textbf{Solution:}
+    \begin{itemize}
+      \item identify a \textbf{bridge} variable $b$
+      \item prove that $b \leq C^\star$
+      \item prove that $C \leq 2 b$
+      \item by substitution:
+        \[ \frac{C}{C^\star} \leq \frac{C}{(b)} \leq \frac{(2b)}{b} = 2 \]
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
 \begin{frame} \frametitle{Vertex Cover Performance Ratio}
 \textbf{Lemma}: APPROX-VERTEX-COVER is a 2-approximation algorithm. \\
 \textbf{Need:} for any $G, |C| \leq 2 |C^\star|$ \\
 \textbf{Proof sketch}:
 \begin{itemize}
-  \item Let $A$ be the set of edges chosen inside the \textbf{while} loop
+  \item \textbf{bridge variable:} let $A$ be the set of edges chosen inside the \textbf{while} loop
   \item will bound $|C|$ and $|C^\star|$ both in terms of $|A|$
 \end{itemize}
 \end{frame}
@@ -306,7 +153,7 @@ for $G, T,$ and $C$)
   \item $C^\star$ is a vertex cover, so for every edge $(u, v) \in A,$ we must have
     $u \in C^\star$ and/or $v \in C^\star$
   \item the ``Remove from $T$'' step guarantees that, after $(u, v)$ is chosen,
-    no other edge incident on $u$ or $v$ will be chosen and added to $A$
+    no other edge incident on $u$ or $v$ will ever be chosen and added to $A$
   \item $\Rightarrow$ each vertex $x \in C^\star$ covers \emph{at most one} edge in $A$
   \item $\Rightarrow |C^\star| \geq |A|$
 \end{itemize}
@@ -324,15 +171,15 @@ for $G, T,$ and $C$)
     |C| &= 2|A| \\
     & \leq 2(|C^\star|)
   \end{align*}
-  \item QED
+  \item therefore $|C| \leq 2 |C^\star|$
 \end{itemize}
 \end{frame}
 
 \begin{frame} \frametitle{Commentary on this Proof}
 \begin{itemize}
   \item optimal set cover $C^\star$ is opaque
-  \item us analysts cannot know which vertices will be in a $C^\star$
-  \item the algorithm doesn't know what $C^\star$ is, either
+  \item we analysts cannot know which vertices will be in a $C^\star$
+  \item the algorithm doesn't know what $C^\star$ is either
   \item all we do know is that, due to the definition of vertex cover, and
     the logic of our algorithm,
     \begin{center}
@@ -340,14 +187,46 @@ for $G, T,$ and $C$)
     \end{center}
   \item and, due to algorithm logic,
   \begin{center}
-      \# iterations \textbf{while} loop $=$ \# vertices chosen for approx. cover
+    \# vertices chosen for approx. cover = 2 $\times$ \# iterations \textbf{while} loop
   \end{center}
-  \item in general, to prove an approx. ratio, need
-  \begin{enumerate}
-    \item to bound quality of arbitrary, opaque optimal solution; and
-    \item bound quality of approx. solution the same way
-  \end{enumerate}
 \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{General Approximation Ratio Proof Strategy}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+  
+  \begin{center}
+  \textbf{Minimization Problem}
+  \end{center}
+  
+  \begin{enumerate}
+    \item Identify \textbf{bridge variable} $b$
+    \item Prove $k^\star b \leq C^\star$
+    \item Prove $C \leq k b$
+    \item Show by substitution that
+      \[ \frac{C}{C^\star} \leq \frac{(k b)}{(k^\star b)} = \frac{k}{k^\star} \]
+    \item Conclude approximation ratio is $\frac{k}{k^\star}$
+  \end{enumerate}
+
+\end{column}
+\begin{column}{0.5\textwidth}
+  
+  \begin{center}
+  \textbf{Maximization Problem}
+  \end{center}
+
+  \begin{enumerate}
+    \item Identify \textbf{bridge variable} $b$
+    \item Prove $k^\star b \leq C^\star$
+    \item Prove $C \leq k b$
+    \item Show by substitution that
+      \[ \frac{C^\star}{C} \geq \frac{(k^\star b)}{(k b)} = \frac{k^\star}{k} \]
+    \item Conclude approximation ratio is $\frac{k^\star}{k}$
+  \end{enumerate}
+
+\end{column}
+\end{columns}
 \end{frame}
 
 \begin{frame} \frametitle{TSP}
