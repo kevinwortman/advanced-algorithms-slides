@@ -140,13 +140,7 @@ This work is licensed under a
     \item variable $x_i$, $i \in I$
     \item constraints $0 \leq x_i$ and $x_i \leq 1$
     \end{itemize}
-\item \textbf{choose among $k$ alternatives:} more generally, can
-  formulate a choice from $\{a, \ldots, b\} \subset \mathbb{Z}$ with
-  \begin{itemize}
-  \item variable $x_i, i \in I$
-  \item constraints $a \leq x_i$ and $x_i \leq b$
-    \end{itemize}
-  \end{itemize}
+\end{itemize}
 \end{frame}
 
 \begin{frame} \frametitle{MIP Hardness}
@@ -204,7 +198,6 @@ This work is licensed under a
   $0 \leq x_v \leq 1$ & $\forall v \in V$ & (0 or 1 indicator) \\
   $x_u + x_v \geq 1$ & $\forall (u, v) \in E$ & (each edge is covered)
 \end{tabular}
-
 \end{frame}
 
 \begin{frame} \frametitle{Vertex Cover Outcomes}
@@ -226,7 +219,68 @@ This work is licensed under a
     \end{itemize}
   \end{frame}
 
-  \begin{frame} \frametitle{TSP}
+
+\begin{frame} \frametitle{Subset Sum}
+  \emph{subset sum problem} \\
+  \textbf{input:} a set $X$ of integers, and target integer $k$ \\
+  \textbf{output:} a subset $S \subseteq X$ such that $\sum_{x \in S} x = k$; or NIL if no such $S$ exists
+  \stanza
+
+   3SUM is $NP$-complete.
+   \stanza
+
+  Examples:
+  \begin{itemize}
+    \item $X = \{1, 2, 3, 4, 5\}, k=10;$ output $S=\{2, 3, 5\}$
+    \item $X = \{2, 4, 6, 8\}, k=11;$ output NIL
+  \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Formulating Subset Sum}
+  ``Rules'' to represent:
+    \begin{itemize}
+      \item each element $x \in X$ is either in $S$ or not
+      \item sum of included elements must equal $k$
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame} \frametitle{Formulating Subset Sum}
+  \textbf{Variables:}
+  for each $x \in X$, create an integer (indicator) variable $i_x$, such that
+  \[ i_x = 1 \Leftrightarrow x \in S \]
+  
+  \textbf{Objective:} nothing to do; define objective
+  \[ 0 \]
+  
+  \textbf{Constraints:}
+
+  \begin{tabular}{lll}
+    $0 \leq i_x \leq 1$ & $\forall x \in X$ & (0 or 1 indicator) \\
+    $\sum_{x \in X} i_x x = k$ & & (sum of included elements is $k$)
+  \end{tabular}
+\end{frame}
+
+
+\begin{frame} \frametitle{Subset Sum Outcomes}
+  \begin{itemize}
+    \item \textbf{Infeasible:}
+      \begin{itemize}
+      \item indicates no $S$ can exist
+      \item useful information!
+      \item return NIL in this case
+      \end{itemize}
+    \item \textbf{Unbounded:}
+    \begin{itemize}
+      \item never happens
+      \item objective is bounded: the constant 0 is clearly finite
+    \end{itemize}
+    \item \textbf{Solution:} Construct $S$ as
+      \[ X = \{ x \,|\, x \in X \text{ and } i_x=1 \} \]
+    \end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{TSP}
     \emph{traveling salesperson problem (TSP)} \\
     \textbf{input:} a complete, weighted, undirected graph $G=(V, E)$ \\
     \textbf{output:} a tour $T$ of minimum weight
